@@ -1,6 +1,10 @@
+import { Typography } from "antd"
+import Bread from "../../components/Bread/Bread"
 const Page_Shared_Documents = () => {
     return (
-        <></>
+        <>
+            <Bread title={"Shared documents"} />
+        </>
     )
 }
 

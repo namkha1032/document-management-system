@@ -1,7 +1,8 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import {
     AppstoreOutlined,
-    BarsOutlined
+    BarsOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
 import {
     Breadcrumb,
@@ -9,33 +10,42 @@ import {
     theme,
     Typography,
     Segmented,
+    Button
 } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 
-const Bread = () => {
+const Bread = (props) => {
+    const queryClient = useQueryClient()
+    const navigate = useNavigate()
     return (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Breadcrumb
-                style={{
-                    margin: '16px 0',
-                }}
-            >
-                <Breadcrumb.Item>My Documents</Breadcrumb.Item>
-                <Breadcrumb.Item>Spider-Man</Breadcrumb.Item>
-            </Breadcrumb>
-            <Segmented
-                options={[
-                    {
-                        value: 'List',
-                        icon: <BarsOutlined />
-                    },
-                    {
-                        value: 'Kanban',
-                        icon: <AppstoreOutlined />
-                    },
-                ]}
-            />
-        </div>
+            <Typography.Title level={1} style={{ margin: 0 }}>
+                {props.title}
+            </Typography.Title>
+            <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
+                <Button type="primary" icon={<PlusOutlined />} size={"large"}
+                    onClick={() => {
+                        queryClient.setQueryData(['sidebarItem'], 0)
+                        navigate("/upload")
+                    }}
+                >
+                    Upload
+                </Button>
+                <Segmented
+                    options={[
+                        {
+                            value: 'List',
+                            icon: <BarsOutlined />
+                        },
+                        {
+                            value: 'Kanban',
+                            icon: <AppstoreOutlined />
+                        },
+                    ]}
+                />
+
+            </div>
+        </div >
     )
 }
 

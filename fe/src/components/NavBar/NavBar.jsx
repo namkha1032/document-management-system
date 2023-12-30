@@ -31,15 +31,15 @@ const AdvancedSearchButton = (props) => {
 }
 
 const NavBar = () => {
-    const colorTheme = theme.useToken()
+    const antdTheme = theme.useToken()
     let queryClient = useQueryClient()
-    let darklightTheme = queryClient.getQueryData(['theme'])
+    let modeTheme = queryClient.getQueryData(['modeTheme'])
     return (
         <Layout.Header
             style={{
-                paddingRight: `${colorTheme.token.paddingContentHorizontal}px`,
+                paddingRight: `${antdTheme.token.paddingContentHorizontal}px`,
                 paddingLeft: 0,
-                background: colorTheme.token.colorBgContainer
+                background: antdTheme.token.colorBgContainer
             }}
         >
             <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}>
@@ -50,17 +50,17 @@ const NavBar = () => {
                     />
                 </Col>
                 <Col md={5} style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", columnGap: 10 }}>
-                    <Switch checked={queryClient.getQueryData(['theme']) == "dark"}
+                    <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"}
                         checkedChildren={<FontAwesomeIcon icon={icon({ name: 'moon', style: 'solid' })} />}
                         unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
                         onClick={(e) => {
                             if (e) {
-                                window.localStorage.setItem("darklightTheme", "dark")
-                                queryClient.setQueryData(['theme'], "dark")
+                                window.localStorage.setItem("modeTheme", "dark")
+                                queryClient.setQueryData(['modeTheme'], "dark")
                             }
                             else {
-                                window.localStorage.setItem("darklightTheme", "light")
-                                queryClient.setQueryData(['theme'], "light")
+                                window.localStorage.setItem("modeTheme", "light")
+                                queryClient.setQueryData(['modeTheme'], "light")
                             }
                         }} />
                     <Typography.Text>Peter Parker</Typography.Text>

@@ -12,8 +12,8 @@ const PageColor = () => {
     let queryClient = useQueryClient()
     let colorArray = []
     let controlArray = []
-    const colorTheme = theme.useToken()
-    for (const [key, value] of Object.entries(colorTheme.token)) {
+    const antdTheme = theme.useToken()
+    for (const [key, value] of Object.entries(antdTheme.token)) {
         console.log(`${key}: ${value}`);
         console.log("typeof: ", typeof key)
         if (key.toLowerCase().includes("color")
@@ -37,18 +37,18 @@ const PageColor = () => {
     }
     return (
         <>
-            <Switch checked={queryClient.getQueryData(['theme']) == "dark"} onClick={(e) => {
+            <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"} onClick={(e) => {
                 if (e) {
-                    window.localStorage.setItem("darklightTheme", "dark")
-                    queryClient.setQueryData(['theme'], "dark")
+                    window.localStorage.setItem("modeTheme", "dark")
+                    queryClient.setQueryData(['modeTheme'], "dark")
                 }
                 else {
-                    window.localStorage.setItem("darklightTheme", "light")
-                    queryClient.setQueryData(['theme'], "light")
+                    window.localStorage.setItem("modeTheme", "light")
+                    queryClient.setQueryData(['modeTheme'], "light")
                 }
             }} />
             <Row gutter={[10, 10]} style={{
-                backgroundColor: colorTheme.token.colorBgBase
+                backgroundColor: antdTheme.token.colorBgBase
             }}>
                 {colorArray}
             </Row >
