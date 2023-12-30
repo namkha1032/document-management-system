@@ -11,6 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import PageColor from './pages/PageColor';
 import MainLayout from './components/MainLayout/MainLayout';
+// test
 const App = () => {
   let dmsTheme = window.localStorage.getItem("dmsTheme")
   const themeQuery = useQuery({
