@@ -59,9 +59,9 @@ const MenuItem = (props) => {
     const startIcon = props.startIcon
     const inlineIcon = props.inlineIcon
     const setOpenFolderTree = props.setOpenFolderTree
-    const dmsTheme = props.dmsTheme
+    const darklightTheme = props.darklightTheme
     // hook
-    const myTheme = theme.useToken()
+    const colorTheme = theme.useToken()
     return (
         <div style={{
             padding: menuIndex == 0 ? 0 : "0px 12px 8px 8px"
@@ -69,7 +69,7 @@ const MenuItem = (props) => {
             <Button
                 type={selectedMenu == menuIndex ? "primary" : "text"}
                 size={"large"}
-                ghost={dmsTheme == "light" && selectedMenu == menuIndex ? true : false}
+                ghost={darklightTheme == "light" && selectedMenu == menuIndex ? true : false}
                 block
                 // icon={<MenuUnfoldOutlined />}
                 style={{
@@ -78,7 +78,7 @@ const MenuItem = (props) => {
                     // paddingRight: "4px",
                     // height: 40,
                     // width: collapsed ? 56 : 176,
-                    backgroundColor: dmsTheme == "light" && selectedMenu == menuIndex ? myTheme.token.colorPrimaryBg : null,
+                    backgroundColor: darklightTheme == "light" && selectedMenu == menuIndex ? colorTheme.token.colorPrimaryBg : null,
                     paddingLeft: collapsed ? 20 : 15,
                     transition: "width 0.215s, background-color 0.215s, padding 0.215s",
                     display: "flex",
@@ -109,27 +109,27 @@ const SideBar = (props) => {
     const [collapsed, setCollapsed] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(0)
     const [openFolderTree, setOpenFolderTree] = useState([])
-    const myTheme = theme.useToken()
+    const colorTheme = theme.useToken()
 
     let queryClient = useQueryClient()
-    let dmsTheme = queryClient.getQueryData(['theme'])
+    let darklightTheme = queryClient.getQueryData(['theme'])
     return (
         <Sider
             style={{
-                // background: queryClient.getQueryData(['theme']) == "light" ? myTheme.token.colorBgBase : "#001529" 
-                background: myTheme.token.colorBgContainer
+                // background: queryClient.getQueryData(['theme']) == "light" ? colorTheme.token.colorBgBase : "#001529" 
+                background: colorTheme.token.colorBgContainer
             }}
             width="13%"
             collapsible collapsed={collapsed}
             trigger={
                 <Flex
                     justify="center" align="center"
-                    style={{ width: "100%", height: "100%", backgroundColor: myTheme.token.colorBgContainer }}>
+                    style={{ width: "100%", height: "100%", backgroundColor: colorTheme.token.colorBgContainer }}>
                     <Button
-                        style={{ width: "100%", margin: myTheme.token.marginXXS, backgroundColor: myTheme.token.colorPrimaryBg, transition: "backgroundColor 0.215s" }}
-                        type={dmsTheme == "dark" ? "primary" : "default"}
+                        style={{ width: "100%", margin: colorTheme.token.marginXXS, backgroundColor: colorTheme.token.colorPrimaryBg, transition: "backgroundColor 0.215s" }}
+                        type={darklightTheme == "dark" ? "primary" : "default"}
                         // type={"primary"}
-                        ghost={dmsTheme == "dark" ? true : false}
+                        ghost={darklightTheme == "dark" ? true : false}
                         onClick={() => setCollapsed(!collapsed)}>
                         {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                     </Button>
@@ -143,15 +143,15 @@ const SideBar = (props) => {
                 alignItems: "center",
                 columnGap: 15,
                 height: 56,
-                // margin: `0 ${myTheme.token.marginXXS}px`,
-                padding: collapsed ? `0 ${36 - myTheme.token.fontSizeHeading3 / 2}px` : `0 ${31 - myTheme.token.fontSizeHeading3 / 2}px`,
+                // margin: `0 ${colorTheme.token.marginXXS}px`,
+                padding: collapsed ? `0 ${36 - colorTheme.token.fontSizeHeading3 / 2}px` : `0 ${31 - colorTheme.token.fontSizeHeading3 / 2}px`,
                 transition: "padding 0.215s"
             }}>
                 <Html5Outlined
-                    style={{ fontSize: myTheme.token.fontSizeHeading3, color: myTheme.token.colorTextBase }}
+                    style={{ fontSize: colorTheme.token.fontSizeHeading3, color: colorTheme.token.colorTextBase }}
                 />
                 <Text strong={true} style={{
-                    fontSize: myTheme.token.fontSizeHeading3, whiteSpace: "nowrap",
+                    fontSize: colorTheme.token.fontSizeHeading3, whiteSpace: "nowrap",
                     display: collapsed ? "none" : "block"
                 }}>
                     xCorp
@@ -179,7 +179,7 @@ const SideBar = (props) => {
                                     startIcon={<UserOutlined />}
                                     inlineIcon={collapsed ? null : <RightOutlined rotate={openFolderTree[0] == 1 ? 90 : 0} />}
                                     setOpenFolderTree={setOpenFolderTree}
-                                    dmsTheme={dmsTheme}
+                                    darklightTheme={darklightTheme}
                                 />
                             </>,
                         children: <FolderTree />,
@@ -196,7 +196,7 @@ const SideBar = (props) => {
                 collapsed={collapsed}
                 startIcon={<TeamOutlined />}
                 setOpenFolderTree={setOpenFolderTree}
-                dmsTheme={dmsTheme}
+                darklightTheme={darklightTheme}
             />
             <MenuItem
                 selectedMenu={selectedMenu}
@@ -206,7 +206,7 @@ const SideBar = (props) => {
                 collapsed={collapsed}
                 startIcon={<DeleteOutlined />}
                 setOpenFolderTree={setOpenFolderTree}
-                dmsTheme={dmsTheme}
+                darklightTheme={darklightTheme}
             />
 
         </Sider>

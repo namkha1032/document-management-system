@@ -11,22 +11,22 @@ import Bread from '../Bread/Bread';
 // //////////////////////////////////////////////////////
 
 const MainLayout = () => {
-    const myTheme = theme.useToken()
+    const colorTheme = theme.useToken()
     let queryClient = useQueryClient()
-    let dmsTheme = queryClient.getQueryData(['theme'])
+    let darklightTheme = queryClient.getQueryData(['theme'])
     return (
         <Layout style={{
             minHeight: '100vh',
         }}
         >
             <SideBar />
-            <Layout style={{ background: myTheme.token.colorBgContainer }}>
+            <Layout style={{ background: colorTheme.token.colorBgContainer }}>
                 <NavBar />
                 <Layout.Content style={{
                     margin: 0,
-                    borderRadius: myTheme.token.borderRadiusLG,
+                    borderRadius: colorTheme.token.borderRadiusLG,
                     padding: "0 16px",
-                    backgroundColor: myTheme.token.colorBgLayout,
+                    backgroundColor: colorTheme.token.colorBgLayout,
                     overflowY: "scroll"
                 }}
                 >

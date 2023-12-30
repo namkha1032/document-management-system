@@ -12,8 +12,8 @@ const PageColor = () => {
     let queryClient = useQueryClient()
     let colorArray = []
     let controlArray = []
-    const myTheme = theme.useToken()
-    for (const [key, value] of Object.entries(myTheme.token)) {
+    const colorTheme = theme.useToken()
+    for (const [key, value] of Object.entries(colorTheme.token)) {
         console.log(`${key}: ${value}`);
         console.log("typeof: ", typeof key)
         if (key.toLowerCase().includes("color")
@@ -39,16 +39,16 @@ const PageColor = () => {
         <>
             <Switch checked={queryClient.getQueryData(['theme']) == "dark"} onClick={(e) => {
                 if (e) {
-                    window.localStorage.setItem("dmsTheme", "dark")
+                    window.localStorage.setItem("darklightTheme", "dark")
                     queryClient.setQueryData(['theme'], "dark")
                 }
                 else {
-                    window.localStorage.setItem("dmsTheme", "light")
+                    window.localStorage.setItem("darklightTheme", "light")
                     queryClient.setQueryData(['theme'], "light")
                 }
             }} />
             <Row gutter={[10, 10]} style={{
-                backgroundColor: myTheme.token.colorBgBase
+                backgroundColor: colorTheme.token.colorBgBase
             }}>
                 {colorArray}
             </Row >

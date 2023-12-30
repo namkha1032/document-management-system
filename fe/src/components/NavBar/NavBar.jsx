@@ -31,15 +31,15 @@ const AdvancedSearchButton = (props) => {
 }
 
 const NavBar = () => {
-    const myTheme = theme.useToken()
+    const colorTheme = theme.useToken()
     let queryClient = useQueryClient()
-    let dmsTheme = queryClient.getQueryData(['theme'])
+    let darklightTheme = queryClient.getQueryData(['theme'])
     return (
         <Layout.Header
             style={{
-                paddingRight: `${myTheme.token.paddingContentHorizontal}px`,
+                paddingRight: `${colorTheme.token.paddingContentHorizontal}px`,
                 paddingLeft: 0,
-                background: myTheme.token.colorBgContainer
+                background: colorTheme.token.colorBgContainer
             }}
         >
             <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}>
@@ -55,11 +55,11 @@ const NavBar = () => {
                         unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
                         onClick={(e) => {
                             if (e) {
-                                window.localStorage.setItem("dmsTheme", "dark")
+                                window.localStorage.setItem("darklightTheme", "dark")
                                 queryClient.setQueryData(['theme'], "dark")
                             }
                             else {
-                                window.localStorage.setItem("dmsTheme", "light")
+                                window.localStorage.setItem("darklightTheme", "light")
                                 queryClient.setQueryData(['theme'], "light")
                             }
                         }} />
