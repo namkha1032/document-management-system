@@ -1,2 +1,2 @@
-/fe/node_modules
-/fe/package-lock.json
+/node_modules
+package-lock.json
