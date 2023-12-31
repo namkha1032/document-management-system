@@ -1,0 +1,67 @@
+.metadata-tab {
+    width: 30em;
+    height: 35.3em;
+    padding: 1em;
+    background-color: white;
+    border-radius: 0 15px 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+
+}
+
+.metadata-tab h3 {
+    margin-bottom: 10px;
+}
+
+.metadata-tab button {
+    /* margin-top: 10px; */
+    padding: 8px 15px;
+    background-color: #1677ff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.metadata-tab button:hover {
+    background-color: #1677ff;
+    color: #fff;
+}
+
+.metadata-table {
+    display: flex;
+}
+
+.column {
+    flex: 1;
+}
+
+.key-column>div {
+    margin-bottom: 1.12em;
+}
+
+.metadata-item {
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+/* .key-item {
+    font-weight: bold;
+} */
+
+.value-item input {
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+
+.metadata-input {
+    display: flex;
+    /* margin-left: 2em; */
+}
+
+input {
+    height: 2.5em;
+    margin: 0 .5em;
+    width: 12em;
+    border-radius: 5px;
+}

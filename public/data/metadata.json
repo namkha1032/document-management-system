@@ -1,8 +1,36 @@
 {
-    "metadata":[
+    "metadata": [
         {
-            "key": "abc",
-            "value": "def"
+            "key": "Document number",
+            "value": "22/2021"
+        },
+        {
+            "key": "Document type",
+            "value": "thong tu"
+        },
+        {
+            "key": "Agency",
+            "value": "bo giao duc"
+        },
+        {
+            "key": "Document title",
+            "value": "something"
+        },
+        {
+            "key": "Issued date",
+            "value": "22/10/2021"
+        },
+        {
+            "key": "Effective date",
+            "value": "22/10/2021"
+        },
+        {
+            "key": "Document based",
+            "value": "nghi dinh"
+        },
+        {
+            "key": "Expired document",
+            "value": "22231"
         }
     ]
 }
