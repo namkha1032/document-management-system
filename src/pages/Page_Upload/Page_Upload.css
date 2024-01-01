@@ -1,21 +1,21 @@
-.pdf-viewer-container {
+.page_upload .pdf-viewer-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.main-content {
+.page_upload .main-content {
     width: 100%;
     justify-content: center;
 }
 
-.navbar {
+.page_upload .navbar {
     padding: 5px 10px;
     justify-content: space-between;
     align-items: center;
 }
 
-.nav-controls {
+.page_upload .nav-controls {
     margin-top: 0px;
     background-color: #474747;
     padding: 10px 5px;
@@ -26,26 +26,25 @@
     justify-content: center;
 }
 
-.nav-controls button {
+.page_upload .nav-controls button {
     margin: 0 5px;
-    padding: 5px 15px;
-    background-color: transparent;
-    border: solid 1px #fff;
+    background-color: #626262;
+    /* border: solid 1px #fff; */
+    color: white;
 }
 
-.nav-controls button:hover {
+.page_upload .nav-controls button:hover {
     margin: 0 5px;
-    padding: 5px 15px;
     background-color: #787878;
     border: solid 1px #fff;
 }
 
 
-input[type="file"] {
+.page_upload .navbar input[type="file"] {
     display: none;
 }
 
-.custom-file-upload {
+.page_upload .custom-file-upload {
     background-color: #1677ff;
     color: white;
     border: none;
@@ -60,12 +59,12 @@ input[type="file"] {
     gap: 10px;
 }
 
-.custom-file-upload:hover {
+.page_upload .custom-file-upload:hover {
     background-color: #4593ff;
 
 }
 
-.pdf-content {
+.page_upload .pdf-content {
     height: 32em;
     width: 60em;
     display: flex;
@@ -79,7 +78,7 @@ input[type="file"] {
 
 }
 
-.pdf-page {
+.page_upload .pdf-page {
     width: 100%;
     /* Make sure the page takes the full width of the container */
     border: 1px solid #ddd;
@@ -90,12 +89,12 @@ input[type="file"] {
 }
 
 
-.react-pdf__Page__textContent, .react-pdf__Page__annotations {
+.page_upload .react-pdf__Page__textContent, .react-pdf__Page__annotations {
     display: none !important;
     height: 0 !important;
 }
 
-.page-controls {
+.page_upload .page-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -103,22 +102,9 @@ input[type="file"] {
     background-color: #f5f5f5;
 }
 
-button {
-    background-color: #0808fe;
-    color: white;
-    font-weight: 500;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
 
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
 
-.extract-div {
+.page_upload .extract-div {
     padding: 0 10px;
     margin-top: 5px;
     align-items: center;
@@ -127,7 +113,7 @@ button:disabled {
     width: 55%;
 }
 
-.page-tracker {
+.page_upload .page-tracker {
     border: solid 1px #fff;
     border-radius: 5px;
 }

@@ -58,7 +58,7 @@ const PdfUploader = () => {
     };
 
     return (
-        <>
+        <div className='page_upload'>
             <Bread title="New Document" />
 
             <div className="pdf-viewer-container">
@@ -80,9 +80,9 @@ const PdfUploader = () => {
                             <div>
                                 <div className="nav-controls">
                                     <div style={{ borderRight: 'solid 1px #fff', paddingRight: '2em' }}>
-                                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
+                                        <Button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
                                             &lt;
-                                        </button>
+                                        </Button>
                                         <span>
                                             <Input
                                                 value={currentPage.toString()}
@@ -91,14 +91,14 @@ const PdfUploader = () => {
                                                 style={{ width: '2em', height: '2em', padding: '.3em' }}
                                             />/{numPages}
                                         </span>
-                                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= numPages}>
+                                        <Button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= numPages}>
                                             &gt;
-                                        </button>
+                                        </Button>
                                     </div>
                                     <div style={{ marginLeft: '2em' }}>
-                                        <button onClick={() => handleZoom(scale + 0.1)}>Zoom In</button>
-                                        <button onClick={() => handleZoom(scale - 0.1)}>Zoom Out</button>
-                                        <button onClick={() => handleZoom(1)}>Fit to Width</button>
+                                        <Button onClick={() => handleZoom(scale + 0.1)}>Zoom In</Button>
+                                        <Button onClick={() => handleZoom(scale - 0.1)}>Zoom Out</Button>
+                                        <Button onClick={() => handleZoom(1)}>Fit to Width</Button>
                                     </div>
                                 </div>
                                 <div className="pdf-content" id="pdf-viewer">
@@ -151,7 +151,7 @@ const PdfUploader = () => {
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 };
 

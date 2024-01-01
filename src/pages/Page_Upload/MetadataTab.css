@@ -20,6 +20,7 @@
     color: #fff;
     border: none;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 .metadata-tab button:hover {
@@ -31,11 +32,11 @@
     display: flex;
 }
 
-.column {
+.metadata-tab .column {
     flex: 1;
 }
 
-.key-column>div {
+.metadata-tab .key-column>div {
     margin-bottom: 1.25em;
 }
 
@@ -48,7 +49,7 @@
     font-weight: bold;
 } */
 
-.value-item input {
+.metadata-tab .value-item input {
     padding: 5px;
     border: 1px solid #ccc;
 }
@@ -59,7 +60,7 @@
     /* margin-left: 2em; */
 }
 
-input {
+.metadata-tab input {
     height: 2.5em;
     margin: 0 .5em;
     width: 12em;
