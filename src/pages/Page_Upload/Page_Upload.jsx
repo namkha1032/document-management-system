@@ -1,92 +1,69 @@
 import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import './Page_Upload.css'; // Import the external CSS file
-import Bread from "../../components/Bread/Bread"
-import { Select, Button } from 'antd';
-import {
-    UploadOutlined
-} from '@ant-design/icons';
-import MetadataTab from "./Page_Upload_MetaData"; // Import your MetadataTab component
+import './Page_Upload.css';
+import Bread from '../../components/Bread/Bread';
+import { Select, Button, Input } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import MetadataTab from './Page_Upload_MetaData';
 
-// Set worker URL to initialize PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const PdfUploader = () => {
-    const [metadata, setMetadata] = useState(null); // State to store fetched metadata
+    const [metadata, setMetadata] = useState(null);
     const [numPages, setNumPages] = useState(null);
     const [file, setFile] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [scale, setScale] = useState(1);
-    const [showMetadataTab, setShowMetadataTab] = useState(false); // State to manage the visibility of the metadata tab
-    const [inputPage, setInputPage] = useState(""); // State to store the input page number
-    const pagesPerView = 1; // Number of pages to show in a single view
+    const [showMetadataTab, setShowMetadataTab] = useState(false);
+    const [inputPage, setInputPage] = useState("");
+    const pagesPerView = 1;
 
     const onFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
-        setNumPages(null); // Reset numPages when a new file is selected
+        setNumPages(null);
     };
 
-    const onDocumentLoadSuccess = ({ numPages }) => {
-        setNumPages(numPages);
-    };
+    const onDocumentLoadSuccess = ({ numPages }) => setNumPages(numPages);
 
     const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= numPages) {
-            setCurrentPage(newPage);
-        }
+        if (newPage >= 1 && newPage <= numPages) setCurrentPage(newPage);
     };
 
-    const handleZoomIn = () => {
-        setScale(scale + 0.1);
-    };
-
-    const handleZoomOut = () => {
-        setScale(scale - 0.1);
-    };
-
-    const handleFitToWidth = () => {
-        setScale(1);
-    };
+    const handleZoom = (newScale) => setScale(newScale);
 
     const handleExtract = async () => {
-        let raw = await fetch("http://localhost:3000/data/metadata.json");
-        let data = await raw.json();
-
-        // Set the fetched metadata in the state
+        const raw = await fetch('http://localhost:3000/data/metadata.json');
+        const data = await raw.json();
         setMetadata(data.metadata);
-
-        // Show metadata tab when the "Start Extract" button is clicked
         setShowMetadataTab(true);
     };
 
-    const handleSave = () => {
-        console.log("Save");
-    };
+    const handleSave = () => console.log('Save');
 
-    const handleExportChange = (value) => {
-        console.log(`selected ${value}`);
-    };
+    const handleExportChange = (value) => console.log(`selected ${value}`);
 
     const handleInputChange = (e) => {
-        setInputPage(e.target.value);
+        const newPage = parseInt(e.target.value, 10);
+        if (!isNaN(newPage) && newPage >= 1 && newPage <= numPages)
+            setCurrentPage(newPage);
     };
 
     const handleGoToPage = () => {
         const pageNumber = parseInt(inputPage, 10);
         if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= numPages) {
             setCurrentPage(pageNumber);
-            setInputPage(""); // Clear the input after navigating to the page
+            setInputPage("");
         }
     };
 
     return (
         <>
-            <Bread title={"New Document"} />
+            <Bread title="New Document" />
 
             <div className="pdf-viewer-container">
                 <div className="navbar">
-                    <label htmlFor="file-upload" className="custom-file-upload" >
+                    <label htmlFor="file-upload" className="custom-file-upload">
                         <UploadOutlined />
                         Choose File
                     </label>
@@ -96,70 +73,47 @@ const PdfUploader = () => {
                         onChange={onFileChange}
                         accept=".pdf"
                     />
-
                 </div>
                 {file && (
-                    <div className='main-content'>
-                        <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
+                    <div className="main-content">
+                        <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
                             <div>
                                 <div className="nav-controls">
-                                    <div style={{ borderRight: "solid 1px #fff", paddingRight: "2em" }}>
-                                        <button onClick={() => handlePageChange(currentPage - pagesPerView)} disabled={currentPage <= 1}>
+                                    <div style={{ borderRight: 'solid 1px #fff', paddingRight: '2em' }}>
+                                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
                                             &lt;
                                         </button>
                                         <span>
-                                            <input
-                                                type="text"
-                                                defaultvalue={`${currentPage}`}
+                                            <Input
+                                                value={currentPage.toString()}
                                                 onChange={handleInputChange}
-                                                onKeyPress={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        handleGoToPage();
-                                                    }
-                                                }}
-                                                style={{ width: "2em", height: "2em" }}
+                                                onPressEnter={handleGoToPage}
+                                                style={{ width: '2em', height: '2em', padding: '.3em' }}
                                             />/{numPages}
                                         </span>
-                                        <button onClick={() => handlePageChange(currentPage + pagesPerView)} disabled={currentPage + pagesPerView > numPages}>
+                                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= numPages}>
                                             &gt;
                                         </button>
                                     </div>
-
-                                    {/* <button onClick={handleGoToPage}>Go</button> */}
-                                    <div style={{ marginLeft: "2em" }}>
-                                        <button onClick={handleZoomIn}>
-                                            Zoom In
-                                        </button>
-                                        <button onClick={handleZoomOut}>
-                                            Zoom Out
-                                        </button>
-                                        <button onClick={handleFitToWidth}>
-                                            Fit to Width
-                                        </button>
+                                    <div style={{ marginLeft: '2em' }}>
+                                        <button onClick={() => handleZoom(scale + 0.1)}>Zoom In</button>
+                                        <button onClick={() => handleZoom(scale - 0.1)}>Zoom Out</button>
+                                        <button onClick={() => handleZoom(1)}>Fit to Width</button>
                                     </div>
                                 </div>
                                 <div className="pdf-content" id="pdf-viewer">
-                                    <Document
-                                        file={file}
-                                        onLoadSuccess={onDocumentLoadSuccess}
-                                    >
+                                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
                                         {Array.from(new Array(pagesPerView), (el, index) => (
-                                            <Page
-                                                key={`page_${currentPage + index}`}
-                                                pageNumber={currentPage + index}
-                                                scale={scale}
-                                            />
+                                            <Page key={`page_${currentPage + index}`} pageNumber={currentPage + index} scale={scale} />
                                         ))}
                                     </Document>
                                 </div>
                             </div>
-                            {showMetadataTab && (
-                                <MetadataTab metadata={metadata} onClose={() => setShowMetadataTab(false)} />
-                            )}
+                            {showMetadataTab && <MetadataTab metadata={metadata} onClose={() => setShowMetadataTab(false)} />}
                         </div>
                         {!showMetadataTab ? (
-                            <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
-                                <div className='extract-div'>
+                            <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+                                <div className="extract-div">
                                     <h2>Select OCR template: </h2>
                                     <Select
                                         defaultValue="0"
@@ -182,21 +136,21 @@ const PdfUploader = () => {
                                             },
                                         ]}
                                     />
-                                    <Button type="primary" size={"large"} onClick={handleExtract}>
+                                    <Button type="primary" size="large" onClick={handleExtract}>
                                         Start Extract
                                     </Button>
                                 </div>
                             </div>
                         ) : (
-                            <div style={{ display: "flex", width: "90%", justifyContent: "right", marginTop: "1em" }}>
-                                <Button type="primary" size={"large"} onClick={handleSave}>
+                            <div style={{ display: 'flex', width: '90%', justifyContent: 'right', marginTop: '1em' }}>
+                                <Button type="primary" size="large" onClick={handleSave}>
                                     Save Document
                                 </Button>
                             </div>
                         )}
                     </div>
                 )}
-            </div >
+            </div>
         </>
     );
 };

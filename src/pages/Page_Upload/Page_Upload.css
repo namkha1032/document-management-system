@@ -49,19 +49,20 @@ input[type="file"] {
     background-color: #1677ff;
     color: white;
     border: none;
-    padding: 5px 5px;
+    padding: 8px 5px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     display: flex;
     justify-content: center;
     width: 150px;
-    margin-left: 0%;
+    height: 2.5em;
     gap: 10px;
 }
 
 .custom-file-upload:hover {
-    background-color: #1677ff;
+    background-color: #4593ff;
+
 }
 
 .pdf-content {

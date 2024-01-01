@@ -6,7 +6,7 @@ import {
     PlusOutlined
 } from '@ant-design/icons';
 import {
-    Button
+    Button, Input
 } from 'antd';
 const MetadataTab = ({ metadata, onClose }) => {
     const [newKey, setNewKey] = useState('');
@@ -23,7 +23,6 @@ const MetadataTab = ({ metadata, onClose }) => {
     };
 
     const handleAddPair = () => {
-        // Validate that both key and value are provided
         if (newKey.trim() === '' || newValue.trim() === '') {
             alert('Please enter both key and value.');
             return;
@@ -62,43 +61,25 @@ const MetadataTab = ({ metadata, onClose }) => {
                         <div className="column value-column">
                             {thisMetadata.map(({ key, value }) => (
                                 <div key={key} className="metadata-item value-item">
-                                    <input
-                                        type="text"
-                                        defaultValue={value}
-                                        onChange={(e) => handleInputChange(key, e.target.value)}
-                                    />
+                                    <Input defaultValue={value} onChange={(e) => handleInputChange(key, e.target.value)} />
                                 </div>
                             ))}
                             {newKey && (
                                 <div className="metadata-item value-item">
-                                    <input
-                                        type="text"
-                                        value={newValue}
-                                        onChange={(e) => handleInputChange(newKey, e.target.value)}
-                                    />
+                                    <Input value={newValue} placeholder='New value' onChange={(e) => handleInputChange(newKey, e.target.value)} />
                                 </div>
                             )}
-                            {/* Input fields for adding new key-value pair */}
-
                         </div>
 
                     </div>
                     <h4 style={{ margin: ".5em" }}>Add new metadata:</h4>
 
                     <div className="metadata-input metadata-item value-item">
-                        <input
-                            type="text"
-                            placeholder="New Key"
-                            value={newKey}
-                            onChange={(e) => setNewKey(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="New Value"
-                            value={newValue}
-                            onChange={(e) => setNewValue(e.target.value)}
-                        />
-                        <Button style={{ padding: 0 }} icon={<PlusOutlined />}
+
+                        <Input value={newKey} placeholder='New key' onChange={(e) => setNewKey(e.target.value)} style={{ width: "80%", margin: "0 5px" }} />
+                        <Input value={newValue} placeholder='New value' onChange={(e) => setNewValue(e.target.value)} style={{ width: "80%", margin: "0 5px" }} />
+
+                        <Button style={{ padding: "0 8px" }} icon={<PlusOutlined />}
                             onClick={handleAddPair}
                         />
                     </div>
