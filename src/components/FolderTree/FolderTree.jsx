@@ -179,7 +179,6 @@ const FolderTree = () => {
         setSearchValue(value);
         setAutoExpandParent(true);
     };
-    console.log("defaultData: ", defaultData)
     const treeData = useMemo(() => {
         const loop = (data) =>
             data.map((item) => {
@@ -225,7 +224,6 @@ const FolderTree = () => {
                 switcherIcon={<DownOutlined />}
                 onExpand={onExpand}
                 onSelect={(keys, info) => {
-                    console.log('Trigger Select', keys, info);
                 }}
                 expandedKeys={expandedKeys}
                 autoExpandParent={autoExpandParent}

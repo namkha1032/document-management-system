@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import { ConfigProvider, theme } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import PageColor from './pages/PageColor';
+import Page_Color from './pages/Page_Color';
 import MainLayout from './components/MainLayout/MainLayout';
 // import pages
 import PageTest from './pages/PageTest';
@@ -54,6 +54,10 @@ const router = createBrowserRouter([
       }
     ]
   },
+  {
+    path: '/color',
+    element: <Page_Color />
+  }
 ]);
 
 const App = () => {
@@ -81,15 +85,6 @@ const App = () => {
   // --------------------dark light mode---------------------
   return (
     <ConfigProvider theme={algo}>
-      {/* <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route path="/my-documents" element={<PageMyDocuments />}></Route>
-            <Route path="/test" element={<PageTest />}></Route>
-            <Route path="/color" element={<PageColor />}></Route>
-          </Route>
-        </Routes>
-      </BrowserRouter> */}
       <RouterProvider router={router} />
     </ConfigProvider>
   );

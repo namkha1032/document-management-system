@@ -14,8 +14,6 @@ const PageColor = () => {
     let controlArray = []
     const antdTheme = theme.useToken()
     for (const [key, value] of Object.entries(antdTheme.token)) {
-        console.log(`${key}: ${value}`);
-        console.log("typeof: ", typeof key)
         if (key.toLowerCase().includes("color")
             || key == "controlItemBgActive" || key == "controlItemBgActiveDisabled" || key == "controlItemBgActiveHover"
             || key == "controlItemBgHover" || key == "controlOutline") {

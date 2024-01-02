@@ -6,7 +6,6 @@ const Page_Upload = () => {
         async function fetchData() {
             let raw = await fetch("http://localhost:3000/data/metadata.json")
             let data = await raw.json()
-            console.log("data: ", data)
         }
         fetchData()
     }, [])

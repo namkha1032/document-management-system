@@ -1,0 +1,40 @@
+{
+    "documents": [
+        {
+            "document_id": 1,
+            "title": "document 1"
+        },
+        {
+            "document_id": 2,
+            "title": "document 2"
+        },
+        {
+            "document_id": 3,
+            "title": "document 3"
+        }
+    ],
+    "broader": [
+        {
+            "keyword": "broader 1"
+        },
+        {
+            "keyword": "broader 2"
+        }
+    ],
+    "related": [
+        {
+            "keyword": "related 1"
+        },
+        {
+            "keyword": "related 2"
+        }
+    ],
+    "narrower": [
+        {
+            "keyword": "narrower 1"
+        },
+        {
+            "keyword": "narrower 2"
+        }
+    ]
+}

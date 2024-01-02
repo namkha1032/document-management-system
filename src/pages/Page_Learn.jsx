@@ -20,7 +20,6 @@ const phone = 8
 const PageLearn = () => {
     const screen = useBreakpoint()
     const gutter = screen.md ? [30, 30] : (screen.sm ? [20, 20] : [10, 10])
-    console.log("screen: ", screen)
     const [date, setDate] = useState(null);
     const [messageApi, contextHolder] = message.useMessage();
     const handleChange = (value) => {

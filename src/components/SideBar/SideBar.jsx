@@ -50,61 +50,6 @@ import FolderTree from '../FolderTree/FolderTree';
 const { Text, Title, Paragraph } = Typography
 const { Header, Content, Footer, Sider } = Layout;
 
-// const MenuItem = (props) => {
-//     // props
-//     const selectedMenu = props.selectedMenu
-//     const setSelectedMenu = props.setSelectedMenu
-//     const menuIndex = props.menuIndex
-//     const menuName = props.menuName
-//     const collapsed = props.collapsed
-//     const startIcon = props.startIcon
-//     const inlineIcon = props.inlineIcon
-//     const setOpenFolderTree = props.setOpenFolderTree
-//     const modeTheme = props.modeTheme
-//     // hook
-//     const antdTheme = theme.useToken()
-//     return (
-//         <div style={{
-//             padding: menuIndex == 0 ? 0 : "0px 12px 8px 8px"
-//         }}>
-//             <Button
-//                 type={selectedMenu == menuIndex ? "primary" : "text"}
-//                 size={"large"}
-//                 ghost={modeTheme == "light" && selectedMenu == menuIndex ? true : false}
-//                 block
-//                 // icon={<MenuUnfoldOutlined />}
-//                 style={{
-//                     // backgroundColor: selectedMenu == menuIndex ? "blue" : "grey",
-//                     // marginLeft: "4px",
-//                     // paddingRight: "4px",
-//                     // height: 40,
-//                     // width: collapsed ? 56 : 176,
-//                     backgroundColor: modeTheme == "light" && selectedMenu == menuIndex ? antdTheme.token.colorPrimaryBg : null,
-//                     paddingLeft: collapsed ? 20 : 15,
-//                     transition: "width 0.215s, background-color 0.215s, padding 0.215s",
-//                     display: "flex",
-//                     justifyContent: "space-between",
-//                     alignItems: "center"
-//                 }}
-//                 onClick={() => {
-//                     setOpenFolderTree([])
-//                     setSelectedMenu(menuIndex)
-//                 }}
-//             >
-//                 <div style={{
-//                     display: "flex",
-//                     justifyContent: "flex-start",
-//                     alignItems: "center",
-//                     columnGap: 8
-//                 }}>
-//                     {startIcon}
-//                     {collapsed ? null : menuName}
-//                 </div>
-//                 {inlineIcon}
-//             </Button>
-//         </div>
-//     )
-// }
 
 const SideBar = (props) => {
     const [collapsed, setCollapsed] = useState(false);
@@ -118,7 +63,7 @@ const SideBar = (props) => {
         {
             queryKey: ["sidebarItem"],
             queryFn: () => {
-                console.log("lolololololol")
+                console.log("sidebar run")
                 if (location.pathname.includes("company")) {
                     return '1'
                 }
@@ -159,7 +104,6 @@ const SideBar = (props) => {
             label: "Trash"
         }
     ]
-    console.log("array: ", [queryClient.getQueryData(['sidebarItem'])])
     return (
         <Sider
             style={{
@@ -204,65 +148,11 @@ const SideBar = (props) => {
                     xCorp
                 </Text>
             </div>
-
-            {/* <Collapse
-                style={{ padding: 0 }}
-                // collapsible='icon'
-                bordered={false}
-                size={"small"}
-                ghost={true}
-                onChange={(e) => { setOpenFolderTree(e) }}
-                activeKey={openFolderTree[0] == 1 && collapsed == false && selectedMenu == 0 ? [1] : []}
-                items={[
-                    {
-                        key: '1',
-                        label:
-                            <>
-                                <MenuItem
-                                    selectedMenu={selectedMenu}
-                                    setSelectedMenu={setSelectedMenu}
-                                    menuIndex={0}
-                                    menuName={"My Documents"}
-                                    collapsed={collapsed}
-                                    startIcon={<UserOutlined />}
-                                    inlineIcon={collapsed ? null : <RightOutlined rotate={openFolderTree[0] == 1 ? 90 : 0} />}
-                                    setOpenFolderTree={setOpenFolderTree}
-                                    modeTheme={modeTheme}
-                                />
-                            </>,
-                        children: <FolderTree />,
-                        showArrow: false,
-
-                    },
-                ]}
-            />
-            <MenuItem
-                selectedMenu={selectedMenu}
-                setSelectedMenu={setSelectedMenu}
-                menuIndex={1}
-                menuName={"Shared with me"}
-                collapsed={collapsed}
-                startIcon={<TeamOutlined />}
-                setOpenFolderTree={setOpenFolderTree}
-                modeTheme={modeTheme}
-            />
-            <MenuItem
-                selectedMenu={selectedMenu}
-                setSelectedMenu={setSelectedMenu}
-                menuIndex={2}
-                menuName={"Trash"}
-                collapsed={collapsed}
-                startIcon={<DeleteOutlined />}
-                setOpenFolderTree={setOpenFolderTree}
-                modeTheme={modeTheme}
-            /> */}
             <Menu theme={modeTheme}
-            // defaultSelectedKeys={['1']}
+                style={{ border: 0 }}
                 selectedKeys={[queryClient.getQueryData(['sidebarItem'])]}
-                // selectedKeys={['1']}
                 mode="inline" items={items}
                 onSelect={(event) => {
-                    console.log("item: ", event)
                     if (event.key == '1') {
                         queryClient.setQueryData(['sidebarItem'], '1')
                         navigate("/company")
