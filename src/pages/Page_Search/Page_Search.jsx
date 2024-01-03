@@ -13,6 +13,9 @@ import {
     Select
 } from "antd"
 // import icons
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { LaptopOutlined } from "@ant-design/icons"
 // import apis
 import { getSearchResult } from "../../apis/searchApi"
 // import hooks
@@ -105,83 +108,132 @@ const Page_Search = (props) => {
             }
         })
     }
+    async function handleChangeMethod(value) {
+        queryClient.setQueryData(['searchOption'], oldSearchOption => {
+            return {
+                ...oldSearchOption,
+                method: value
+            }
+        })
+    }
     // HTMl
     return (
         <>
             <Bread title={"Search"} />
+            <>
+                <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                        <Card title={'Keyword suggestion'} style={{ height: '100%' }}
+                            extra={<Select
+                                value={searchOption?.domain}
+                                style={{
+                                    width: 200,
+                                }}
+                                size={'large'}
+                                onChange={handleChangeDomain}
+                                options={[
+                                    {
+                                        value: 'phapluat',
+                                        label:
+                                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                <FontAwesomeIcon icon={icon({ name: 'scale-balanced', style: 'solid' })} />
+                                                <Typography.Text>Pháp luật</Typography.Text>
+                                            </div>
+                                    },
+                                    {
+                                        value: 'khmt',
+                                        label:
+                                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                <FontAwesomeIcon icon={icon({ name: 'laptop-code', style: 'solid' })} />
+                                                <Typography.Text>Khoa học máy tính</Typography.Text>
+                                            </div>,
+                                    }
+                                ]}
+                            />}>
+                            <Row gutter={[10, 10]}>
+                                <Col span={4}>
+                                    <Typography.Text>Broader terms: </Typography.Text>
+                                </Col>
+                                <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                    {searchResult?.broader.map((broaderItem, index) =>
+                                        <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(broaderItem, 'broader')}>
+                                            {broaderItem.keyword}
+                                        </Tag>
+                                    )}
+                                </Col>
+                                <Col span={4}>
+                                    <Typography.Text>Related terms: </Typography.Text>
+                                </Col>
+                                <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                    {searchResult?.related.map((relatedItem, index) =>
+                                        <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(relatedItem, 'related')}>
+                                            {relatedItem.keyword}
+                                        </Tag>
+                                    )}
+                                </Col>
+                                <Col span={4}>
+                                    <Typography.Text>Narrower terms: </Typography.Text>
+                                </Col>
+                                <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                    {searchResult?.narrower.map((narrowerItem, index) =>
+                                        <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(narrowerItem, 'narrower')}>
+                                            {narrowerItem.keyword}
+                                        </Tag>
+                                    )}
+                                </Col>
+                            </Row>
+                        </Card>
+                    </Col>
+                    <Col span={12}>
+                        <Card title={'Metadata'} style={{ height: '100%' }}
+                            extra={<Select
+                                value={searchOption?.method}
+                                style={{
+                                    width: 200,
+                                }}
+                                size={'large'}
+                                onChange={handleChangeMethod}
+                                options={[
+                                    {
+                                        value: 'full-text',
+                                        label:
+                                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />
+                                                <Typography.Text>Full-text search</Typography.Text>
+                                            </div>
+                                    },
+                                    {
+                                        value: 'semantic',
+                                        label:
+                                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                <FontAwesomeIcon icon={icon({ name: 'brain', style: 'solid' })} />
+                                                <Typography.Text>Semantic search</Typography.Text>
+                                            </div>,
+                                    },
+                                    {
+                                        value: 'filename',
+                                        label:
+                                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} />
+                                                <Typography.Text>Search by file name</Typography.Text>
+                                            </div>,
+                                    }
+                                ]}
+                            />}
+                        >
+                            <Typography.Text>hehehe</Typography.Text>
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             {searchMutation.isPending
-                ?
-                <Typography.Text>loading...</Typography.Text>
-                :
-                (searchResult?.documents.length > 0
-                    ?
-                    <>
-                        <Row>
-                            <Col span={12}>
-                                <Card title={'Keyword suggestion'}>
-                                    <Row gutter={[10, 10]}>
-                                        <Col span={4}>
-                                            <Typography.Text>Broader: </Typography.Text>
-                                        </Col>
-                                        <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {searchResult.broader.map((broaderItem, index) =>
-                                                <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(broaderItem, 'broader')}>
-                                                    {broaderItem.keyword}
-                                                </Tag>
-                                            )}
-                                        </Col>
-                                        <Col span={4}>
-                                            <Typography.Text>Related: </Typography.Text>
-                                        </Col>
-                                        <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {searchResult.related.map((relatedItem, index) =>
-                                                <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(relatedItem, 'related')}>
-                                                    {relatedItem.keyword}
-                                                </Tag>
-                                            )}
-                                        </Col>
-                                        <Col span={4}>
-                                            <Typography.Text>Narrower: </Typography.Text>
-                                        </Col>
-                                        <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {searchResult.narrower.map((narrowerItem, index) =>
-                                                <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(narrowerItem, 'narrower')}>
-                                                    {narrowerItem.keyword}
-                                                </Tag>
-                                            )}
-                                        </Col>
-                                        <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>
-                                            <Typography.Text>Domain: </Typography.Text>
-                                        </Col>
-                                        <Col span={20}>
-                                            <Select
-                                                value={searchOption.domain}
-                                                style={{
-                                                    width: 200,
-                                                }}
-                                                onChange={handleChangeDomain}
-                                                options={[
-                                                    {
-                                                        value: 'phapluat',
-                                                        label: 'Pháp luật',
-                                                    },
-                                                    {
-                                                        value: 'khmt',
-                                                        label: 'Khoa học máy tính',
-                                                    }
-                                                ]}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </Card>
-                            </Col>
-                        </Row>
-                    </>
-                    :
-                    null
-                )
-
-
+                ? <Typography.Text>loading...</Typography.Text>
+                : searchResult?.documents.map((doc, index) => (
+                    <div key={index}>
+                        <Typography.Text>{doc.title}</Typography.Text>
+                        <br />
+                    </div>
+                ))
             }
         </>
     )
