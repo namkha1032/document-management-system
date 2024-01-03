@@ -1,6 +1,6 @@
 // import packages
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // import my components
 // import ui components
 import {
@@ -25,70 +25,75 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 // import apis
 import { getSearchResult } from '../../apis/searchApi';
 // import hooks
-import useSearchMutation from '../../hooks/searchMutation';
 // import functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 const AdvancedSearchButton = (props) => {
+    const navigate = useNavigate()
     return (
         <>
-            <Button shape='circle' type={"text"} size='small'>
+            <Button shape='circle' type={"text"} size='small' onClick={() => { navigate('/search') }}>
                 <SlidersOutlined style={{ fontSize: 16 }} />
             </Button>
         </>
     )
 }
 
-const NavBar = () => {
+const NavBar = (props) => {
+    console.log('---------------render NavBar----------------')
     // props
-    // states
-    // hooks
+    // const searchOptionQuery = props.searchOptionQuery
+    // const searchResultQuery = props.searchResultQuery
+    const searchMutation = props.searchMutation
     const antdTheme = theme.useToken()
     let queryClient = useQueryClient()
-    const searchMutation = useSearchMutation()
     const navigate = useNavigate()
-    // queries
-    let searchOption = useQuery({
+    // const location = useLocation()
+    let searchOptionQuery = useQuery({
         queryKey: ['searchOption'],
         queryFn: () => {
-            // return {
-            //     extend_keywords: [],
-            //     metadata: [],
-            //     method: null
-            // }
-            return null
+            return {
+                original_query: '',
+                extend_keywords: [],
+                metadata: [],
+                method: null
+            }
+            // return null
         },
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false
     })
-    let searchResult = useQuery({
+    let searchResultQuery = useQuery({
         queryKey: ['searchResult'],
         queryFn: () => {
-            // return {
-            //     documents: [],
-            //     broader: [],
-            //     related: [],
-            //     narrower: []
-            // }
-            return null
+            return {
+                documents: [],
+                broader: [],
+                related: [],
+                narrower: []
+            }
+            // return null
         },
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false
     })
-    // mutations
-    // functions
     async function handleSearch(value) {
-        let searchOp = await queryClient.getQueryData(['searchOption'])
-        let searchData = {
-            original_query: value,
-            ...searchOp
-        }
-        await queryClient.setQueryData(['searchOption'], searchData)
+        // if (!location.pathname.includes('search')) {
         navigate('/search')
+        // }
+        let oldSearchOption = queryClient.getQueryData(['searchOption'])
+        let newSearchOption = {
+            ...oldSearchOption,
+            original_query: value
+        }
+        queryClient.setQueryData(['searchOption'], newSearchOption)
+        await searchMutation.mutateAsync(newSearchOption)
     }
     // logics
     let modeTheme = queryClient.getQueryData(['modeTheme'])
+    let searchOption = queryClient.getQueryData(['searchOption'])
+    // let searchOption = searchOptionQuery.data
     // HTMl
     return (
         <Layout.Header
@@ -100,22 +105,20 @@ const NavBar = () => {
         >
             <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}>
                 <Col md={10} style={{ display: "flex", alignItems: "center" }}>
-                    {/* <Input
-                        // style={{ transition: "backgroundColor 0.215s" }}
-                        prefix={<SearchOutlined />}
-                        suffix={<AdvancedSearchButton />}
-                    /> */}
                     <Input.Search
                         placeholder="input search text"
                         enterButton="Search"
                         size="large"
                         suffix={<AdvancedSearchButton />}
                         onSearch={handleSearch}
-                        prefix={<>
-                            <Tag color='cyan' closeIcon>
-                                Prevent Default
-                            </Tag>
-                        </>
+                        prefix={
+                            searchOption?.extend_keywords.map((kw, index) =>
+                                <Tag key={index} color='cyan' closeIcon onClose={() => {
+
+                                }}>
+                                    {kw.keyword}
+                                </Tag>
+                            )
                         }
                     >
                     </Input.Search>

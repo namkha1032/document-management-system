@@ -63,7 +63,6 @@ const SideBar = (props) => {
         {
             queryKey: ["sidebarItem"],
             queryFn: () => {
-                console.log("sidebar run")
                 if (location.pathname.includes("company")) {
                     return '1'
                 }

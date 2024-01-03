@@ -10,7 +10,13 @@ import Footer from '../Footer/Footer';
 import Bread from '../Bread/Bread';
 // //////////////////////////////////////////////////////
 
-const MainLayout = () => {
+const MainLayout = (props) => {
+    console.log('---------------render MainLayout----------------')
+    // props
+    // const searchOptionQuery = props.searchOptionQuery
+    // const searchResultQuery = props.searchResultQuery
+    const searchMutation = props.searchMutation
+    // hooks
     const antdTheme = theme.useToken()
     let queryClient = useQueryClient()
     let modeTheme = queryClient.getQueryData(['modeTheme'])
@@ -21,7 +27,7 @@ const MainLayout = () => {
         >
             <SideBar />
             <Layout style={{ background: antdTheme.token.colorBgContainer }}>
-                <NavBar />
+                <NavBar searchMutation={searchMutation} />
                 <Layout.Content style={{
                     margin: 0,
                     borderRadius: antdTheme.token.borderRadiusLG,
