@@ -1,6 +1,6 @@
 // import packages
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link, redirect } from 'react-router-dom';
 // import my components
 // import ui components
 import {
@@ -13,12 +13,14 @@ import {
     Row,
     Col,
     Avatar,
-    Tag
+    Tag,
+    Popover
 } from 'antd';
 // import icons
 import {
     SlidersOutlined,
-    SearchOutlined
+    SearchOutlined,
+    CloseOutlined
 } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -31,9 +33,11 @@ const AdvancedSearchButton = (props) => {
     const navigate = useNavigate()
     return (
         <>
-            <Button shape='circle' type={"text"} size='small' onClick={() => { navigate('/search') }}>
-                <SlidersOutlined style={{ fontSize: 16 }} />
-            </Button>
+            <Popover placement="bottom" content={'Advanced search'}>
+                <Button shape='circle' type={"text"} size='small' onClick={() => { navigate('/search') }}>
+                    <SlidersOutlined style={{ fontSize: 16 }} />
+                </Button>
+            </Popover>
         </>
     )
 }
@@ -48,36 +52,7 @@ const NavBar = (props) => {
     let queryClient = useQueryClient()
     const navigate = useNavigate()
     // const location = useLocation()
-    let searchOptionQuery = useQuery({
-        queryKey: ['searchOption'],
-        queryFn: () => {
-            return {
-                original_query: '',
-                extend_keywords: [],
-                metadata: [],
-                method: null
-            }
-            // return null
-        },
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false
-    })
-    let searchResultQuery = useQuery({
-        queryKey: ['searchResult'],
-        queryFn: () => {
-            return {
-                documents: [],
-                broader: [],
-                related: [],
-                narrower: []
-            }
-            // return null
-        },
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false
-    })
+
     async function handleSearch(value) {
         // if (!location.pathname.includes('search')) {
         navigate('/search')
@@ -89,6 +64,35 @@ const NavBar = (props) => {
         }
         queryClient.setQueryData(['searchOption'], newSearchOption)
         await searchMutation.mutateAsync(newSearchOption)
+    }
+    async function handleRemoveKeyword(e, kw) {
+        e.preventDefault()
+        queryClient.setQueryData(['searchResult'], (oldSearchResult) => {
+            const newBroader = kw.type == 'broader'
+                ?
+                oldSearchResult.broader.concat(kw)
+                : oldSearchResult.broader
+            const newRelated = kw.type == 'related'
+                ?
+                oldSearchResult.related.concat(kw)
+                : oldSearchResult.related
+            const newNarrower = kw.type == 'narrower'
+                ?
+                oldSearchResult.narrower.concat(kw)
+                : oldSearchResult.narrower
+            return {
+                ...oldSearchResult,
+                broader: newBroader,
+                related: newRelated,
+                narrower: newNarrower
+            }
+        })
+        queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
+            return {
+                ...oldSearchOption,
+                extend_keywords: oldSearchOption.extend_keywords.filter(kwItem => kwItem.keyword != kw.keyword)
+            }
+        })
     }
     // logics
     let modeTheme = queryClient.getQueryData(['modeTheme'])
@@ -107,18 +111,16 @@ const NavBar = (props) => {
                 <Col md={10} style={{ display: "flex", alignItems: "center" }}>
                     <Input.Search
                         placeholder="input search text"
-                        enterButton="Search"
+                        // enterButton={<Typography.Text>Search</Typography.Text>}
+                        enterButton='Search'
                         size="large"
                         suffix={<AdvancedSearchButton />}
                         onSearch={handleSearch}
                         prefix={
                             searchOption?.extend_keywords.map((kw, index) =>
-                                <Tag key={index} color='cyan' closeIcon onClose={() => {
-
-                                }}>
+                                <Tag key={index} color={kw.color} closeIcon onClose={(e) => handleRemoveKeyword(e, kw)}>
                                     {kw.keyword}
-                                </Tag>
-                            )
+                                </Tag>)
                         }
                     >
                     </Input.Search>

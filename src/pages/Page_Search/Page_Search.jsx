@@ -8,7 +8,9 @@ import {
     Typography,
     Row,
     Col,
-    Tag
+    Tag,
+    Card,
+    Select
 } from "antd"
 // import icons
 // import apis
@@ -27,64 +29,55 @@ const Page_Search = (props) => {
     const queryClient = useQueryClient()
     const searchOption = queryClient.getQueryData(['searchOption'])
     const searchResult = queryClient.getQueryData(['searchResult'])
-    // const searchPending = queryClient.getQueryData(['searchPending'])
+    console.log('searchResult in page', searchResult)
     // useEffect(() => {
-    //     console.log("in useEffect")
-    //     console.log('ori query', searchOption?.original_query)
-    //     if (searchOption && searchOption?.original_query != '') {
-    //         console.log('nice')
-    //         searchMutation.mutate(searchOption)
+    //     return () => {
+    //         queryClient.setQueryData(['searchOption'], {
+    //             original_query: '',
+    //             extend_keywords: [],
+    //             metadata: [],
+    //             method: null
+    //         })
+    //         queryClient.setQueryData(['searchResult'], {
+    //             documents: [],
+    //             broader: [],
+    //             related: [],
+    //             narrower: []
+    //         })
     //     }
-    // }, [searchOption])
-
-    // const searchMutation = useMutation({
-    //     // mutationKey: ['searchMutation'],
-    //     mutationFn: getSearchResult,
-    //     onSuccess: (response) => {
-    //         queryClient.setQueryData(['searchResult'], response)
-    //     }
-    // })
-    useEffect(() => {
-        if (searchOption && searchOption?.original_query != '') {
-            searchMutation.mutate(searchOption)
-        }
-        return () => {
-            queryClient.setQueryData(['searchOption'], {
-                extend_keywords: [],
-                metadata: [],
-                method: null
-            })
-            queryClient.setQueryData(['searchResult'], {
-                documents: [],
-                broader: [],
-                related: [],
-                narrower: []
-            })
-        }
-    }, [])
+    // }, [])
     // const searchMutationArray = useMutationState({
     //     // this mutation key needs to match the mutation key of the given mutation (see above)
     //     filters: { mutationKey: ['searchMutation'] }
     // })
     // const searchMutation = searchMutationArray[0]
     // console.log("searchMutation: ", searchMutation)
-    async function handleAddKeyword(keywordItem) {
-        queryClient.setQueryData(['searchResult'], oldSearchResult => {
-            const newBroader = oldSearchResult.broader.filter(broaderItem => {
-                if (broaderItem.keyword != keywordItem.keyword) {
-                    return true
-                }
-            })
-            const newRelated = oldSearchResult.related.filter(relatedItem => {
-                if (relatedItem.keyword != keywordItem.keyword) {
-                    return true
-                }
-            })
-            const newNarrower = oldSearchResult.narrower.filter(narrowerItem => {
-                if (narrowerItem.keyword != keywordItem.keyword) {
-                    return true
-                }
-            })
+    async function handleAddKeyword(keywordItem, type) {
+        await queryClient.setQueryData(['searchResult'], oldSearchResult => {
+            const newBroader = type == 'broader'
+                ?
+                oldSearchResult.broader.filter(broaderItem => {
+                    if (broaderItem.keyword != keywordItem.keyword) {
+                        return true
+                    }
+                })
+                : oldSearchResult.broader
+            const newRelated = type == 'related'
+                ?
+                oldSearchResult.related.filter(relatedItem => {
+                    if (relatedItem.keyword != keywordItem.keyword) {
+                        return true
+                    }
+                })
+                : oldSearchResult.related
+            const newNarrower = type == 'narrower'
+                ?
+                oldSearchResult.narrower.filter(narrowerItem => {
+                    if (narrowerItem.keyword != keywordItem.keyword) {
+                        return true
+                    }
+                })
+                : oldSearchResult.narrower
             return {
                 ...oldSearchResult,
                 broader: newBroader,
@@ -92,11 +85,23 @@ const Page_Search = (props) => {
                 narrower: newNarrower
             }
         })
-        queryClient.setQueryData(['searchOption'], oldSearchOption => {
-            const newExtendKeywords = oldSearchOption.extend_keywords.concat(keywordItem)
+        await queryClient.setQueryData(['searchOption'], oldSearchOption => {
+            const newExtendKeywords = oldSearchOption.extend_keywords.concat({
+                ...keywordItem,
+                type: type,
+                color: type == 'broader' ? 'red' : (type == 'related' ? 'green' : 'blue')
+            })
             return {
                 ...oldSearchOption,
                 extend_keywords: newExtendKeywords
+            }
+        })
+    }
+    async function handleChangeDomain(value) {
+        queryClient.setQueryData(['searchOption'], oldSearchOption => {
+            return {
+                ...oldSearchOption,
+                domain: value
             }
         })
     }
@@ -111,37 +116,64 @@ const Page_Search = (props) => {
                 (searchResult?.documents.length > 0
                     ?
                     <>
-                        <Typography.Text>Search query: {searchOption.original_query}</Typography.Text>
-                        <Row style={{ width: '50%' }} gutter={[10, 10]}>
-                            <Col span={4}>
-                                <Typography.Text>Broader: </Typography.Text>
-                            </Col>
-                            <Col span={20}>
-                                {searchResult.broader.map((broaderItem, index) =>
-                                    <Tag key={index} color='cyan' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(broaderItem)}>
-                                        {broaderItem.keyword}
-                                    </Tag>
-                                )}
-                            </Col>
-                            <Col span={4}>
-                                <Typography.Text>Related: </Typography.Text>
-                            </Col>
-                            <Col span={20}>
-                                {searchResult.related.map((relatedItem, index) =>
-                                    <Tag key={index} color='cyan'>
-                                        {relatedItem.keyword}
-                                    </Tag>
-                                )}
-                            </Col>
-                            <Col span={4}>
-                                <Typography.Text>Narrower: </Typography.Text>
-                            </Col>
-                            <Col span={20}>
-                                {searchResult.narrower.map((narrowerItem, index) =>
-                                    <Tag key={index} color='cyan'>
-                                        {narrowerItem.keyword}
-                                    </Tag>
-                                )}
+                        <Row>
+                            <Col span={12}>
+                                <Card title={'Keyword suggestion'}>
+                                    <Row gutter={[10, 10]}>
+                                        <Col span={4}>
+                                            <Typography.Text>Broader: </Typography.Text>
+                                        </Col>
+                                        <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                            {searchResult.broader.map((broaderItem, index) =>
+                                                <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(broaderItem, 'broader')}>
+                                                    {broaderItem.keyword}
+                                                </Tag>
+                                            )}
+                                        </Col>
+                                        <Col span={4}>
+                                            <Typography.Text>Related: </Typography.Text>
+                                        </Col>
+                                        <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                            {searchResult.related.map((relatedItem, index) =>
+                                                <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(relatedItem, 'related')}>
+                                                    {relatedItem.keyword}
+                                                </Tag>
+                                            )}
+                                        </Col>
+                                        <Col span={4}>
+                                            <Typography.Text>Narrower: </Typography.Text>
+                                        </Col>
+                                        <Col span={20} style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                            {searchResult.narrower.map((narrowerItem, index) =>
+                                                <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(narrowerItem, 'narrower')}>
+                                                    {narrowerItem.keyword}
+                                                </Tag>
+                                            )}
+                                        </Col>
+                                        <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>
+                                            <Typography.Text>Domain: </Typography.Text>
+                                        </Col>
+                                        <Col span={20}>
+                                            <Select
+                                                value={searchOption.domain}
+                                                style={{
+                                                    width: 200,
+                                                }}
+                                                onChange={handleChangeDomain}
+                                                options={[
+                                                    {
+                                                        value: 'phapluat',
+                                                        label: 'Pháp luật',
+                                                    },
+                                                    {
+                                                        value: 'khmt',
+                                                        label: 'Khoa học máy tính',
+                                                    }
+                                                ]}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </Card>
                             </Col>
                         </Row>
                     </>

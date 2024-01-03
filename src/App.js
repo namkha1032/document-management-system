@@ -28,18 +28,85 @@ import { getSearchResult } from './apis/searchApi';
 
 const App = () => {
   console.log('---------------render App----------------')
-
+  const queryClient = useQueryClient()
+  let searchOptionQuery = useQuery({
+    queryKey: ['searchOption'],
+    queryFn: () => {
+      return {
+        original_query: '',
+        extend_keywords: [],
+        metadata: [],
+        method: 'full-text',
+        domain: 'phapluat'
+      }
+      // return null
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false
+  })
+  let searchResultQuery = useQuery({
+    queryKey: ['searchResult'],
+    queryFn: () => {
+      return {
+        documents: [],
+        broader: [],
+        related: [],
+        narrower: []
+      }
+      // return null
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false
+  })
   const searchMutation = useMutation({
     mutationFn: getSearchResult,
     onSuccess: (response) => {
-      queryClient.setQueryData(['searchResult'], response)
+      const searchOption = queryClient.getQueryData(['searchOption'])
+      queryClient.setQueryData(['searchResult'], () => {
+        const newBroader = response.broader.filter(kwItem => {
+          for (let extendItem of searchOption.extend_keywords) {
+            if (extendItem.keyword == kwItem.keyword) {
+              return false
+            }
+          }
+          return true
+        })
+        const newRelated = response.related.filter(kwItem => {
+          for (let extendItem of searchOption.extend_keywords) {
+            if (extendItem.keyword == kwItem.keyword) {
+              return false
+            }
+          }
+          return true
+        })
+        const newNarrower = response.narrower.filter(kwItem => {
+          for (let extendItem of searchOption.extend_keywords) {
+            if (extendItem.keyword == kwItem.keyword) {
+              return false
+            }
+          }
+          return true
+        })
+        return {
+          ...response,
+          broader: newBroader,
+          related: newRelated,
+          narrower: newNarrower
+        }
+      })
     }
   })
   // router
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <MainLayout searchMutation={searchMutation} />,
+      element: <MainLayout
+        searchMutation={searchMutation}
+      // searchOptionQuery={searchOptionQuery}
+      // searchResultQuery={searchResultQuery}
+      />,
       children: [
         {
           path: "company",
@@ -55,7 +122,11 @@ const App = () => {
         },
         {
           path: "search",
-          element: <Page_Search searchMutation={searchMutation} />,
+          element: <Page_Search
+            searchMutation={searchMutation}
+          // searchOptionQuery={searchOptionQuery}
+          // searchResultQuery={searchResultQuery}
+          />,
         },
         {
           path: "trash",
@@ -87,9 +158,11 @@ const App = () => {
         window.localStorage.setItem("modeTheme", "light")
         return "light"
       }
-    }
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false
   })
-  const queryClient = useQueryClient()
   const algo = {
     algorithm: queryClient.getQueryData(['modeTheme']) == "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm
   }

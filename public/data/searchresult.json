@@ -27,6 +27,36 @@
         },
         {
             "keyword": "related 2"
+        },
+        {
+            "keyword": "related 3"
+        },
+        {
+            "keyword": "related 4"
+        },
+        {
+            "keyword": "related 5"
+        },
+        {
+            "keyword": "related 6"
+        },
+        {
+            "keyword": "related 7"
+        },
+        {
+            "keyword": "related 8"
+        },
+        {
+            "keyword": "related 9"
+        },
+        {
+            "keyword": "related 10"
+        },
+        {
+            "keyword": "related 11"
+        },
+        {
+            "keyword": "related 12"
         }
     ],
     "narrower": [
@@ -35,6 +65,12 @@
         },
         {
             "keyword": "narrower 2"
+        },
+        {
+            "keyword": "narrower 3"
+        },
+        {
+            "keyword": "narrower 4"
         }
     ]
 }

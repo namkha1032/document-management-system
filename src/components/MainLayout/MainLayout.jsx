@@ -27,7 +27,11 @@ const MainLayout = (props) => {
         >
             <SideBar />
             <Layout style={{ background: antdTheme.token.colorBgContainer }}>
-                <NavBar searchMutation={searchMutation} />
+                <NavBar
+                    searchMutation={searchMutation}
+                    // searchOptionQuery={searchOptionQuery}
+                    // searchResultQuery={searchResultQuery}
+                />
                 <Layout.Content style={{
                     margin: 0,
                     borderRadius: antdTheme.token.borderRadiusLG,

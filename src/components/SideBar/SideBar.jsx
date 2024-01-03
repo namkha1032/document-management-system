@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import {
     AppstoreOutlined,
@@ -72,15 +72,44 @@ const SideBar = (props) => {
                 else if (location.pathname.includes("shared-documents")) {
                     return '3'
                 }
-                else if (location.pathname.includes("trash")) {
+                else if (location.pathname.includes("search")) {
                     return '4'
+                }
+                else if (location.pathname.includes("trash")) {
+                    return '5'
                 }
                 else {
                     return '0'
                 }
-            }
+                // return '1'
+            },
+            refetchOnMount: false,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false
         }
     )
+    useEffect(() => {
+        // if (location) {
+            if (location.pathname.includes("company")) {
+                queryClient.setQueryData(['sidebarItem'], '1')
+            }
+            else if (location.pathname.includes("my-documents")) {
+                queryClient.setQueryData(['sidebarItem'], '2')
+            }
+            else if (location.pathname.includes("shared-documents")) {
+                queryClient.setQueryData(['sidebarItem'], '3')
+            }
+            else if (location.pathname.includes("search")) {
+                queryClient.setQueryData(['sidebarItem'], '4')
+            }
+            else if (location.pathname.includes("trash")) {
+                queryClient.setQueryData(['sidebarItem'], '5')
+            }
+            else {
+                queryClient.setQueryData(['sidebarItem'], '0')
+            }
+        // }
+    }, [location])
     const items = [
         {
             key: '1',
@@ -99,6 +128,11 @@ const SideBar = (props) => {
         },
         {
             key: '4',
+            icon: <SearchOutlined />,
+            label: "Search"
+        },
+        {
+            key: '5',
             icon: <DeleteOutlined />,
             label: "Trash"
         }
@@ -153,19 +187,23 @@ const SideBar = (props) => {
                 mode="inline" items={items}
                 onSelect={(event) => {
                     if (event.key == '1') {
-                        queryClient.setQueryData(['sidebarItem'], '1')
+                        // queryClient.setQueryData(['sidebarItem'], '1')
                         navigate("/company")
                     }
                     else if (event.key == '2') {
-                        queryClient.setQueryData(['sidebarItem'], '2')
+                        // queryClient.setQueryData(['sidebarItem'], '2')
                         navigate("/my-documents")
                     }
                     else if (event.key == '3') {
-                        queryClient.setQueryData(['sidebarItem'], '3')
+                        // queryClient.setQueryData(['sidebarItem'], '3')
                         navigate("/shared-documents")
                     }
                     else if (event.key == '4') {
-                        queryClient.setQueryData(['sidebarItem'], '4')
+                        // queryClient.setQueryData(['sidebarItem'], '4')
+                        navigate("/search")
+                    }
+                    else if (event.key == '5') {
+                        // queryClient.setQueryData(['sidebarItem'], '5')
                         navigate("/trash")
                     }
                 }}

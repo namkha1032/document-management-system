@@ -18,8 +18,8 @@ const Bread = (props) => {
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     return (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography.Title level={1} style={{ margin: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <Typography.Title level={2} style={{ margin: 0 }}>
                 {props.title}
             </Typography.Title>
             <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
