@@ -4,10 +4,11 @@ import {
     Col,
     theme,
     Switch,
-    Typography
+    Typography,
+    Affix
 } from "antd"
 import { useQueryClient } from "@tanstack/react-query"
-
+import { useState } from "react"
 const PageColor = () => {
     let queryClient = useQueryClient()
     let colorArray = []
@@ -35,16 +36,19 @@ const PageColor = () => {
     }
     return (
         <>
-            <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"} onClick={(e) => {
-                if (e) {
-                    window.localStorage.setItem("modeTheme", "dark")
-                    queryClient.setQueryData(['modeTheme'], "dark")
-                }
-                else {
-                    window.localStorage.setItem("modeTheme", "light")
-                    queryClient.setQueryData(['modeTheme'], "light")
-                }
-            }} />
+
+            <Affix offsetTop={10}>
+                <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"} onClick={(e) => {
+                    if (e) {
+                        window.localStorage.setItem("modeTheme", "dark")
+                        queryClient.setQueryData(['modeTheme'], "dark")
+                    }
+                    else {
+                        window.localStorage.setItem("modeTheme", "light")
+                        queryClient.setQueryData(['modeTheme'], "light")
+                    }
+                }} />
+            </Affix>
             <Row gutter={[10, 10]} style={{
                 backgroundColor: antdTheme.token.colorBgBase
             }}>

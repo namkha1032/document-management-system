@@ -35,6 +35,72 @@ const App = () => {
       return {
         original_query: '',
         extend_keywords: [],
+        // metadata: [
+        //   {
+        //     "obj_id": "mfdl7",
+        //     "$and": [
+        //       {
+        //         "obj_id": "75jdm",
+        //         "$or": [
+        //           {
+        //             "obj_id": "i16zk",
+        //             "$and": [
+        //               {
+        //                 "obj_id": "6e3ph",
+        //                 "key": "key A",
+        //                 "value": "value A"
+        //               },
+        //               {
+        //                 "obj_id": "1z06b",
+        //                 "$not": {
+        //                   "obj_id": "hzzau",
+        //                   "key": "key B",
+        //                   "value": "value B"
+        //                 }
+        //               },
+        //               {
+        //                 "obj_id": "unxh6",
+        //                 "key": "key C",
+        //                 "value": "value C"
+        //               }
+        //             ]
+        //           },
+        //           {
+        //             "obj_id": "301e2",
+        //             "$not": {
+        //               "obj_id": "es5es",
+        //               "key": "key D",
+        //               "value": "value D"
+        //             }
+        //           },
+        //           {
+        //             "obj_id": "yd8p0",
+        //             "$and": [
+        //               {
+        //                 "obj_id": "wlkzy",
+        //                 "key": "key F",
+        //                 "value": "value F"
+        //               },
+        //               {
+        //                 "obj_id": "0l9fw",
+        //                 "key": "key G",
+        //                 "value": "value G"
+        //               }
+        //             ]
+        //           }
+        //         ]
+        //       },
+        //       {
+        //         "obj_id": "6va5f",
+        //         "$not": {
+        //           "obj_id": "ysavo",
+        //           "key": "key E",
+        //           "value": "value E"
+        //         }
+        //       }
+        //     ]
+        //   }
+        // ],
         metadata: [],
         method: 'full-text',
         domain: 'phapluat'
