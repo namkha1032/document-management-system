@@ -2,6 +2,8 @@
 import { useQueryClient, useMutation, useMutationState } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 // import my components
 import Bread from "../../components/Bread/Bread"
 // import ui components
@@ -17,6 +19,7 @@ import {
     Button,
     theme
 } from "antd"
+import Container from '@mui/material/Container';
 // import icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -27,6 +30,11 @@ import { hover } from "@testing-library/user-event/dist/hover"
 // import hooks
 // import functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url,
+).toString();
+
 function randomString() {
     const result = Math.random().toString(36).substring(2, 7);
     return result
@@ -534,8 +542,10 @@ const Page_Search = (props) => {
     const searchMutation = props.searchMutation
     const [inp, setInp] = useState('')
     const queryClient = useQueryClient()
+    let antdTheme = theme.useToken()
     const searchOption = queryClient.getQueryData(['searchOption'])
     const searchResult = queryClient.getQueryData(['searchResult'])
+    // ///////////////////////
     // useEffect(() => {
     //     return () => {
     //         queryClient.setQueryData(['searchOption'], {
@@ -625,13 +635,14 @@ const Page_Search = (props) => {
     }
     const leftTerm = 6
     const rightTerm = 18
+    console.log('searchMutation', searchMutation)
     // HTMl
     return (
         searchOption
             ?
             <>
                 < Bread title={"Search"} />
-                <>
+                <Container>
                     <Row gutter={[16, 16]}>
                         <Col span={12}>
                             <Card title={'Keyword suggestion'} style={{ height: '100%' }}
@@ -741,7 +752,11 @@ const Page_Search = (props) => {
                                     {searchOption.metadata.length == 0 || searchOption.metadata[0].hasOwnProperty('key') || searchOption.metadata[0].hasOwnProperty('$not')
                                         ?
                                         <div style={{ marginBottom: 8, width: 456 }}>
-                                            <Button size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', queryClient) }}>metadata</Button>
+                                            <Button style={{
+                                                color: antdTheme.token.colorSuccess,
+                                                borderColor: antdTheme.token.colorSuccess,
+                                            }}
+                                                size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', queryClient) }}>metadata</Button>
                                         </div>
                                         : null
                                     }
@@ -749,21 +764,28 @@ const Page_Search = (props) => {
                                 </div>
                             </Card>
                         </Col>
+                        <Col span={24}>
+                            {
+                                searchMutation.isPending
+                                    ? <Typography.Text>loading...</Typography.Text>
+                                    : (searchMutation.isSuccess
+                                        ? <Card>
+                                            {searchResult?.documents.map((doc, index) => (
+                                                <div style={{ width: 100 }}>
+                                                    <Document file="/file/01-cp.signed.pdf">
+                                                        <Page width={100} pageNumber={1} />
+                                                    </Document>
+
+                                                </div>
+                                            ))}
+
+                                        </Card>
+                                        : null
+                                    )
+                            }
+                        </Col>
                     </Row>
-                </>
-                {
-                    searchMutation.isPending
-                        ? <Typography.Text>loading...</Typography.Text>
-                        : searchResult?.documents.map((doc, index) => (
-                            <div key={index}>
-                                <Typography.Text>{doc.title}</Typography.Text>
-                                <br />
-                            </div>
-                        ))
-                }
-                <Document file="/file/diem.pdf">
-                    <Page />
-                </Document>
+                </Container>
             </>
             : null
     )

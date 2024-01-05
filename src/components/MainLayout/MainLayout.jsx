@@ -43,7 +43,7 @@ const MainLayout = (props) => {
                     {/* <Bread /> */}
                     <Outlet />
                 </Layout.Content>
-                <Footer />
+                {/* <Footer /> */}
             </Layout>
         </Layout >
     );
