@@ -1,6 +1,7 @@
 // import packages
 import { useQueryClient, useMutation, useMutationState } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
+import { Document, Page, pdfjs } from "react-pdf"
 // import my components
 import Bread from "../../components/Bread/Bread"
 // import ui components
@@ -19,9 +20,10 @@ import {
 // import icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { LaptopOutlined, PlusOutlined } from "@ant-design/icons"
+import { LaptopOutlined, PlusOutlined, CloseOutlined, CloseCircleOutlined, CloseCircleFilled, CloseCircleTwoTone } from "@ant-design/icons"
 // import apis
 import { getSearchResult } from "../../apis/searchApi"
+import { hover } from "@testing-library/user-event/dist/hover"
 // import hooks
 // import functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,39 +80,18 @@ const metadata = {
 }
 function calculateTreeHeight(subTree) {
     if (subTree.hasOwnProperty('key') || subTree.hasOwnProperty('$not')) {
-        console.log('subTree in 1', subTree)
         return 1
     }
     if (subTree.hasOwnProperty('$and')) {
-        console.log('subTree in 2', subTree)
         return 1 + Math.max(...subTree.$and.map((item, index) => calculateTreeHeight(item)))
     }
     else if (subTree.hasOwnProperty('$or')) {
-        console.log('subTree in 3', subTree)
         return 1 + Math.max(...subTree.$or.map((item, index) => calculateTreeHeight(item)))
     }
 }
-function recurAddMetadata(obj_id, myObj, type) {
+function recurAddMetadata(obj_id, type, myObj) {
     if (myObj.obj_id == obj_id) {
         if (myObj.hasOwnProperty('$and')) {
-            // let newObj = type == 'metadata'
-            //     ? {
-            //         obj_id: randomString(),
-            //         key: '',
-            //         value: ''
-            //     }
-            //     : {
-            //         obj_id: randomString(),
-            //         $and: []
-            //     }
-            // let newAndArray = [
-            //     newObj,
-            //     ...myObj.$and
-            // ]
-            // return {
-            //     ...myObj,
-            //     $and: newAndArray
-            // }
             let newReturn = type == 'outer'
                 ? {
                     obj_id: randomString(),
@@ -120,46 +101,28 @@ function recurAddMetadata(obj_id, myObj, type) {
                         ? {
                             ...myObj,
                             $and: [
+                                ...myObj.$and,
                                 {
                                     obj_id: randomString(),
                                     $and: []
-                                },
-                                ...myObj.$and
+                                }
                             ]
                         }
                         : {
                             ...myObj,
                             $and: [
+                                ...myObj.$and,
                                 {
                                     obj_id: randomString(),
                                     key: '',
                                     value: ''
-                                },
-                                ...myObj.$and
+                                }
                             ]
                         }
                 )
             return newReturn
         }
         else if (myObj.hasOwnProperty('$or')) {
-            // let newObj = type == 'metadata'
-            //     ? {
-            //         obj_id: randomString(),
-            //         key: '',
-            //         value: ''
-            //     }
-            //     : {
-            //         obj_id: randomString(),
-            //         $and: []
-            //     }
-            // let newOrArray = [
-            //     newObj,
-            //     ...myObj.$or
-            // ]
-            // return {
-            //     ...myObj,
-            //     $or: newOrArray
-            // }
             let newReturn = type == 'outer'
                 ? {
                     obj_id: randomString(),
@@ -169,22 +132,22 @@ function recurAddMetadata(obj_id, myObj, type) {
                         ? {
                             ...myObj,
                             $or: [
+                                ...myObj.$or,
                                 {
                                     obj_id: randomString(),
                                     $and: []
-                                },
-                                ...myObj.$or
+                                }
                             ]
                         }
                         : {
                             ...myObj,
                             $or: [
+                                ...myObj.$or,
                                 {
                                     obj_id: randomString(),
                                     key: '',
                                     value: ''
-                                },
-                                ...myObj.$or
+                                }
                             ]
                         }
                 )
@@ -195,13 +158,13 @@ function recurAddMetadata(obj_id, myObj, type) {
         if (myObj.hasOwnProperty('$and')) {
             return {
                 ...myObj,
-                $and: myObj.$and.map((item, index) => recurAddMetadata(obj_id, item, type))
+                $and: myObj.$and.map((item, index) => recurAddMetadata(obj_id, type, item))
             }
         }
         else if (myObj.hasOwnProperty('$or')) {
             return {
                 ...myObj,
-                $or: myObj.$or.map((item, index) => recurAddMetadata(obj_id, item, type))
+                $or: myObj.$or.map((item, index) => recurAddMetadata(obj_id, type, item))
             }
         }
         else {
@@ -213,23 +176,23 @@ async function handleAddMetadata(obj_id, type, queryClient) {
     if (obj_id == null) {
         queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
             let newMetadata1 = [
+                ...oldSearchOption.metadata,
                 {
                     obj_id: randomString(),
                     key: '',
                     value: '',
-                },
-                ...oldSearchOption.metadata
+                }
             ]
-            const newMetadata2 = [
+            let newMetadata2 = [
                 {
                     obj_id: randomString(),
                     $and: [
+                        ...oldSearchOption.metadata,
                         {
                             obj_id: randomString(),
                             key: '',
                             value: '',
-                        },
-                        ...oldSearchOption.metadata,
+                        }
                     ]
                 }
             ]
@@ -243,12 +206,12 @@ async function handleAddMetadata(obj_id, type, queryClient) {
         queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
             return {
                 ...oldSearchOption,
-                metadata: oldSearchOption.metadata.map((item, index) => recurAddMetadata(obj_id, item, type))
+                metadata: oldSearchOption.metadata.map((item, index) => recurAddMetadata(obj_id, type, item))
             }
         })
     }
 }
-function recurTypeKeyValue(obj_id, myObj, keyvalue, type) {
+function recurTypeKeyValue(obj_id, keyvalue, type, myObj) {
     if (myObj.obj_id == obj_id) {
         let newObject = null
         if (myObj.hasOwnProperty('$not')) {
@@ -285,13 +248,13 @@ function recurTypeKeyValue(obj_id, myObj, keyvalue, type) {
         if (myObj.hasOwnProperty('$and')) {
             return {
                 ...myObj,
-                $and: myObj.$and.map((item, index) => recurTypeKeyValue(obj_id, item, keyvalue, type))
+                $and: myObj.$and.map((item, index) => recurTypeKeyValue(obj_id, keyvalue, type, item))
             }
         }
         else if (myObj.hasOwnProperty('$or')) {
             return {
                 ...myObj,
-                $or: myObj.$or.map((item, index) => recurTypeKeyValue(obj_id, item, keyvalue, type))
+                $or: myObj.$or.map((item, index) => recurTypeKeyValue(obj_id, keyvalue, type, item))
             }
         }
         else {
@@ -303,7 +266,138 @@ async function handleTypeKeyValue(obj_id, keyvalue, type, queryClient) {
     queryClient.setQueryData(['searchOption'], oldSearchOption => {
         return {
             ...oldSearchOption,
-            metadata: oldSearchOption.metadata.map((item, index) => recurTypeKeyValue(obj_id, item, keyvalue, type))
+            metadata: oldSearchOption.metadata.map((item, index) => recurTypeKeyValue(obj_id, keyvalue, type, item))
+        }
+    })
+}
+
+function recurChangeIsNot(obj_id, val, myObj) {
+    if (myObj.obj_id == obj_id) {
+        let newReturn = val == 'is'
+            ?
+            {
+                ...myObj.$not
+            }
+            :
+            {
+                obj_id: myObj.obj_id,
+                $not: {
+                    ...myObj
+                }
+            }
+        return newReturn
+    }
+    else {
+        if (myObj.hasOwnProperty('$and')) {
+            return {
+                ...myObj,
+                $and: myObj.$and.map((item, index) => recurChangeIsNot(obj_id, val, item))
+            }
+        }
+        else if (myObj.hasOwnProperty('$or')) {
+            return {
+                ...myObj,
+                $or: myObj.$or.map((item, index) => recurChangeIsNot(obj_id, val, item))
+            }
+        }
+        else {
+            return myObj
+        }
+    }
+}
+async function handleChangeIsNot(obj_id, val, queryClient) {
+    queryClient.setQueryData(['searchOption'], oldSearchOption => {
+        return {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurChangeIsNot(obj_id, val, item))
+        }
+    })
+}
+
+function recurDeleteMetadata(obj_id, myObj) {
+    if (myObj.hasOwnProperty('$and')) {
+        let newReturn = {
+            ...myObj,
+            $and: myObj.$and.filter((item, index) => item.obj_id != obj_id)
+        }
+        return newReturn.$and.length == myObj.$and.length
+            ? {
+                ...myObj,
+                $and: myObj.$and.map((item, index) => recurDeleteMetadata(obj_id, item))
+            }
+            : newReturn
+    }
+    else if (myObj.hasOwnProperty('$or')) {
+        let newReturn = {
+            ...myObj,
+            $or: myObj.$or.filter((item, index) => item.obj_id != obj_id)
+        }
+        return newReturn.$or.length == myObj.$or.length
+            ? {
+                ...myObj,
+                $or: myObj.$or.map((item, index) => recurDeleteMetadata(obj_id, item))
+            }
+            : newReturn
+    }
+    else {
+        return myObj
+    }
+}
+
+async function handleDeleteMetadata(obj_id, queryClient) {
+    queryClient.setQueryData(['searchOption'], oldSearchOption => {
+        if (oldSearchOption.metadata[0].obj_id == obj_id) {
+            return {
+                ...oldSearchOption,
+                metadata: []
+            }
+        }
+        else {
+            return {
+                ...oldSearchOption,
+                metadata: oldSearchOption.metadata.map((item, index) => recurDeleteMetadata(obj_id, item))
+            }
+        }
+    })
+}
+function recurChangeAndOr(obj_id, val, myObj) {
+    if (myObj.obj_id == obj_id) {
+        let newReturn = val == '$and'
+            ?
+            {
+                obj_id: myObj.obj_id,
+                $and: [...myObj.$or]
+            }
+            :
+            {
+                obj_id: myObj.obj_id,
+                $or: [...myObj.$and]
+            }
+        return newReturn
+    }
+    else {
+        if (myObj.hasOwnProperty('$and')) {
+            return {
+                ...myObj,
+                $and: myObj.$and.map((item, index) => recurChangeAndOr(obj_id, val, item))
+            }
+        }
+        else if (myObj.hasOwnProperty('$or')) {
+            return {
+                ...myObj,
+                $or: myObj.$or.map((item, index) => recurChangeAndOr(obj_id, val, item))
+            }
+        }
+        else {
+            return myObj
+        }
+    }
+}
+async function handleChangeAndOr(obj_id, val, queryClient) {
+    queryClient.setQueryData(['searchOption'], oldSearchOption => {
+        return {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurChangeAndOr(obj_id, val, item))
         }
     })
 }
@@ -312,13 +406,14 @@ const MetaForm = (props) => {
     const myObj = props.myObj
     const treeHeight = props.treeHeight
     const currHeight = props.currHeight
+    const cardWidth = props.cardWidth
     let queryClient = useQueryClient()
     if (Array.isArray(myObj)) {
         return (
             <>
                 {myObj.map((item, index) =>
                     <div key={index}>
-                        <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight} />
+                        <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight} cardWidth={'fit-content'} />
                     </div>
                 )}
             </>
@@ -329,41 +424,64 @@ const MetaForm = (props) => {
             return (
                 <Card type="inner" size={'small'}
                     headStyle={{ backgroundColor: antdTheme.token.colorBgLayout }}
-                    style={{ border: `1px solid ${antdTheme.token.colorTextQuaternary}` }}
+                    style={{
+                        border: `1px solid ${antdTheme.token.colorTextQuaternary}`,
+                        minWidth: 482,
+                        maxWidth: cardWidth
+                    }}
                     title={
                         <div style={{ display: 'flex', columnGap: 8 }}>
-                            <Select
-                                style={{ width: 80 }}
-                                size="small"
-                                value={myObj.hasOwnProperty('$and') ? '$and' : '$or'}
-                                options={[
-                                    {
-                                        value: '$and',
-                                        label: 'AND'
-                                    },
-                                    {
-                                        value: '$or',
-                                        label: 'OR'
+                            <Button
+                                style={{ width: 50 }}
+                                size='small'
+                                type="primary"
+                                onClick={() => {
+                                    if (myObj.hasOwnProperty('$and')) {
+                                        handleChangeAndOr(myObj.obj_id, '$or', queryClient)
                                     }
-                                ]}
-                            />
-                            <Button size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'metadata', queryClient) }}>metadata</Button>
-                            <Button size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'inner', queryClient) }}>inner</Button>
-                            <Button size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'outer', queryClient) }}>outer</Button>
+                                    else {
+                                        handleChangeAndOr(myObj.obj_id, '$and', queryClient)
+                                    }
+                                }}>
+                                {myObj.hasOwnProperty('$and') ? 'AND' : 'OR'}
+                            </Button>
+                            <Button style={{
+                                color: antdTheme.token.colorSuccess,
+                                borderColor: antdTheme.token.colorSuccess,
+                                backgroundColor: antdTheme.token.colorBgLayout
+                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'metadata', queryClient) }}>metadata</Button>
+                            <Button style={{
+                                color: antdTheme.token.colorWarning,
+                                borderColor: antdTheme.token.colorWarning,
+                                backgroundColor: antdTheme.token.colorBgLayout
+                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'inner', queryClient) }}>inner</Button>
+                            <Button style={{
+                                color: antdTheme.token.colorWarning,
+                                borderColor: antdTheme.token.colorWarning,
+                                backgroundColor: antdTheme.token.colorBgLayout
+                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'outer', queryClient) }}>outer</Button>
                         </div>
-                    }>
+                    }
+                    extra={
+                        <>
+                            <Button danger shape="circle" size='small' type='text' icon={<CloseCircleOutlined />}
+                                onClick={() => handleDeleteMetadata(myObj.obj_id, queryClient)}
+                            />
+                        </>
+                    }
+                >
                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                         {myObj.hasOwnProperty('$and')
                             ?
                             myObj.$and.map((item, index) =>
                                 <div key={index}>
-                                    <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} />
+                                    <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} cardWidth={'100%'} />
                                 </div>
                             )
                             :
                             myObj.$or.map((item, index) =>
                                 <div key={index}>
-                                    <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} />
+                                    <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} cardWidth={'fit-content'} />
                                 </div>)
                         }
                     </div>
@@ -373,7 +491,7 @@ const MetaForm = (props) => {
         else if (myObj.hasOwnProperty('$not') || myObj.hasOwnProperty('key')) {
             return (
                 <div style={{
-                    display: 'flex', columnGap: 8, justifyContent: 'flex-start',
+                    display: 'flex', columnGap: 8, justifyContent: 'flex-start', alignItems: 'center'
                     // marginLeft: (treeHeight - currHeight) * 25
                 }}>
                     <AutoComplete
@@ -382,26 +500,25 @@ const MetaForm = (props) => {
                         }}
                         placeholder="key"
                         value={myObj.hasOwnProperty('$not') ? myObj.$not.key : myObj.key}
-                        onChange={(val) => { handleTypeKeyValue(myObj.obj_id, val, 'key', queryClient) }}
+                        onChange={val => handleTypeKeyValue(myObj.obj_id, val, 'key', queryClient)}
                     />
-                    <Select
+                    <Button
                         style={{ width: 80 }}
-                        value={myObj.hasOwnProperty('$not') ? 'isnot' : 'is'}
-                        options={[
-                            {
-                                value: 'is',
-                                label: 'IS'
-                            },
-                            {
-                                value: 'isnot',
-                                label: 'IS NOT'
+                        onClick={() => {
+                            if (myObj.hasOwnProperty('$not')) {
+                                handleChangeIsNot(myObj.obj_id, 'is', queryClient)
                             }
-                        ]}
-                    />
+                            else {
+                                handleChangeIsNot(myObj.obj_id, 'isnot', queryClient)
+                            }
+                        }}>
+                        {myObj.hasOwnProperty('$not') ? 'IS NOT' : 'IS'}
+                    </Button>
                     <Input
                         value={myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value}
-                        onChange={(e) => { handleTypeKeyValue(myObj.obj_id, e.target.value, 'value', queryClient) }}
+                        onChange={e => handleTypeKeyValue(myObj.obj_id, e.target.value, 'value', queryClient)}
                         style={{ width: 160 }} placeholder='value' />
+                    <Button shape="circle" type="text" icon={<CloseOutlined />} onClick={() => handleDeleteMetadata(myObj.obj_id, queryClient)} />
                 </div>
             )
         }
@@ -506,7 +623,6 @@ const Page_Search = (props) => {
     if (searchOption && searchOption.metadata.length > 0) {
         treeHeight = calculateTreeHeight(searchOption.metadata[0])
     }
-    console.log('treeHeight', treeHeight)
     const leftTerm = 6
     const rightTerm = 18
     // HTMl
@@ -544,7 +660,12 @@ const Page_Search = (props) => {
                                                 </div>,
                                         }
                                     ]}
-                                />}>
+                                />}
+                            // headStyle={{
+                            //     paddingTop: 24,
+                            //     paddingBottom: 24
+                            // }}
+                            >
                                 <Row gutter={[10, 10]}>
                                     <Col span={leftTerm}>
                                         <Typography.Text>Broader terms: </Typography.Text>
@@ -616,15 +737,16 @@ const Page_Search = (props) => {
                                     ]}
                                 />}
                             >
-                                {searchOption.metadata.length == 0 || searchOption.metadata[0].hasOwnProperty('key') || searchOption.metadata[0].hasOwnProperty('$not')
-                                    ? <>
-                                        <div style={{ display: 'flex', columnGap: 8, marginBottom: 8 }}>
-                                            <Button icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', queryClient) }}>metadata</Button>
+                                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                                    {searchOption.metadata.length == 0 || searchOption.metadata[0].hasOwnProperty('key') || searchOption.metadata[0].hasOwnProperty('$not')
+                                        ?
+                                        <div style={{ marginBottom: 8, width: 456 }}>
+                                            <Button size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', queryClient) }}>metadata</Button>
                                         </div>
-                                    </>
-                                    : null
-                                }
-                                <MetaForm myObj={searchOption?.metadata} treeHeight={treeHeight} currHeight={1} />
+                                        : null
+                                    }
+                                    <MetaForm myObj={searchOption?.metadata} treeHeight={treeHeight} currHeight={1} cardWidth='fit-content' />
+                                </div>
                             </Card>
                         </Col>
                     </Row>
@@ -639,7 +761,9 @@ const Page_Search = (props) => {
                             </div>
                         ))
                 }
-                <Input value={inp} onChange={e => setInp(e.target.value)} />
+                <Document file="/file/diem.pdf">
+                    <Page />
+                </Document>
             </>
             : null
     )
