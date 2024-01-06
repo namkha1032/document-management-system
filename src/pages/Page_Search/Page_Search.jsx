@@ -6,7 +6,6 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 // import my components
 import Bread from "../../components/Bread/Bread"
-import Page_Table from "../Page_Table";
 // import ui components
 import {
     Typography,
@@ -18,8 +17,7 @@ import {
     AutoComplete,
     Input,
     Button,
-    theme,
-    Table
+    theme
 } from "antd"
 import Container from '@mui/material/Container';
 // import icons
@@ -40,6 +38,53 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 function randomString() {
     const result = Math.random().toString(36).substring(2, 7);
     return result
+}
+const metadata = {
+    "metadata": [
+        {
+            "$and": [
+                {
+                    "$or": [
+                        {
+                            "$and": [
+                                {
+                                    "key": "A"
+                                },
+                                {
+                                    "$not": {
+                                        "key": "B"
+                                    }
+                                },
+                                {
+                                    "key": "C"
+                                }
+                            ]
+                        },
+                        {
+                            "$not": {
+                                "key": "D"
+                            }
+                        },
+                        {
+                            "$and": [
+                                {
+                                    "key": "F"
+                                },
+                                {
+                                    "key": "G"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "$not": {
+                        "key": "E"
+                    }
+                }
+            ]
+        }
+    ]
 }
 function calculateTreeHeight(subTree) {
     if (subTree.hasOwnProperty('key') || subTree.hasOwnProperty('$not')) {
@@ -775,7 +820,7 @@ const Page_Search = (props) => {
                                 </div>
                             </Card>
                         </Col>
-                        {/* <Col span={24}>
+                        <Col span={24}>
                             {
                                 searchMutation.isPending
                                     ? <Typography.Text>loading...</Typography.Text>
@@ -811,7 +856,6 @@ const Page_Search = (props) => {
                             />
                         </Col>
                     </Row>
-                    <a href='/company'>click here</a>
                 </Container>
             </>
             : null
