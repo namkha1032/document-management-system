@@ -46,7 +46,7 @@ const NavBar = (props) => {
     console.log('---------------render NavBar----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
-    const searchResultQuery = props.searchResultQuery
+    // const searchResultQuery = props.searchResultQuery
     const searchMutation = props.searchMutation
     const antdTheme = theme.useToken()
     let queryClient = useQueryClient()
@@ -62,9 +62,8 @@ const NavBar = (props) => {
             ...oldSearchOption,
             original_query: value
         }
-        await queryClient.setQueryData(['searchOption'], newSearchOption)
-        await searchResultQuery.refetch()
-        // await searchMutation.mutateAsync(newSearchOption)
+        queryClient.setQueryData(['searchOption'], newSearchOption)
+        await searchMutation.mutateAsync(newSearchOption)
     }
     async function handleRemoveKeyword(e, kw) {
         e.preventDefault()

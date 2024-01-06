@@ -6,6 +6,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 // import my components
 import Bread from "../../components/Bread/Bread"
+import Page_Table from "../Page_Table";
 // import ui components
 import {
     Typography,
@@ -17,7 +18,8 @@ import {
     AutoComplete,
     Input,
     Button,
-    theme
+    theme,
+    Table
 } from "antd"
 import Container from '@mui/material/Container';
 // import icons
@@ -38,53 +40,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 function randomString() {
     const result = Math.random().toString(36).substring(2, 7);
     return result
-}
-const metadata = {
-    "metadata": [
-        {
-            "$and": [
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {
-                                    "key": "A"
-                                },
-                                {
-                                    "$not": {
-                                        "key": "B"
-                                    }
-                                },
-                                {
-                                    "key": "C"
-                                }
-                            ]
-                        },
-                        {
-                            "$not": {
-                                "key": "D"
-                            }
-                        },
-                        {
-                            "$and": [
-                                {
-                                    "key": "F"
-                                },
-                                {
-                                    "key": "G"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "$not": {
-                        "key": "E"
-                    }
-                }
-            ]
-        }
-    ]
 }
 function calculateTreeHeight(subTree) {
     if (subTree.hasOwnProperty('key') || subTree.hasOwnProperty('$not')) {
@@ -538,14 +493,13 @@ const Page_Search = (props) => {
     console.log('---------------render Page_Search----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
-    const searchResultQuery = props.searchResultQuery
-    // const searchMutation = props.searchMutation
+    // const searchResultQuery = props.searchResultQuery
+    const searchMutation = props.searchMutation
     const [inp, setInp] = useState('')
     const queryClient = useQueryClient()
     let antdTheme = theme.useToken()
     const searchOption = queryClient.getQueryData(['searchOption'])
     const searchResult = queryClient.getQueryData(['searchResult'])
-    // const searchResult = searchResultQuery.data
     // ///////////////////////
     // useEffect(() => {
     //     return () => {
@@ -684,9 +638,8 @@ const Page_Search = (props) => {
                 pageSize: obj.pageSize
             }
         }
-        await queryClient.setQueryData(['searchOption'], newSearchOption)
-        await searchResultQuery.refetch()
-        // await searchMutation.mutateAsync(newSearchOption)
+        queryClient.setQueryData(['searchOption'], newSearchOption)
+        await searchMutation.mutateAsync(newSearchOption)
         // // `dataSource` is useless since `pageSize` changed
         // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
         //     setData([]);
@@ -843,19 +796,19 @@ const Page_Search = (props) => {
                         {/* <Col span={24}>
                             <Page_Table />
                         </Col> */}
-                        {/* /////////////////////////////////////////////////////////////////////////////// */}
                         <Col span={24}>
                             <Table
                                 columns={columns}
                                 rowKey={(record) => record.document_id}
                                 dataSource={searchResult.documents}
                                 pagination={searchResult.pagination}
-                                loading={searchResultQuery.isFetching}
+                                loading={searchMutation.isPending}
                                 onChange={handleTableChange}
                                 showHeader={false}
                             />
                         </Col>
                     </Row>
+                    <a href='/company'>click here</a>
                 </Container>
             </>
             : null
