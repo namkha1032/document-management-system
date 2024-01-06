@@ -20,13 +20,29 @@ import {
     Input,
     Button,
     theme,
-    Table
+    Table,
+    Popover,
+    Avatar,
+    Pagination
 } from "antd"
 import Container from '@mui/material/Container';
 // import icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { LaptopOutlined, PlusOutlined, CloseOutlined, CloseCircleOutlined, CloseCircleFilled, CloseCircleTwoTone } from "@ant-design/icons"
+import {
+    LaptopOutlined,
+    PlusOutlined,
+    CloseOutlined,
+    CloseCircleOutlined,
+    CloseCircleFilled,
+    CloseCircleTwoTone,
+    EllipsisOutlined,
+    FileDoneOutlined,
+    HddOutlined,
+    UserOutlined,
+    TeamOutlined,
+    SearchOutlined
+} from "@ant-design/icons"
 // import apis
 import { getSearchResult } from "../../apis/searchApi"
 import { hover } from "@testing-library/user-event/dist/hover"
@@ -489,7 +505,22 @@ const MetaForm = (props) => {
     }
 
 }
-
+const MetadataList = (props) => {
+    const metaArray = props.metaArray
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', rowGap: 8 }}>
+                {metaArray.map((item, index) => {
+                    return (
+                        <div key={index}>
+                            <Typography.Text type={'secondary'}>{item.key}: </Typography.Text>
+                            <Typography.Text code>{item.value}</Typography.Text>
+                        </div>)
+                })}
+            </div>
+        </div>
+    )
+}
 const Page_Search = (props) => {
     console.log('---------------render Page_Search----------------')
     // props
@@ -569,6 +600,14 @@ const Page_Search = (props) => {
             }
         })
     }
+    async function handleChangeSearchScope(value) {
+        queryClient.setQueryData(['searchOption'], oldSearchOption => {
+            return {
+                ...oldSearchOption,
+                search_scope: value
+            }
+        })
+    }
     async function handleChangeDomain(value) {
         queryClient.setQueryData(['searchOption'], oldSearchOption => {
             return {
@@ -612,21 +651,11 @@ const Page_Search = (props) => {
                                     <Typography.Title style={{ marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj.file_name}</Typography.Title>
 
                                 </div>
-                                <Typography.Text style={{
-                                    height: 93,
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2, /* number of lines to show */
-                                    LineCamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    // display: '-webkit - box',
-                                    // WebkitLineClamp: 3, /* number of lines to show */
-                                    // WebkitBoxOrient: 'vertical',
-                                    // overflow: 'hidden',
-                                    // textOverflow: 'ellipsis'
-                                }}>{obj.content}
-                                </Typography.Text>
+                                <Typography.Paragraph ellipsis={{
+                                    rows: 4
+                                }}>
+                                    {obj.content}
+                                </Typography.Paragraph>
                             </div>
                         </div >
                     </Link>
@@ -635,22 +664,84 @@ const Page_Search = (props) => {
         },
         {
             title: 'Metadata',
-            width: '40%',
+            width: '25%',
             render: (obj) => {
+                let displayArray = []
+                let extendArray = []
+                // obj.metadata.forEach((item, index) => {
+                //     if (index < 4) {
+                //         displayArray.push({
+                //             key: index,
+                //             label: item.key,
+                //             children: item.value,
+                //             span: 24
+                //         })
+                //     }
+                //     else {
+                //         extendArray.push({
+                //             key: index,
+                //             label: item.key,
+                //             children: item.value,
+                //             span: 24
+                //         })
+                //     }
+                // })
+                let limit = 4
+                if (obj.metadata.length > limit) {
+                    displayArray = obj.metadata.slice(0, limit)
+                    extendArray = obj.metadata.slice(limit)
+                }
+                else {
+                    displayArray = [...obj.metadata]
+                }
                 return (
-                    <div>
-                        <Typography.Text>{obj.metadata[0].key}</Typography.Text>
-                    </div>
+                    <>
+                        {/* <Descriptions items={displayArray} /> */}
+                        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
+                            <MetadataList metaArray={displayArray} />
+                            <Popover placement="bottom" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
+                                <Button icon={<EllipsisOutlined />} size='small' shape="round" style={{ height: 14, display: 'flex', alignItems: 'center' }} />
+                            </Popover>
+                        </div>
+                    </>
                 )
             }
         },
         {
             title: 'Information',
             render: (obj) => {
+                let todayiso = new Date(obj.created_date)
+                let today = todayiso.toLocaleDateString()
                 return (
-                    <div>
-                        <Typography.Text>{obj.owner.full_name}</Typography.Text>
-                    </div>
+                    <Row gutter={[16, 16]}>
+                        <Col span={12}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography.Title level={5} style={{ marginTop: 0 }}>Owner</Typography.Title>
+                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                    <Avatar src={obj.owner.avatar} />
+                                    <Typography.Text>{obj.owner.full_name}</Typography.Text>
+                                </div>
+                            </div>
+                        </Col>
+                        <Col span={12}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>File size</Typography.Title>
+                                <Typography.Text>{obj.file_size}</Typography.Text>
+                            </div>
+                        </Col>
+                        <Col span={12}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>Created date</Typography.Title>
+                                <Typography.Text>{new Date(obj.created_date).toLocaleDateString()}</Typography.Text>
+                            </div>
+                        </Col>
+                        <Col span={12}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>Updated date</Typography.Title>
+                                <Typography.Text>{new Date(obj.updated_date).toLocaleDateString()}</Typography.Text>
+                            </div>
+                        </Col>
+                    </Row>
                 )
             }
         },
@@ -676,12 +767,72 @@ const Page_Search = (props) => {
         //     setData([]);
         // }
     };
+    async function handlePaginationChange(page, pageSize) {
+        let newSearchOption = {
+            ...searchOption,
+            pagination: {
+                ...searchOption.pagination,
+                current: page,
+                pageSize: pageSize
+            }
+        }
+        queryClient.setQueryData(['searchOption'], newSearchOption)
+        await searchMutation.mutateAsync(newSearchOption)
+    }
     // HTMl
     return (
         searchOption
             ?
             <>
-                < Bread title={"Search"} />
+                <Bread title={
+                    <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                        <Typography.Title level={2} style={{ margin: 0 }}>
+                            Search in
+                        </Typography.Title>
+                        <Select
+                            value={searchOption?.search_scope}
+                            style={{
+                                width: 200,
+                            }}
+                            size={'large'}
+                            onChange={handleChangeSearchScope}
+                            options={[
+                                {
+                                    value: 'all',
+                                    label:
+                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                            <FileDoneOutlined />
+                                            <Typography.Text>All</Typography.Text>
+                                        </div>
+                                },
+                                {
+                                    value: 'company',
+                                    label:
+                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                            <HddOutlined />
+                                            <Typography.Text>Company documents</Typography.Text>
+                                        </div>
+                                },
+                                {
+                                    value: 'my',
+                                    label:
+                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                            <FileDoneOutlined />
+                                            <Typography.Text>My documents</Typography.Text>
+                                        </div>
+                                },
+                                {
+                                    value: 'shared',
+                                    label:
+                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                            <FileDoneOutlined />
+                                            <Typography.Text>Shared documents</Typography.Text>
+                                        </div>
+                                },
+                            ]}
+                        />
+                    </div>
+                } />
                 <Container>
                     <Row gutter={[16, 16]}>
                         <Col span={12}>
@@ -717,7 +868,7 @@ const Page_Search = (props) => {
                             //     paddingBottom: 24
                             // }}
                             >
-                                <Row gutter={[10, 10]}>
+                                {/* <Row gutter={[10, 10]}>
                                     <Col span={leftTerm}>
                                         <Typography.Text>Broader terms: </Typography.Text>
                                     </Col>
@@ -748,7 +899,39 @@ const Page_Search = (props) => {
                                             </Tag>
                                         )}
                                     </Col>
-                                </Row>
+                                </Row> */}
+                                <div style={{ display: 'flex', flexDirection: 'column', rowGap: 24 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                        <Typography.Text strong>Broader terms: </Typography.Text>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                            {searchResult?.broader.map((broaderItem, index) =>
+                                                <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(broaderItem, 'broader')}>
+                                                    {broaderItem.keyword}
+                                                </Tag>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                        <Typography.Text strong>Related terms: </Typography.Text>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                            {searchResult?.related.map((relatedItem, index) =>
+                                                <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(relatedItem, 'related')}>
+                                                    {relatedItem.keyword}
+                                                </Tag>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                        <Typography.Text strong>Narrower terms: </Typography.Text>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                            {searchResult?.narrower.map((narrowerItem, index) =>
+                                                <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(narrowerItem, 'narrower')}>
+                                                    {narrowerItem.keyword}
+                                                </Tag>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             </Card>
                         </Col>
                         <Col span={12}>
@@ -824,22 +1007,37 @@ const Page_Search = (props) => {
                                     )
                             }
                         </Col> */}
-                        {/* <Col span={24}>
-                            <Page_Table />
-                        </Col> */}
+                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                <SearchOutlined style={{ fontSize: 24 }} />
+                                <Typography.Title level={2} style={{ margin: 0 }}>Search result</Typography.Title>
+                            </div>
+                            <Pagination
+                                current={searchResult.pagination.current}
+                                pageSize={searchResult.pagination.pageSize}
+                                total={searchResult.pagination.total}
+                                onChange={handlePaginationChange}
+                            // showSizeChanger
+                            // pageSizeOptions={[5, 8]}
+                            />
+                        </Col>
                         <Col span={24}>
                             <Table
                                 columns={searchResultsColumn}
                                 rowKey={(record) => record.document_id}
                                 dataSource={searchResult.documents}
-                                pagination={searchResult.pagination}
+                                pagination={{
+                                    ...searchResult.pagination,
+                                    position: ['bottomCenter']
+                                }}
+                                // pagination={false}
                                 loading={searchMutation.isPending}
                                 onChange={handleTableChange}
-                            // showHeader={false}
+                                // showHeader={false}
+                                style={{ borderRadius: 8 }}
                             />
                         </Col>
                     </Row>
-                    <a href='/company'>click here</a>
                 </Container>
             </>
             : null

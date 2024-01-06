@@ -42,7 +42,8 @@ const App = () => {
         pagination: {
           current: 1,
           pageSize: 10,
-        }
+        },
+        search_scope: 'all'
       }
       // return null
     },
