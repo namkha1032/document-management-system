@@ -14,7 +14,7 @@ const MainLayout = (props) => {
     console.log('---------------render MainLayout----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
-    // const searchResultQuery = props.searchResultQuery
+    const searchResultQuery = props.searchResultQuery
     const searchMutation = props.searchMutation
     // hooks
     const antdTheme = theme.useToken()
@@ -30,7 +30,7 @@ const MainLayout = (props) => {
                 <NavBar
                     searchMutation={searchMutation}
                     // searchOptionQuery={searchOptionQuery}
-                    // searchResultQuery={searchResultQuery}
+                    searchResultQuery={searchResultQuery}
                 />
                 <Layout.Content style={{
                     margin: 0,

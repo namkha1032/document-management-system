@@ -50,26 +50,71 @@ const App = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false
   })
+  // let searchOption = queryClient.getQueryData(['searchOption'])
+  let searchOption = searchOptionQuery.data
   let searchResultQuery = useQuery({
     queryKey: ['searchResult'],
-    queryFn: () => {
-      return {
-        documents: [],
-        broader: [],
-        related: [],
-        narrower: [],
-        pagination: {
-          current: null,
-          pageSize: null,
-          total: null
+    queryFn: async () => {
+      const response = await getSearchResult(searchOption)
+      const newBroader = response.broader.filter(kwItem => {
+        for (let extendItem of searchOption.extend_keywords) {
+          if (extendItem.keyword == kwItem.keyword) {
+            return false
+          }
         }
+        return true
+      })
+      const newRelated = response.related.filter(kwItem => {
+        for (let extendItem of searchOption.extend_keywords) {
+          if (extendItem.keyword == kwItem.keyword) {
+            return false
+          }
+        }
+        return true
+      })
+      const newNarrower = response.narrower.filter(kwItem => {
+        for (let extendItem of searchOption.extend_keywords) {
+          if (extendItem.keyword == kwItem.keyword) {
+            return false
+          }
+        }
+        return true
+      })
+      return {
+        ...response,
+        broader: newBroader,
+        related: newRelated,
+        narrower: newNarrower
       }
-      // return null
+      // return {
+      //   documents: [],
+      //   broader: [],
+      //   related: [],
+      //   narrower: [],
+      //   pagination: {
+      //     current: null,
+      //     pageSize: null,
+      //     total: null
+      //   }
+      // }
     },
+    initialData: {
+      documents: [],
+      broader: [],
+      related: [],
+      narrower: [],
+      pagination: {
+        current: null,
+        pageSize: null,
+        total: null
+      }
+    },
+    // enabled: false,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false
   })
+  console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', searchResultQuery)
   const searchMutation = useMutation({
     mutationFn: getSearchResult,
     onSuccess: (response) => {
@@ -114,8 +159,8 @@ const App = () => {
       path: "/",
       element: <MainLayout
         searchMutation={searchMutation}
-      // searchOptionQuery={searchOptionQuery}
-      // searchResultQuery={searchResultQuery}
+        // searchOptionQuery={searchOptionQuery}
+        searchResultQuery={searchResultQuery}
       />,
       children: [
         {
@@ -134,8 +179,8 @@ const App = () => {
           path: "search",
           element: <Page_Search
             searchMutation={searchMutation}
-          // searchOptionQuery={searchOptionQuery}
-          // searchResultQuery={searchResultQuery}
+            // searchOptionQuery={searchOptionQuery}
+            searchResultQuery={searchResultQuery}
           />,
         },
         {

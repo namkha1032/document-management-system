@@ -493,13 +493,14 @@ const Page_Search = (props) => {
     console.log('---------------render Page_Search----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
-    // const searchResultQuery = props.searchResultQuery
-    const searchMutation = props.searchMutation
+    const searchResultQuery = props.searchResultQuery
+    // const searchMutation = props.searchMutation
     const [inp, setInp] = useState('')
     const queryClient = useQueryClient()
     let antdTheme = theme.useToken()
     const searchOption = queryClient.getQueryData(['searchOption'])
     const searchResult = queryClient.getQueryData(['searchResult'])
+    // const searchResult = searchResultQuery.data
     // ///////////////////////
     // useEffect(() => {
     //     return () => {
@@ -638,8 +639,9 @@ const Page_Search = (props) => {
                 pageSize: obj.pageSize
             }
         }
-        queryClient.setQueryData(['searchOption'], newSearchOption)
-        await searchMutation.mutateAsync(newSearchOption)
+        await queryClient.setQueryData(['searchOption'], newSearchOption)
+        await searchResultQuery.refetch()
+        // await searchMutation.mutateAsync(newSearchOption)
         // // `dataSource` is useless since `pageSize` changed
         // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
         //     setData([]);
@@ -796,13 +798,14 @@ const Page_Search = (props) => {
                         {/* <Col span={24}>
                             <Page_Table />
                         </Col> */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
                         <Col span={24}>
                             <Table
                                 columns={columns}
                                 rowKey={(record) => record.document_id}
                                 dataSource={searchResult.documents}
                                 pagination={searchResult.pagination}
-                                loading={searchMutation.isPending}
+                                loading={searchResultQuery.isFetching}
                                 onChange={handleTableChange}
                                 showHeader={false}
                             />

@@ -3,6 +3,7 @@ import delay from "../functions/delay";
 
 const domain = 'http://localhost:3000'
 async function getSearchResult(searchData) {
+    console.log('----------------------------------------search----------------------------------------------------------')
     await delay(1000)
     const response = await axios.get(`${domain}/data/searchresult.json`, {
         params: searchData
