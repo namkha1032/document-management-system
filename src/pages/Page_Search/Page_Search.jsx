@@ -6,6 +6,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 // import my components
 import Bread from "../../components/Bread/Bread"
+import Page_Table from "../Page_Table";
 // import ui components
 import {
     Typography,
@@ -17,7 +18,8 @@ import {
     AutoComplete,
     Input,
     Button,
-    theme
+    theme,
+    Table
 } from "antd"
 import Container from '@mui/material/Container';
 // import icons
@@ -38,53 +40,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 function randomString() {
     const result = Math.random().toString(36).substring(2, 7);
     return result
-}
-const metadata = {
-    "metadata": [
-        {
-            "$and": [
-                {
-                    "$or": [
-                        {
-                            "$and": [
-                                {
-                                    "key": "A"
-                                },
-                                {
-                                    "$not": {
-                                        "key": "B"
-                                    }
-                                },
-                                {
-                                    "key": "C"
-                                }
-                            ]
-                        },
-                        {
-                            "$not": {
-                                "key": "D"
-                            }
-                        },
-                        {
-                            "$and": [
-                                {
-                                    "key": "F"
-                                },
-                                {
-                                    "key": "G"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "$not": {
-                        "key": "E"
-                    }
-                }
-            ]
-        }
-    ]
 }
 function calculateTreeHeight(subTree) {
     if (subTree.hasOwnProperty('key') || subTree.hasOwnProperty('$not')) {
@@ -635,7 +590,61 @@ const Page_Search = (props) => {
     }
     const leftTerm = 6
     const rightTerm = 18
-    console.log('searchMutation', searchMutation)
+    const columns = [
+        {
+            title: 'Document',
+            width: '30%',
+            render: (obj) => {
+                return (
+                    <div>
+                        <Typography.Text>{obj.file_name}</Typography.Text>
+                    </div>
+                )
+            }
+        },
+        {
+            title: 'Metadata',
+            width: '30%',
+            render: (obj) => {
+                return (
+                    <div>
+                        <Typography.Text>{obj.metadata[0].key}</Typography.Text>
+                    </div>
+                )
+            }
+        },
+        {
+            title: 'Information',
+            render: (obj) => {
+                return (
+                    <div>
+                        <Typography.Text>{obj.owner.full_name}</Typography.Text>
+                    </div>
+                )
+            }
+        },
+    ];
+    async function handleTableChange(obj) {
+        // setTableParams({
+        //     pagination,
+        //     filters,
+        //     ...sorter,
+        // });
+        let newSearchOption = {
+            ...searchOption,
+            pagination: {
+                ...searchOption.pagination,
+                current: obj.current,
+                pageSize: obj.pageSize
+            }
+        }
+        queryClient.setQueryData(['searchOption'], newSearchOption)
+        await searchMutation.mutateAsync(newSearchOption)
+        // // `dataSource` is useless since `pageSize` changed
+        // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+        //     setData([]);
+        // }
+    };
     // HTMl
     return (
         searchOption
@@ -764,7 +773,7 @@ const Page_Search = (props) => {
                                 </div>
                             </Card>
                         </Col>
-                        <Col span={24}>
+                        {/* <Col span={24}>
                             {
                                 searchMutation.isPending
                                     ? <Typography.Text>loading...</Typography.Text>
@@ -783,8 +792,23 @@ const Page_Search = (props) => {
                                         : null
                                     )
                             }
+                        </Col> */}
+                        {/* <Col span={24}>
+                            <Page_Table />
+                        </Col> */}
+                        <Col span={24}>
+                            <Table
+                                columns={columns}
+                                rowKey={(record) => record.document_id}
+                                dataSource={searchResult.documents}
+                                pagination={searchResult.pagination}
+                                loading={searchMutation.isPending}
+                                onChange={handleTableChange}
+                                showHeader={false}
+                            />
                         </Col>
                     </Row>
+                    <a href='/company'>click here</a>
                 </Container>
             </>
             : null
