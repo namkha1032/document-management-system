@@ -820,7 +820,7 @@ const Page_Search = (props) => {
                                 </div>
                             </Card>
                         </Col>
-                        <Col span={24}>
+                        {/* <Col span={24}>
                             {
                                 searchMutation.isPending
                                     ? <Typography.Text>loading...</Typography.Text>
