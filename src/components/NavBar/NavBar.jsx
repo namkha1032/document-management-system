@@ -60,7 +60,11 @@ const NavBar = (props) => {
         let oldSearchOption = queryClient.getQueryData(['searchOption'])
         let newSearchOption = {
             ...oldSearchOption,
-            original_query: value
+            original_query: value,
+            pagination: {
+                current: 1,
+                pageSize: oldSearchOption.pagination.pageSize
+            }
         }
         queryClient.setQueryData(['searchOption'], newSearchOption)
         await searchMutation.mutateAsync(newSearchOption)

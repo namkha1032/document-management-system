@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+import { Link } from "react-router-dom";
 // import my components
 import Bread from "../../components/Bread/Bread"
 import Page_Table from "../Page_Table";
@@ -590,21 +591,51 @@ const Page_Search = (props) => {
     }
     const leftTerm = 6
     const rightTerm = 18
-    const columns = [
+    const searchResultsColumn = [
         {
             title: 'Document',
-            width: '30%',
+            width: '40%',
             render: (obj) => {
                 return (
-                    <div>
-                        <Typography.Text>{obj.file_name}</Typography.Text>
-                    </div>
+                    <Link to='#'>
+                        <div style={{ display: 'flex', columnGap: 16 }}>
+                            <div style={{ minWidth: 100, minHeighteight: 140 }}>
+                                <Document file={obj.file_url}>
+                                    <Page width={100} pageNumber={1} />
+                                </Document>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                    {/* <FontAwesomeIcon icon="fa-solid fa-file-pdf" style={{ color: "#d7723c", }} /> */}
+                                    <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} style={{ color: antdTheme.token.colorError, }} size="xl" />
+
+                                    <Typography.Title style={{ marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj.file_name}</Typography.Title>
+
+                                </div>
+                                <Typography.Text style={{
+                                    height: 93,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2, /* number of lines to show */
+                                    LineCamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    // display: '-webkit - box',
+                                    // WebkitLineClamp: 3, /* number of lines to show */
+                                    // WebkitBoxOrient: 'vertical',
+                                    // overflow: 'hidden',
+                                    // textOverflow: 'ellipsis'
+                                }}>{obj.content}
+                                </Typography.Text>
+                            </div>
+                        </div >
+                    </Link>
                 )
             }
         },
         {
             title: 'Metadata',
-            width: '30%',
+            width: '40%',
             render: (obj) => {
                 return (
                     <div>
@@ -798,13 +829,13 @@ const Page_Search = (props) => {
                         </Col> */}
                         <Col span={24}>
                             <Table
-                                columns={columns}
+                                columns={searchResultsColumn}
                                 rowKey={(record) => record.document_id}
                                 dataSource={searchResult.documents}
                                 pagination={searchResult.pagination}
                                 loading={searchMutation.isPending}
                                 onChange={handleTableChange}
-                                showHeader={false}
+                            // showHeader={false}
                             />
                         </Col>
                     </Row>
