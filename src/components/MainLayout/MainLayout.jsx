@@ -11,7 +11,6 @@ import Bread from '../Bread/Bread';
 // //////////////////////////////////////////////////////
 
 const MainLayout = (props) => {
-    console.log('---------------render MainLayout----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
     // const searchResultQuery = props.searchResultQuery

@@ -522,7 +522,6 @@ const MetadataList = (props) => {
     )
 }
 const Page_Search = (props) => {
-    console.log('---------------render Page_Search----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
     // const searchResultQuery = props.searchResultQuery
@@ -554,27 +553,24 @@ const Page_Search = (props) => {
     //     filters: { mutationKey: ['searchMutation'] }
     // })
     // const searchMutation = searchMutationArray[0]
-    // console.log("searchMutation: ", searchMutation)
-    async function handleAddKeyword(keywordItem, oriTerm, type) {
-        console.log('oriTerm', oriTerm)
-        console.log('keywordItem', keywordItem)
+    async function handleAddKeyword(extendTerm, oriTerm, type) {
         await queryClient.setQueryData(['searchResult'], oldSearchResult => {
             const newBroader = type == 'broader'
                 ? {
                     ...oldSearchResult.broader,
-                    [oriTerm]: oldSearchResult.broader[oriTerm].filter(termItem => termItem != keywordItem)
+                    [oriTerm]: oldSearchResult.broader[oriTerm].filter(termItem => termItem != extendTerm)
                 }
                 : oldSearchResult.broader
             const newRelated = type == 'related'
                 ? {
                     ...oldSearchResult.related,
-                    [oriTerm]: oldSearchResult.related[oriTerm].filter(termItem => termItem != keywordItem)
+                    [oriTerm]: oldSearchResult.related[oriTerm].filter(termItem => termItem != extendTerm)
                 }
                 : oldSearchResult.related
             const newNarrower = type == 'narrower'
                 ? {
                     ...oldSearchResult.narrower,
-                    [oriTerm]: oldSearchResult.narrower[oriTerm].filter(termItem => termItem != keywordItem)
+                    [oriTerm]: oldSearchResult.narrower[oriTerm].filter(termItem => termItem != extendTerm)
                 }
                 : oldSearchResult.narrower
             return {
@@ -585,38 +581,44 @@ const Page_Search = (props) => {
             }
         })
         await queryClient.setQueryData(['searchOption'], oldSearchOption => {
-            // const newExtendKeywords = oldSearchOption.extend_keywords.concat({
-            //     ...keywordItem,
-            //     type: type,
-            //     color: type == 'broader' ? 'red' : (type == 'related' ? 'green' : 'blue')
-            // })
-            // const newBroader = type == 'broader'
-            //     ? {
-            //         ...oldSearchOption.extend_keywords.broader,
-            //         broader: null
-            //     }
-            //     : oldSearchOption.extend_keywords.broader
-            // return {
-            //     ...oldSearchOption,
-            //     extend_keywords: newExtendKeywords
-            // }
             const newBroader = type == 'broader'
-                ? {
-                    ...oldSearchOption.broader,
-                    [oriTerm]: [...oldSearchOption.broader[oriTerm], keywordItem]
-                }
+                ? (
+                    oldSearchOption.broader.hasOwnProperty(oriTerm)
+                        ? {
+                            ...oldSearchOption.broader,
+                            [oriTerm]: [...oldSearchOption.broader[oriTerm], extendTerm]
+                        }
+                        : {
+                            ...oldSearchOption.broader,
+                            [oriTerm]: [extendTerm]
+                        }
+                )
                 : oldSearchOption.broader
             const newRelated = type == 'related'
-                ? {
-                    ...oldSearchOption.related,
-                    [oriTerm]: [...oldSearchOption.related[oriTerm], keywordItem]
-                }
+                ? (
+                    oldSearchOption.related.hasOwnProperty(oriTerm)
+                        ? {
+                            ...oldSearchOption.related,
+                            [oriTerm]: [...oldSearchOption.related[oriTerm], extendTerm]
+                        }
+                        : {
+                            ...oldSearchOption.related,
+                            [oriTerm]: [extendTerm]
+                        }
+                )
                 : oldSearchOption.related
             const newNarrower = type == 'narrower'
-                ? {
-                    ...oldSearchOption.narrower,
-                    [oriTerm]: [...oldSearchOption.narrower[oriTerm], keywordItem]
-                }
+                ? (
+                    oldSearchOption.narrower.hasOwnProperty(oriTerm)
+                        ? {
+                            ...oldSearchOption.narrower,
+                            [oriTerm]: [...oldSearchOption.narrower[oriTerm], extendTerm]
+                        }
+                        : {
+                            ...oldSearchOption.narrower,
+                            [oriTerm]: [extendTerm]
+                        }
+                )
                 : oldSearchOption.narrower
             return {
                 ...oldSearchOption,
@@ -806,7 +808,7 @@ const Page_Search = (props) => {
     }
     const leftTerm = 6
     const rightTerm = 18
-    
+
     // HTMl
     return (
         searchOption
@@ -932,8 +934,8 @@ const Page_Search = (props) => {
                                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                         <Typography.Text strong>Broader terms: </Typography.Text>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {Object.entries(searchResult?.broader).map(([oriTerm, extendTerm], index) =>
-                                                extendTerm.map((kw, index) =>
+                                            {Object.entries(searchResult?.broader).map(([oriTerm, extendArray], index) =>
+                                                extendArray.map((kw, index) =>
                                                     <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
                                                         {kw}
                                                     </Tag>))}
@@ -942,8 +944,8 @@ const Page_Search = (props) => {
                                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                         <Typography.Text strong>Related terms: </Typography.Text>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {Object.entries(searchResult?.related).map(([oriTerm, extendTerm], index) =>
-                                                extendTerm.map((kw, index) =>
+                                            {Object.entries(searchResult?.related).map(([oriTerm, extendArray], index) =>
+                                                extendArray.map((kw, index) =>
                                                     <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'related')}>
                                                         {kw}
                                                     </Tag>))}
@@ -952,8 +954,8 @@ const Page_Search = (props) => {
                                     <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                         <Typography.Text strong>Narrower terms: </Typography.Text>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {Object.entries(searchResult?.narrower).map(([oriTerm, extendTerm], index) =>
-                                                extendTerm.map((kw, index) =>
+                                            {Object.entries(searchResult?.narrower).map(([oriTerm, extendArray], index) =>
+                                                extendArray.map((kw, index) =>
                                                     <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'narrower')}>
                                                         {kw}
                                                     </Tag>))}

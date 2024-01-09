@@ -27,7 +27,6 @@ import { getSearchResult } from './apis/searchApi';
 
 
 const App = () => {
-  console.log('---------------render App----------------')
   const queryClient = useQueryClient()
   // search
   let searchOptionQuery = useQuery({
@@ -74,41 +73,85 @@ const App = () => {
   const searchMutation = useMutation({
     mutationFn: getSearchResult,
     onSuccess: (response) => {
-      const oldSearchOption = queryClient.getQueryData(['searchOption'])
-      Object.entries(response.broader).forEach([])
-      queryClient.setQueryData(['searchResult'], () => {
-        const newBroader = response.broader.filter(kwItem => {
-          for (let extendItem of searchOption.extend_keywords) {
-            if (extendItem.keyword == kwItem.keyword) {
-              return false
+      const searchOption = queryClient.getQueryData(['searchOption'])
+      console.log('searchOption in searchMutation', searchOption)
+      let searchResult = {
+        ...response
+      }
+      Object.entries(searchOption.broader).forEach(([oriTerm, extendArray], index) => {
+        if (searchResult.broader.hasOwnProperty(oriTerm)) {
+          extendArray.forEach((extendTerm, index) => {
+            console.log('extendTerm in broader', extendTerm)
+            searchResult = {
+              ...searchResult,
+              broader: {
+                ...searchResult.broader,
+                [oriTerm]: searchResult.broader[oriTerm].filter(newItem => newItem != extendTerm)
+              }
             }
-          }
-          return true
-        })
-        const newRelated = response.related.filter(kwItem => {
-          for (let extendItem of searchOption.extend_keywords) {
-            if (extendItem.keyword == kwItem.keyword) {
-              return false
-            }
-          }
-          return true
-        })
-        const newNarrower = response.narrower.filter(kwItem => {
-          for (let extendItem of searchOption.extend_keywords) {
-            if (extendItem.keyword == kwItem.keyword) {
-              return false
-            }
-          }
-          return true
-        })
-        return {
-          ...response,
-          broader: newBroader,
-          related: newRelated,
-          narrower: newNarrower
+            console.log('searchResult', searchResult)
+          })
         }
       })
-      queryClient.setQueryData(['searchResult'], response)
+      Object.entries(searchOption.related).forEach(([oriTerm, extendArray], index) => {
+        if (searchResult.related.hasOwnProperty(oriTerm)) {
+          extendArray.forEach((extendTerm, index) => {
+            searchResult = {
+              ...searchResult,
+              related: {
+                ...searchResult.related,
+                [oriTerm]: searchResult.related[oriTerm].filter(newItem => newItem != extendTerm)
+              }
+            }
+          })
+        }
+      })
+      Object.entries(searchOption.narrower).forEach(([oriTerm, extendArray], index) => {
+        if (searchResult.narrower.hasOwnProperty(oriTerm)) {
+          extendArray.forEach((extendTerm, index) => {
+            searchResult = {
+              ...searchResult,
+              narrower: {
+                ...searchResult.narrower,
+                [oriTerm]: searchResult.narrower[oriTerm].filter(newItem => newItem != extendTerm)
+              }
+            }
+          })
+        }
+      })
+      // queryClient.setQueryData(['searchResult'], () => {
+      //   const newBroader = response.broader.filter(kwItem => {
+      //     for (let extendItem of searchOption.extend_keywords) {
+      //       if (extendItem.keyword == kwItem.keyword) {
+      //         return false
+      //       }
+      //     }
+      //     return true
+      //   })
+      //   const newRelated = response.related.filter(kwItem => {
+      //     for (let extendItem of searchOption.extend_keywords) {
+      //       if (extendItem.keyword == kwItem.keyword) {
+      //         return false
+      //       }
+      //     }
+      //     return true
+      //   })
+      //   const newNarrower = response.narrower.filter(kwItem => {
+      //     for (let extendItem of searchOption.extend_keywords) {
+      //       if (extendItem.keyword == kwItem.keyword) {
+      //         return false
+      //       }
+      //     }
+      //     return true
+      //   })
+      //   return {
+      //     ...response,
+      //     broader: newBroader,
+      //     related: newRelated,
+      //     narrower: newNarrower
+      //   }
+      // })
+      queryClient.setQueryData(['searchResult'], searchResult)
     }
   })
   // router

@@ -43,7 +43,6 @@ const AdvancedSearchButton = (props) => {
 }
 
 const NavBar = (props) => {
-    console.log('---------------render NavBar----------------')
     // props
     // const searchOptionQuery = props.searchOptionQuery
     // const searchResultQuery = props.searchResultQuery
@@ -66,23 +65,38 @@ const NavBar = (props) => {
                 pageSize: oldSearchOption.pagination.pageSize
             }
         }
-        queryClient.setQueryData(['searchOption'], newSearchOption)
+        await queryClient.setQueryData(['searchOption'], newSearchOption)
         await searchMutation.mutateAsync(newSearchOption)
     }
-    async function handleRemoveKeyword(e, kw) {
+    async function handleRemoveKeyword(e, extendTerm, oriTerm, type) {
         e.preventDefault()
         queryClient.setQueryData(['searchResult'], (oldSearchResult) => {
-            const newBroader = kw.type == 'broader'
-                ?
-                oldSearchResult.broader.concat(kw)
+            const newBroader = type == 'broader'
+                ? (oldSearchResult.broader.hasOwnProperty(oriTerm)
+                    ? {
+                        ...oldSearchResult.broader,
+                        [oriTerm]: [...oldSearchResult.broader[oriTerm], extendTerm]
+                    }
+                    : oldSearchResult.broader
+                )
                 : oldSearchResult.broader
-            const newRelated = kw.type == 'related'
-                ?
-                oldSearchResult.related.concat(kw)
+            const newRelated = type == 'related'
+                ? (oldSearchResult.related.hasOwnProperty(oriTerm)
+                    ? {
+                        ...oldSearchResult.related,
+                        [oriTerm]: [...oldSearchResult.related[oriTerm], extendTerm]
+                    }
+                    : oldSearchResult.related
+                )
                 : oldSearchResult.related
-            const newNarrower = kw.type == 'narrower'
-                ?
-                oldSearchResult.narrower.concat(kw)
+            const newNarrower = type == 'narrower'
+                ? (oldSearchResult.narrower.hasOwnProperty(oriTerm)
+                    ? {
+                        ...oldSearchResult.narrower,
+                        [oriTerm]: [...oldSearchResult.narrower[oriTerm], extendTerm]
+                    }
+                    : oldSearchResult.narrower
+                )
                 : oldSearchResult.narrower
             return {
                 ...oldSearchResult,
@@ -92,9 +106,65 @@ const NavBar = (props) => {
             }
         })
         queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
-            return {
-                ...oldSearchOption,
-                extend_keywords: oldSearchOption.extend_keywords.filter(kwItem => kwItem.keyword != kw.keyword)
+            if (type == 'broader') {
+                let newBroader = {}
+                if (oldSearchOption.broader[oriTerm].length >= 2) {
+                    newBroader = {
+                        ...oldSearchOption.broader,
+                        [oriTerm]: oldSearchOption.broader[oriTerm].filter((item, index) => item != extendTerm)
+                    }
+                }
+                else {
+                    Object.entries(oldSearchOption.broader).forEach(([keyTerm, extendArray], index) => {
+                        if (keyTerm != oriTerm) {
+                            newBroader[keyTerm] = extendArray
+                        }
+                    })
+                }
+                return {
+                    ...oldSearchOption,
+                    broader: newBroader
+                }
+            }
+            else if (type == 'related') {
+                let newRelated = {}
+                if (oldSearchOption.related[oriTerm].length >= 2) {
+                    newRelated = {
+                        ...oldSearchOption.related,
+                        [oriTerm]: oldSearchOption.related[oriTerm].filter((item, index) => item != extendTerm)
+                    }
+                }
+                else {
+                    Object.entries(oldSearchOption.related).forEach(([keyTerm, extendArray], index) => {
+                        if (keyTerm != oriTerm) {
+                            newRelated[keyTerm] = extendArray
+                        }
+                    })
+                }
+                return {
+                    ...oldSearchOption,
+                    related: newRelated
+                }
+            }
+            else if (type == 'narrower') {
+                let newNarrower = {}
+                if (oldSearchOption.narrower[oriTerm].length >= 2) {
+                    newNarrower = {
+                        ...oldSearchOption.narrower,
+                        [oriTerm]: oldSearchOption.narrower[oriTerm].filter((item, index) => item != extendTerm)
+                    }
+                }
+                else {
+                    Object.entries(oldSearchOption.narrower).forEach(([keyTerm, extendArray], index) => {
+                        if (keyTerm != oriTerm) {
+                            newNarrower[keyTerm] = extendArray
+                        }
+                    })
+                }
+                return {
+                    ...oldSearchOption,
+                    narrower: newNarrower
+                }
             }
         })
     }
@@ -126,22 +196,28 @@ const NavBar = (props) => {
                             prefix={
                                 <>
                                     {
-                                        Object.entries(searchOption?.broader).map(([oriTerm, extendTerm], index) =>
-                                            <Tag key={index} color={oriTerm.color} closeIcon onClose={(e) => handleRemoveKeyword(e, oriTerm)}>
-                                                {oriTerm}
-                                            </Tag>)
+                                        Object.entries(searchOption?.broader).map(([oriTerm, extendArray], index) =>
+                                            extendArray.map((extendTerm, index) =>
+                                                <Tag key={index} color='red' closeIcon onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
+                                                    {extendTerm}
+                                                </Tag>
+                                            ))
                                     }
                                     {
-                                        Object.entries(searchOption?.related).map(([oriTerm, extendTerm], index) =>
-                                            <Tag key={index} color={oriTerm.color} closeIcon onClose={(e) => handleRemoveKeyword(e, oriTerm)}>
-                                                {oriTerm}
-                                            </Tag>)
+                                        Object.entries(searchOption?.related).map(([oriTerm, extendArray], index) =>
+                                            extendArray.map((extendTerm, index) =>
+                                                <Tag key={index} color='green' closeIcon onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')}>
+                                                    {extendTerm}
+                                                </Tag>
+                                            ))
                                     }
                                     {
-                                        Object.entries(searchOption?.narrower).map(([oriTerm, extendTerm], index) =>
-                                            <Tag key={index} color={oriTerm.color} closeIcon onClose={(e) => handleRemoveKeyword(e, oriTerm)}>
-                                                {oriTerm}
-                                            </Tag>)
+                                        Object.entries(searchOption?.narrower).map(([oriTerm, extendArray], index) =>
+                                            extendArray.map((extendTerm, index) =>
+                                                <Tag key={index} color='blue' closeIcon onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
+                                                    {extendTerm}
+                                                </Tag>
+                                            ))
                                     }
                                 </>
                             }
