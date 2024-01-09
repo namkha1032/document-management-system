@@ -38,6 +38,10 @@
                     "value": "value 8"
                 }
             ],
+            "keyord": [
+                "abc",
+                "edf"
+            ],
             "owner": {
                 "full_name": "Tran Le Trung Chanh",
                 "avatar": "/file/avatar.png"
@@ -706,105 +710,63 @@
             "updated_date": "2024-01-06T22:36:32.995Z"
         }
     ],
-    "broader": [
-        {
-            "keyword": "broader 1"
-        },
-        {
-            "keyword": "broader 2"
-        }
-    ],
-    "related": [
-        {
-            "keyword": "related 1"
-        },
-        {
-            "keyword": "related 2"
-        },
-        {
-            "keyword": "related 3"
-        },
-        {
-            "keyword": "related 4"
-        },
-        {
-            "keyword": "related 5"
-        },
-        {
-            "keyword": "related 6"
-        },
-        {
-            "keyword": "related 7"
-        },
-        {
-            "keyword": "related 8"
-        },
-        {
-            "keyword": "related 9"
-        },
-        {
-            "keyword": "related 10"
-        },
-        {
-            "keyword": "related 11"
-        },
-        {
-            "keyword": "related 12"
-        }
-    ],
-    "narrower": [
-        {
-            "keyword": "narrower 1"
-        },
-        {
-            "keyword": "narrower 2"
-        },
-        {
-            "keyword": "narrower 3"
-        },
-        {
-            "keyword": "narrower 4"
-        },
-        {
-            "keyword": "narrower 5"
-        },
-        {
-            "keyword": "narrower 6"
-        },
-        {
-            "keyword": "narrower 7"
-        },
-        {
-            "keyword": "narrower 8"
-        },
-        {
-            "keyword": "narrower 9"
-        },
-        {
-            "keyword": "narrower 10"
-        },
-        {
-            "keyword": "narrower 11"
-        },
-        {
-            "keyword": "narrower 12"
-        },
-        {
-            "keyword": "narrower 13"
-        },
-        {
-            "keyword": "narrower 14"
-        },
-        {
-            "keyword": "narrower 15"
-        },
-        {
-            "keyword": "narrower 16"
-        }
-    ],
+    "broader": {
+        "thông tư": [
+            "broader 1",
+            "broader 2"
+        ],
+        "lao động": [
+            "broader 3",
+            "broader 4"
+        ]
+    },
+    "related": {
+        "thông tư": [
+            "related 1",
+            "related 2",
+            "related 3",
+            "related 4",
+            "related 5",
+            "related 6",
+            "related 7",
+            "related 8"
+        ],
+        "lao động": [
+            "related 9",
+            "related 10",
+            "related 11",
+            "related 12",
+            "related 13",
+            "related 14",
+            "related 15",
+            "related 16"
+        ]
+    },
+    "narrower": {
+        "thông tư": [
+            "narrower 1",
+            "narrower 2",
+            "narrower 3",
+            "narrower 4",
+            "narrower 5",
+            "narrower 6",
+            "narrower 7",
+            "narrower 8"
+        ],
+        "lao động": [
+            "narrower 9",
+            "narrower 10",
+            "narrower 11",
+            "narrower 12",
+            "narrower 13",
+            "narrower 14",
+            "narrower 15",
+            "narrower 16"
+        ]
+    },
     "pagination": {
         "current": 0,
         "pageSize": 0,
         "total": 12
-      }
+    }
 }

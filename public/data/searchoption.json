@@ -1,31 +1,65 @@
 {
-    "original_query": "nguyễn nam kha",
-    "extend_keywords_1": {
-        "thongtu": [
-            "broader"
+    "original_query": "hehehe",
+    "broader": {
+        "thông tư": [
+            "broader 1",
+            "broader 2"
         ],
-        "laodong": []
+        "lao động": [
+            "broader 3",
+            "broader 4"
+        ]
     },
-    "extend_keywords": {
-        "broader": {
-            "Thongtu": [
-                "broader"
-            ],
-            "laodong": [
-                ""
+    "related": {
+        "thông tư": [
+            "related 1",
+            "related 2"
+        ],
+        "lao động": [
+            "related 9",
+            "related 10"
+        ]
+    },
+    "narrower": {
+        "thông tư": [
+            "broader 1",
+            "broader 2"
+        ],
+        "lao động": [
+            "broader 9",
+            "broader 10"
+        ]
+    },
+    "metadata": [
+        {
+            "obj_id": "p04sd",
+            "$and": [
+                {
+                    "obj_id": "w2wla",
+                    "key": "k1",
+                    "value": "v1"
+                },
+                {
+                    "obj_id": "f1uql",
+                    "$not": {
+                        "obj_id": "f1uql",
+                        "key": "k2",
+                        "value": "v2"
+                    }
+                },
+                {
+                    "obj_id": "xn0b3",
+                    "key": "k3",
+                    "value": "v3"
+                }
             ]
-        },
-        "related": {
-            "Thongtu": [
-                "broader"
-            ],
-            "laodong": []
-        },
-        "narrower": {
-            "Thongtu": [
-                "broader"
-            ],
-            "laodong": []
         }
-    }
+    ],
+    "method": "full-text",
+    "domain": "phapluat",
+    "pagination": {
+        "current": 1,
+        "pageSize": 10
+    },
+    "search_scope": "all"
 }

@@ -104,50 +104,71 @@ const NavBar = (props) => {
     // let searchOption = searchOptionQuery.data
     // HTMl
     return (
-        <Layout.Header
-            style={{
-                paddingRight: `${antdTheme.token.paddingContentHorizontal}px`,
-                paddingLeft: 0,
-                background: antdTheme.token.colorBgContainer
-            }}
-        >
-            <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}>
-                <Col md={10} style={{ display: "flex", alignItems: "center" }}>
-                    <Input.Search
-                        placeholder="input search text"
-                        // enterButton={<Typography.Text>Search</Typography.Text>}
-                        enterButton='Search'
-                        size="large"
-                        suffix={<AdvancedSearchButton />}
-                        onSearch={handleSearch}
-                        prefix={
-                            searchOption?.extend_keywords.map((kw, index) =>
-                                <Tag key={index} color={kw.color} closeIcon onClose={(e) => handleRemoveKeyword(e, kw)}>
-                                    {kw.keyword}
-                                </Tag>)
-                        }
-                    >
-                    </Input.Search>
-                </Col>
-                <Col md={5} style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", columnGap: 10 }}>
-                    <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"}
-                        checkedChildren={<FontAwesomeIcon icon={icon({ name: 'moon', style: 'solid' })} />}
-                        unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
-                        onClick={(e) => {
-                            if (e) {
-                                window.localStorage.setItem("modeTheme", "dark")
-                                queryClient.setQueryData(['modeTheme'], "dark")
+        searchOption
+            ?
+            <Layout.Header
+                style={{
+                    paddingRight: `${antdTheme.token.paddingContentHorizontal}px`,
+                    paddingLeft: 0,
+                    background: antdTheme.token.colorBgContainer
+                }
+                }
+            >
+                <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}>
+                    <Col md={10} style={{ display: "flex", alignItems: "center" }}>
+                        <Input.Search
+                            placeholder="input search text"
+                            // enterButton={<Typography.Text>Search</Typography.Text>}
+                            enterButton='Search'
+                            size="large"
+                            suffix={<AdvancedSearchButton />}
+                            onSearch={handleSearch}
+                            prefix={
+                                <>
+                                    {
+                                        Object.entries(searchOption?.broader).map(([oriTerm, extendTerm], index) =>
+                                            <Tag key={index} color={oriTerm.color} closeIcon onClose={(e) => handleRemoveKeyword(e, oriTerm)}>
+                                                {oriTerm}
+                                            </Tag>)
+                                    }
+                                    {
+                                        Object.entries(searchOption?.related).map(([oriTerm, extendTerm], index) =>
+                                            <Tag key={index} color={oriTerm.color} closeIcon onClose={(e) => handleRemoveKeyword(e, oriTerm)}>
+                                                {oriTerm}
+                                            </Tag>)
+                                    }
+                                    {
+                                        Object.entries(searchOption?.narrower).map(([oriTerm, extendTerm], index) =>
+                                            <Tag key={index} color={oriTerm.color} closeIcon onClose={(e) => handleRemoveKeyword(e, oriTerm)}>
+                                                {oriTerm}
+                                            </Tag>)
+                                    }
+                                </>
                             }
-                            else {
-                                window.localStorage.setItem("modeTheme", "light")
-                                queryClient.setQueryData(['modeTheme'], "light")
-                            }
-                        }} />
-                    <Typography.Text>Peter Parker</Typography.Text>
-                    <Avatar size={"large"} src="https://avatarfiles.alphacoders.com/149/149117.jpg" />
-                </Col>
-            </Row>
-        </Layout.Header>
+                        >
+                        </Input.Search>
+                    </Col>
+                    <Col md={5} style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", columnGap: 10 }}>
+                        <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"}
+                            checkedChildren={<FontAwesomeIcon icon={icon({ name: 'moon', style: 'solid' })} />}
+                            unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
+                            onClick={(e) => {
+                                if (e) {
+                                    window.localStorage.setItem("modeTheme", "dark")
+                                    queryClient.setQueryData(['modeTheme'], "dark")
+                                }
+                                else {
+                                    window.localStorage.setItem("modeTheme", "light")
+                                    queryClient.setQueryData(['modeTheme'], "light")
+                                }
+                            }} />
+                        <Typography.Text>Peter Parker</Typography.Text>
+                        <Avatar size={"large"} src="https://avatarfiles.alphacoders.com/149/149117.jpg" />
+                    </Col>
+                </Row>
+            </Layout.Header >
+            : null
+
     )
 }
 
