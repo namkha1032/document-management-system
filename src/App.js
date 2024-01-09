@@ -35,7 +35,9 @@ const App = () => {
     queryFn: () => {
       return {
         original_query: '',
-        extend_keywords: [],
+        broader: {},
+        related: {},
+        narrower: {},
         metadata: [],
         method: 'full-text',
         domain: 'phapluat',
@@ -56,12 +58,10 @@ const App = () => {
     queryFn: () => {
       return {
         documents: [],
-        broader: [],
-        related: [],
-        narrower: [],
+        broader: {},
+        related: {},
+        narrower: {},
         pagination: {
-          current: null,
-          pageSize: null,
           total: null
         }
       }
@@ -74,7 +74,8 @@ const App = () => {
   const searchMutation = useMutation({
     mutationFn: getSearchResult,
     onSuccess: (response) => {
-      const searchOption = queryClient.getQueryData(['searchOption'])
+      const oldSearchOption = queryClient.getQueryData(['searchOption'])
+      Object.entries(response.broader).forEach([])
       queryClient.setQueryData(['searchResult'], () => {
         const newBroader = response.broader.filter(kwItem => {
           for (let extendItem of searchOption.extend_keywords) {
@@ -107,6 +108,7 @@ const App = () => {
           narrower: newNarrower
         }
       })
+      queryClient.setQueryData(['searchResult'], response)
     }
   })
   // router
