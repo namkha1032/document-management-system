@@ -1,0 +1,31 @@
+{
+    "original_query": "nguyễn nam kha",
+    "extend_keywords_1": {
+        "thongtu": [
+            "broader"
+        ],
+        "laodong": []
+    },
+    "extend_keywords": {
+        "broader": {
+            "Thongtu": [
+                "broader"
+            ],
+            "laodong": [
+                ""
+            ]
+        },
+        "related": {
+            "Thongtu": [
+                "broader"
+            ],
+            "laodong": []
+        },
+        "narrower": {
+            "Thongtu": [
+                "broader"
+            ],
+            "laodong": []
+        }
+    }
+}
