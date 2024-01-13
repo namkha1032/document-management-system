@@ -513,8 +513,8 @@ const MetadataList = (props) => {
                 {metaArray.map((item, index) => {
                     return (
                         <div key={index}>
-                            <Typography.Text type={'secondary'}>{item.key}: </Typography.Text>
-                            <Typography.Text code>{item.value}</Typography.Text>
+                            <Typography.Text type={'secondary'}>{Object.entries(item)[0][0]}: </Typography.Text>
+                            <Typography.Text>{Object.entries(item)[0][1]}</Typography.Text>
                         </div>)
                 })}
             </div>
@@ -531,28 +531,6 @@ const Page_Search = (props) => {
     let antdTheme = theme.useToken()
     const searchOption = queryClient.getQueryData(['searchOption'])
     const searchResult = queryClient.getQueryData(['searchResult'])
-    // ///////////////////////
-    // useEffect(() => {
-    //     return () => {
-    //         queryClient.setQueryData(['searchOption'], {
-    //             original_query: '',
-    //             extend_keywords: [],
-    //             metadata: [],
-    //             method: null
-    //         })
-    //         queryClient.setQueryData(['searchResult'], {
-    //             documents: [],
-    //             broader: [],
-    //             related: [],
-    //             narrower: []
-    //         })
-    //     }
-    // }, [])
-    // const searchMutationArray = useMutationState({
-    //     // this mutation key needs to match the mutation key of the given mutation (see above)
-    //     filters: { mutationKey: ['searchMutation'] }
-    // })
-    // const searchMutation = searchMutationArray[0]
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         await queryClient.setQueryData(['searchResult'], oldSearchResult => {
             const newBroader = type == 'broader'
@@ -655,8 +633,18 @@ const Page_Search = (props) => {
     const searchResultsColumn = [
         {
             title: 'Document',
-            width: '40%',
+            width: '65%',
             render: (obj) => {
+                let displayArray = []
+                let extendArray = []
+                let limit = 3
+                if (obj.metadata.length > limit) {
+                    displayArray = obj.metadata.slice(0, limit)
+                    extendArray = obj.metadata.slice(limit)
+                }
+                else {
+                    displayArray = [...obj.metadata]
+                }
                 return (
                     <Link to='#'>
                         <div style={{ display: 'flex', columnGap: 16 }}>
@@ -673,59 +661,20 @@ const Page_Search = (props) => {
                                     <Typography.Title style={{ marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj.file_name}</Typography.Title>
 
                                 </div>
-                                <Typography.Paragraph ellipsis={{
+                                {/* <Typography.Paragraph ellipsis={{
                                     rows: 4
                                 }}>
                                     {obj.content}
-                                </Typography.Paragraph>
+                                </Typography.Paragraph> */}
+                                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
+                                    <MetadataList metaArray={displayArray} />
+                                    <Popover placement="bottom" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
+                                        <Button icon={<EllipsisOutlined />} size='small' shape="round" style={{ height: 14, display: 'flex', alignItems: 'center' }} />
+                                    </Popover>
+                                </div>
                             </div>
                         </div >
                     </Link>
-                )
-            }
-        },
-        {
-            title: 'Metadata',
-            width: '25%',
-            render: (obj) => {
-                let displayArray = []
-                let extendArray = []
-                // obj.metadata.forEach((item, index) => {
-                //     if (index < 4) {
-                //         displayArray.push({
-                //             key: index,
-                //             label: item.key,
-                //             children: item.value,
-                //             span: 24
-                //         })
-                //     }
-                //     else {
-                //         extendArray.push({
-                //             key: index,
-                //             label: item.key,
-                //             children: item.value,
-                //             span: 24
-                //         })
-                //     }
-                // })
-                let limit = 4
-                if (obj.metadata.length > limit) {
-                    displayArray = obj.metadata.slice(0, limit)
-                    extendArray = obj.metadata.slice(limit)
-                }
-                else {
-                    displayArray = [...obj.metadata]
-                }
-                return (
-                    <>
-                        {/* <Descriptions items={displayArray} /> */}
-                        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
-                            <MetadataList metaArray={displayArray} />
-                            <Popover placement="bottom" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
-                                <Button icon={<EllipsisOutlined />} size='small' shape="round" style={{ height: 14, display: 'flex', alignItems: 'center' }} />
-                            </Popover>
-                        </div>
-                    </>
                 )
             }
         },
@@ -1040,7 +989,10 @@ const Page_Search = (props) => {
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                                 <SearchOutlined
-                                // style={{ fontSize: 24 }}
+                                    style={{
+                                        fontSize: 24,
+                                        color: antdTheme.token.colorTextHeading
+                                    }}
                                 />
                                 <Typography.Title level={2} style={{ margin: 0 }}>Search result</Typography.Title>
                             </div>
@@ -1065,7 +1017,7 @@ const Page_Search = (props) => {
                                 // pagination={false}
                                 loading={searchMutation.isPending}
                                 onChange={handleTableChange}
-                                // showHeader={false}
+                                showHeader={false}
                                 style={{ borderRadius: 8 }}
                             />
                         </Col>
