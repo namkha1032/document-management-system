@@ -239,7 +239,7 @@ const NavBar = (props) => {
                                 }
                             }} />
                         <Typography.Text>Peter Parker</Typography.Text>
-                        <Avatar size={"large"} src="https://avatarfiles.alphacoders.com/149/149117.jpg" />
+                        <Avatar size={"large"} src="/file/avatar.png" />
                     </Col>
                 </Row>
             </Layout.Header >

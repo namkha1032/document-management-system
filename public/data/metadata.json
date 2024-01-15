@@ -1,36 +1,28 @@
 {
     "metadata": [
         {
-            "key": "Document number",
-            "value": "22/2021"
+            "Document number": "22/2021"
         },
         {
-            "key": "Document type",
-            "value": "thong tu"
+            "Document type": "thong tu"
         },
         {
-            "key": "Agency",
-            "value": "bo giao duc"
+            "Agency": "bo giao duc"
         },
         {
-            "key": "Document title",
-            "value": "something"
+            "Document title": "something"
         },
         {
-            "key": "Issued date",
-            "value": "22/10/2021"
+            "Issued date": "22/10/2021"
         },
         {
-            "key": "Effective date",
-            "value": "22/10/2021"
+            "Effective date": "22/10/2021"
         },
         {
-            "key": "Document based",
-            "value": "nghi dinh"
+            "Văn bản liên quan": "['001','002','003','004']"
         },
         {
-            "key": "Expired document",
-            "value": "22231"
+            "Expired document": "22231"
         }
     ]
 }

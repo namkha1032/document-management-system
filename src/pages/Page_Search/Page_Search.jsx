@@ -1,5 +1,5 @@
 // import packages
-import { useQueryClient, useMutation, useMutationState } from "@tanstack/react-query"
+import { useQueryClient, useMutation, useMutationState, useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -242,7 +242,7 @@ function recurTypeKeyValue(obj_id, keyvalue, type, myObj) {
         }
     }
 }
-async function handleTypeKeyValue(obj_id, keyvalue, type, queryClient) {
+function handleTypeKeyValue(obj_id, keyvalue, type, queryClient) {
     queryClient.setQueryData(['searchOption'], oldSearchOption => {
         return {
             ...oldSearchOption,
@@ -508,7 +508,7 @@ const MetaForm = (props) => {
 const MetadataList = (props) => {
     const metaArray = props.metaArray
     return (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', width: 600 }}>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', rowGap: 8 }}>
                 {metaArray.map((item, index) => {
                     return (
@@ -527,10 +527,12 @@ const Page_Search = (props) => {
     // const searchResultQuery = props.searchResultQuery
     const searchMutation = props.searchMutation
     const [inp, setInp] = useState('')
+    const [test, setTest] = useState('')
     const queryClient = useQueryClient()
     let antdTheme = theme.useToken()
     const searchOption = queryClient.getQueryData(['searchOption'])
     const searchResult = queryClient.getQueryData(['searchResult'])
+    console.log('searchResult', JSON.stringify(searchResult))
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         await queryClient.setQueryData(['searchResult'], oldSearchResult => {
             const newBroader = type == 'broader'
@@ -614,6 +616,13 @@ const Page_Search = (props) => {
             }
         })
     }
+    const trashQuery = useQuery({
+        queryKey: ['trash'],
+        queryFn: () => '',
+        // refetchOnMount: false,
+        // refetchOnWindowFocus: false,
+        // refetchOnReconnect: false
+    })
     async function handleChangeDomain(value) {
         queryClient.setQueryData(['searchOption'], oldSearchOption => {
             return {
@@ -637,7 +646,7 @@ const Page_Search = (props) => {
             render: (obj) => {
                 let displayArray = []
                 let extendArray = []
-                let limit = 3
+                let limit = 2
                 if (obj.metadata.length > limit) {
                     displayArray = obj.metadata.slice(0, limit)
                     extendArray = obj.metadata.slice(limit)
@@ -649,7 +658,7 @@ const Page_Search = (props) => {
                     <Link to='#'>
                         <div style={{ display: 'flex', columnGap: 16 }}>
                             <div style={{ minWidth: 100, minHeighteight: 140 }}>
-                                <Document file={obj.file_url}>
+                                <Document file={'/file/01-cp.signed.pdf'}>
                                     <Page width={100} pageNumber={1} />
                                 </Document>
                             </div>
@@ -666,9 +675,9 @@ const Page_Search = (props) => {
                                 }}>
                                     {obj.content}
                                 </Typography.Paragraph> */}
-                                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
                                     <MetadataList metaArray={displayArray} />
-                                    <Popover placement="bottom" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
+                                    <Popover placement="bottomLeft" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
                                         <Button icon={<EllipsisOutlined />} size='small' shape="round" style={{ height: 14, display: 'flex', alignItems: 'center' }} />
                                     </Popover>
                                 </div>
@@ -689,27 +698,27 @@ const Page_Search = (props) => {
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0 }}>Owner</Typography.Title>
                                 <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                    <Avatar src={obj.owner.avatar} />
-                                    <Typography.Text>{obj.owner.full_name}</Typography.Text>
+                                    <Avatar src={'/file/avatar.png'} />
+                                    <Typography.Text>{'Nguyen Nam Kha'}</Typography.Text>
                                 </div>
                             </div>
                         </Col>
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>File size</Typography.Title>
-                                <Typography.Text>{obj.file_size}</Typography.Text>
+                                <Typography.Text>{'5 MB'}</Typography.Text>
                             </div>
                         </Col>
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>Created date</Typography.Title>
-                                <Typography.Text>{new Date(obj.created_date).toLocaleDateString()}</Typography.Text>
+                                <Typography.Text>01-01-2024</Typography.Text>
                             </div>
                         </Col>
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>Updated date</Typography.Title>
-                                <Typography.Text>{new Date(obj.updated_date).toLocaleDateString()}</Typography.Text>
+                                <Typography.Text>01-01-2024</Typography.Text>
                             </div>
                         </Col>
                     </Row>
@@ -770,6 +779,7 @@ const Page_Search = (props) => {
                         </Typography.Title>
                         <Select
                             value={searchOption?.search_scope}
+                            // value={"ALL"}
                             style={{
                                 width: 200,
                             }}
@@ -825,7 +835,7 @@ const Page_Search = (props) => {
                                     onChange={handleChangeDomain}
                                     options={[
                                         {
-                                            value: 'phapluat',
+                                            value: 'legal',
                                             label:
                                                 <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                                                     <FontAwesomeIcon icon={icon({ name: 'scale-balanced', style: 'solid' })} />
@@ -924,7 +934,7 @@ const Page_Search = (props) => {
                                     onChange={handleChangeMethod}
                                     options={[
                                         {
-                                            value: 'full-text',
+                                            value: 'fulltext',
                                             label:
                                                 <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                                                     <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />
@@ -1008,7 +1018,7 @@ const Page_Search = (props) => {
                         <Col span={24}>
                             <Table
                                 columns={searchResultsColumn}
-                                rowKey={(record) => record.document_id}
+                                rowKey={(record) => record.metadata[0].id}
                                 dataSource={searchResult.documents}
                                 pagination={{
                                     ...searchResult.pagination,
@@ -1022,6 +1032,15 @@ const Page_Search = (props) => {
                             />
                         </Col>
                     </Row>
+                    {/* <Input
+                        value={queryClient.getQueryData(['trash'])}
+                        onChange={(e) => {
+                        let newVal = e.target.value
+                        queryClient.setQueryData(['trash'], newVal)
+                        }}
+                        // value={test}
+                        // onChange={(e) => { setTest(e.target.value) }}
+                    /> */}
                 </Container>
             </>
             : null

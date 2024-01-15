@@ -38,8 +38,8 @@ const App = () => {
         related: {},
         narrower: {},
         metadata: [],
-        method: 'full-text',
-        domain: 'phapluat',
+        method: 'fulltext',
+        domain: 'legal',
         pagination: {
           current: 1,
           pageSize: 10,
@@ -74,14 +74,12 @@ const App = () => {
     mutationFn: getSearchResult,
     onSuccess: (response) => {
       const searchOption = queryClient.getQueryData(['searchOption'])
-      console.log('searchOption in searchMutation', searchOption)
       let searchResult = {
         ...response
       }
       Object.entries(searchOption.broader).forEach(([oriTerm, extendArray], index) => {
         if (searchResult.broader.hasOwnProperty(oriTerm)) {
           extendArray.forEach((extendTerm, index) => {
-            console.log('extendTerm in broader', extendTerm)
             searchResult = {
               ...searchResult,
               broader: {
@@ -89,7 +87,6 @@ const App = () => {
                 [oriTerm]: searchResult.broader[oriTerm].filter(newItem => newItem != extendTerm)
               }
             }
-            console.log('searchResult', searchResult)
           })
         }
       })
