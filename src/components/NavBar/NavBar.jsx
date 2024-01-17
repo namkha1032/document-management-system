@@ -1,6 +1,7 @@
 // import packages
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import { useNavigate, useLocation, Link, redirect } from 'react-router-dom';
+import { useContext } from 'react';
 // import my components
 // import ui components
 import {
@@ -28,6 +29,10 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { getSearchResult } from '../../apis/searchApi';
 // import hooks
 // import functions
+// import context
+import ModeThemeContext from '../../context/ModeThemeContext';
+import SearchOptionContext from '../../context/SearchOptionContext';
+import SearchResultContext from '../../context/SearchResultContext';
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 const AdvancedSearchButton = (props) => {
     const navigate = useNavigate()
@@ -50,23 +55,29 @@ const NavBar = (props) => {
     const antdTheme = theme.useToken()
     let queryClient = useQueryClient()
     const navigate = useNavigate()
+    let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
+    let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
     // const location = useLocation()
 
     async function handleSearch(value) {
         // if (!location.pathname.includes('search')) {
         navigate('/search')
         // }
-        let oldSearchOption = queryClient.getQueryData(['searchOption'])
         let newSearchOption = {
-            ...oldSearchOption,
+            ...searchOption,
             original_query: value,
             pagination: {
                 current: 1,
-                pageSize: oldSearchOption.pagination.pageSize
+                pageSize: searchOption.pagination.pageSize
             }
         }
-        await queryClient.setQueryData(['searchOption'], newSearchOption)
-        await searchMutation.mutateAsync(newSearchOption)
+        // await queryClient.setQueryData(['searchOption'], newSearchOption)
+        // await searchMutation.mutateAsync(newSearchOption)
+        await dispatchSearchResult({ type: 'loading', payload: true })
+        let newSearchResult = await getSearchResult(newSearchOption)
+        await dispatchSearchResult({ type: 'search', payload: { newSearchResult, newSearchOption } })
+        await dispatchSearchOption({ type: 'update', payload: newSearchOption })
+        await dispatchSearchResult({ type: 'loading', payload: false })
     }
     async function handleRemoveKeyword(e, extendTerm, oriTerm, type) {
         e.preventDefault()
@@ -169,9 +180,8 @@ const NavBar = (props) => {
         })
     }
     // logics
-    let modeTheme = queryClient.getQueryData(['modeTheme'])
-    let searchOption = queryClient.getQueryData(['searchOption'])
-    // let searchOption = searchOptionQuery.data
+    let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
+    // let searchOption = queryClient.getQueryData(['searchOption'])
     // HTMl
     return (
         searchOption
@@ -225,17 +235,15 @@ const NavBar = (props) => {
                         </Input.Search>
                     </Col>
                     <Col md={5} style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", columnGap: 10 }}>
-                        <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"}
+                        <Switch checked={modeTheme == "dark"}
                             checkedChildren={<FontAwesomeIcon icon={icon({ name: 'moon', style: 'solid' })} />}
                             unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
                             onClick={(e) => {
                                 if (e) {
-                                    window.localStorage.setItem("modeTheme", "dark")
-                                    queryClient.setQueryData(['modeTheme'], "dark")
+                                    dispatchModeTheme({ type: "dark" })
                                 }
                                 else {
-                                    window.localStorage.setItem("modeTheme", "light")
-                                    queryClient.setQueryData(['modeTheme'], "light")
+                                    dispatchModeTheme({ type: "light" })
                                 }
                             }} />
                         <Typography.Text>Peter Parker</Typography.Text>

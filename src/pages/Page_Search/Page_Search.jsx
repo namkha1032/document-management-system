@@ -1,6 +1,6 @@
 // import packages
 import { useQueryClient, useMutation, useMutationState, useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -48,6 +48,9 @@ import { getSearchResult } from "../../apis/searchApi"
 import { hover } from "@testing-library/user-event/dist/hover"
 // import hooks
 // import functions
+// import context
+import SearchOptionContext from "../../context/SearchOptionContext";
+import SearchResultContext from "../../context/SearchResultContext";
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -508,7 +511,7 @@ const MetaForm = (props) => {
 const MetadataList = (props) => {
     const metaArray = props.metaArray
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', width: 600 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', width: 600 }}>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', rowGap: 8 }}>
                 {metaArray.map((item, index) => {
                     return (
@@ -528,11 +531,14 @@ const Page_Search = (props) => {
     const searchMutation = props.searchMutation
     const [inp, setInp] = useState('')
     const [test, setTest] = useState('')
+    // const [loading, setLoading] = useState(false)
     const queryClient = useQueryClient()
     let antdTheme = theme.useToken()
-    const searchOption = queryClient.getQueryData(['searchOption'])
-    const searchResult = queryClient.getQueryData(['searchResult'])
-    console.log('searchResult', JSON.stringify(searchResult))
+    // const searchOption = queryClient.getQueryData(['searchOption'])
+    // const searchResult = queryClient.getQueryData(['searchResult'])
+    let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
+    let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+    console.log('searchResult in Page_Search', searchResult)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         await queryClient.setQueryData(['searchResult'], oldSearchResult => {
             const newBroader = type == 'broader'
@@ -756,8 +762,13 @@ const Page_Search = (props) => {
                 pageSize: pageSize
             }
         }
-        queryClient.setQueryData(['searchOption'], newSearchOption)
-        await searchMutation.mutateAsync(newSearchOption)
+        // queryClient.setQueryData(['searchOption'], newSearchOption)
+        // await searchMutation.mutateAsync(newSearchOption)
+        await dispatchSearchResult({ type: 'loading', payload: true })
+        let newSearchResult = await getSearchResult(newSearchOption)
+        await dispatchSearchResult({ type: 'search', payload: { newSearchResult, newSearchOption } })
+        await dispatchSearchOption({ type: 'update', payload: newSearchOption })
+        await dispatchSearchResult({ type: 'loading', payload: false })
     }
     // logic
     let treeHeight = 0
@@ -768,8 +779,9 @@ const Page_Search = (props) => {
     const rightTerm = 18
 
     // HTMl
+    // return null
     return (
-        searchOption
+        searchOption && searchResult
             ?
             <>
                 <Bread title={
@@ -779,7 +791,6 @@ const Page_Search = (props) => {
                         </Typography.Title>
                         <Select
                             value={searchOption?.search_scope}
-                            // value={"ALL"}
                             style={{
                                 width: 200,
                             }}
@@ -1018,15 +1029,16 @@ const Page_Search = (props) => {
                         <Col span={24}>
                             <Table
                                 columns={searchResultsColumn}
-                                rowKey={(record) => record.metadata[0].id}
+                                rowKey={(record) => record.document_id}
+                                // rowKey={(record) => record.metadata[0].id}
                                 dataSource={searchResult.documents}
                                 pagination={{
                                     ...searchResult.pagination,
                                     position: ['bottomCenter']
                                 }}
                                 // pagination={false}
-                                loading={searchMutation.isPending}
-                                onChange={handleTableChange}
+                                loading={searchResult.loading}
+                                // onChange={handleTableChange}
                                 showHeader={false}
                                 style={{ borderRadius: 8 }}
                             />

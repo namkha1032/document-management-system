@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import {
     AppstoreOutlined,
@@ -46,6 +46,8 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { useSearchParams, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import FolderTree from '../FolderTree/FolderTree';
+// import context
+import ModeThemeContext from '../../context/ModeThemeContext';
 // //////////////////////////////////////////////////////
 const { Text, Title, Paragraph } = Typography
 const { Header, Content, Footer, Sider } = Layout;
@@ -55,7 +57,7 @@ const SideBar = (props) => {
     const [collapsed, setCollapsed] = useState(false);
     const [openFolderTree, setOpenFolderTree] = useState([])
     let queryClient = useQueryClient()
-    let modeTheme = queryClient.getQueryData(['modeTheme'])
+    let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
     const antdTheme = theme.useToken()
     const location = useLocation()
     const navigate = useNavigate()
@@ -90,24 +92,24 @@ const SideBar = (props) => {
     )
     useEffect(() => {
         // if (location) {
-            if (location.pathname.includes("company")) {
-                queryClient.setQueryData(['sidebarItem'], '1')
-            }
-            else if (location.pathname.includes("my-documents")) {
-                queryClient.setQueryData(['sidebarItem'], '2')
-            }
-            else if (location.pathname.includes("shared-documents")) {
-                queryClient.setQueryData(['sidebarItem'], '3')
-            }
-            else if (location.pathname.includes("search")) {
-                queryClient.setQueryData(['sidebarItem'], '4')
-            }
-            else if (location.pathname.includes("trash")) {
-                queryClient.setQueryData(['sidebarItem'], '5')
-            }
-            else {
-                queryClient.setQueryData(['sidebarItem'], '0')
-            }
+        if (location.pathname.includes("company")) {
+            queryClient.setQueryData(['sidebarItem'], '1')
+        }
+        else if (location.pathname.includes("my-documents")) {
+            queryClient.setQueryData(['sidebarItem'], '2')
+        }
+        else if (location.pathname.includes("shared-documents")) {
+            queryClient.setQueryData(['sidebarItem'], '3')
+        }
+        else if (location.pathname.includes("search")) {
+            queryClient.setQueryData(['sidebarItem'], '4')
+        }
+        else if (location.pathname.includes("trash")) {
+            queryClient.setQueryData(['sidebarItem'], '5')
+        }
+        else {
+            queryClient.setQueryData(['sidebarItem'], '0')
+        }
         // }
     }, [location])
     const items = [
@@ -140,7 +142,6 @@ const SideBar = (props) => {
     return (
         <Sider
             style={{
-                // background: queryClient.getQueryData(['modeTheme']) == "light" ? antdTheme.token.colorBgBase : "#001529" 
                 background: antdTheme.token.colorBgContainer
             }}
             width="13%"

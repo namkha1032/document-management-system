@@ -8,9 +8,12 @@ import {
     Affix
 } from "antd"
 import { useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useState, useContext } from "react"
+// import context
+import ModeThemeContext from "../context/ModeThemeContext"
 const PageColor = () => {
     let queryClient = useQueryClient()
+    let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
     let colorArray = []
     let controlArray = []
     const antdTheme = theme.useToken()
@@ -38,14 +41,12 @@ const PageColor = () => {
         <>
 
             <Affix offsetTop={10}>
-                <Switch checked={queryClient.getQueryData(['modeTheme']) == "dark"} onClick={(e) => {
+                <Switch checked={modeTheme == "dark"} onClick={(e) => {
                     if (e) {
-                        window.localStorage.setItem("modeTheme", "dark")
-                        queryClient.setQueryData(['modeTheme'], "dark")
+                        dispatchModeTheme({ type: 'dark' })
                     }
                     else {
-                        window.localStorage.setItem("modeTheme", "light")
-                        queryClient.setQueryData(['modeTheme'], "light")
+                        dispatchModeTheme({ type: 'light' })
                     }
                 }} />
             </Affix>

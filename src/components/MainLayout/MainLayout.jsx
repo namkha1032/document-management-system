@@ -18,7 +18,6 @@ const MainLayout = (props) => {
     // hooks
     const antdTheme = theme.useToken()
     let queryClient = useQueryClient()
-    let modeTheme = queryClient.getQueryData(['modeTheme'])
     return (
         <Layout style={{
             minHeight: '100vh',

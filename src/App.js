@@ -7,10 +7,10 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { ConfigProvider, theme } from 'antd';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import Page_Color from './pages/Page_Color';
 import MainLayout from './components/MainLayout/MainLayout';
+import { useContext } from 'react';
 // import pages
 import PageTest from './pages/PageTest';
 import FolderTree from './components/FolderTree/FolderTree';
@@ -23,10 +23,12 @@ import Page_Search from './pages/Page_Search/Page_Search';
 import Page_Upload from './pages/Page_Upload/Page_Upload';
 // import apis
 import { getSearchResult } from './apis/searchApi';
-
-
-
+// import context
+import { ModeThemeProvider } from './context/ModeThemeContext';
+import { SearchOptionProvider } from './context/SearchOptionContext';
+import { SearchResultProvider } from './context/SearchResultContext';
 const App = () => {
+  let modeTheme = window.localStorage.getItem("modeTheme")
   const queryClient = useQueryClient()
   // search
   let searchOptionQuery = useQuery({
@@ -196,34 +198,14 @@ const App = () => {
       element: <Page_Color />
     }
   ]);
-  // --------------------dark light mode---------------------
-  let modeTheme = window.localStorage.getItem("modeTheme")
-  const modeQuery = useQuery({
-    queryKey: ['modeTheme'],
-    queryFn: () => {
-      if (modeTheme == "dark") {
-        return "dark"
-      }
-      else if (modeTheme == "light") {
-        return "light"
-      }
-      else {
-        window.localStorage.setItem("modeTheme", "light")
-        return "light"
-      }
-    },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false
-  })
-  const algo = {
-    algorithm: queryClient.getQueryData(['modeTheme']) == "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm
-  }
-  // --------------------dark light mode---------------------
   return (
-    <ConfigProvider theme={algo}>
-      <RouterProvider router={router} />
-    </ConfigProvider>
+    <ModeThemeProvider>
+      <SearchOptionProvider>
+        <SearchResultProvider>
+          <RouterProvider router={router} />
+        </SearchResultProvider>
+      </SearchOptionProvider>
+    </ModeThemeProvider>
   );
 };
 
