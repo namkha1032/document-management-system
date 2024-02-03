@@ -4,14 +4,18 @@ import {
     Image,
     Card,
     Form,
-    Input
+    Input,
+    theme
 } from "antd"
 import {
     AppstoreOutlined,
     UserOutlined,
     LockOutlined
 } from '@ant-design/icons';
+import ModeThemeContext from "../../context/ModeThemeContext";
 const Page_Login = () => {
+    const antdTheme = theme.useToken()
+    let loginColor = antdTheme.token.colorFill
     const handleLogin = (values) => {
         console.log('Received values of form: ', values);
     };
@@ -19,7 +23,7 @@ const Page_Login = () => {
         <div style={{
             width: "100%",
             height: "100%",
-            backgroundImage: "url('https://preview.redd.it/fn0542d6gaw31.jpg?auto=webp&s=61dc4dffb31ef492ff08aa7aa19ab52c12b7cb56')",
+            backgroundImage: "url('/file/login.png')",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "fixed",
             backgroundSize: "cover",
@@ -28,8 +32,13 @@ const Page_Login = () => {
             alignItems: "center"
         }}>
             <Card style={{
-                width: "30%",
-                boxShadow: "0px 0px 50px 10px"
+                width: "25%",
+                boxShadow: "0px 0px 20px 1px",
+                // opacity: "0.6",
+                // backgroundColor: `${loginColor}`,
+                // backgroundColor: `rgba(255,255,255,0.4)`,
+                // backdropFilter: `blur(0px)`,
+                // border: "0px"
             }}>
                 <Typography.Title level={1} style={{
                     marginTop: 0,
@@ -38,12 +47,15 @@ const Page_Login = () => {
                     Login
                 </Typography.Title>
                 <Form
+                    name="normal_login"
+                    className="login-form"
                     initialValues={{
                         remember: true,
                     }}
                     onFinish={handleLogin}
                 >
                     <Form.Item
+                        name="username"
                         rules={[
                             {
                                 required: true,
@@ -51,7 +63,7 @@ const Page_Login = () => {
                             },
                         ]}
                     >
-                        <Input prefix={<UserOutlined />} placeholder="Username" />
+                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
                     </Form.Item>
                     <Form.Item
                         name="password"
@@ -68,13 +80,12 @@ const Page_Login = () => {
                             placeholder="Password"
                         />
                     </Form.Item>
+                    <a className="login-form-forgot" href="">
+                        Forgot password
+                    </a>
+
                     <Form.Item>
-                        <a href="">
-                            Forgot password
-                        </a>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button style={{ width: "100%" }} type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit" className="login-form-button" style={{ width: "100%" }}>
                             Log in
                         </Button>
                     </Form.Item>

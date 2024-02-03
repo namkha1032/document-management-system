@@ -185,13 +185,14 @@ const SideBar = (props) => {
                     fontSize: antdTheme.token.fontSizeHeading3, whiteSpace: "nowrap",
                     display: collapsed ? "none" : "block"
                 }}>
-                    xCorp
+                    DMS
                 </Text>
             </div>
             <Menu theme={modeTheme}
                 style={{
                     border: 0,
-                    background: antdTheme.token.colorBgContainer
+                    background: antdTheme.token.colorBgContainer,
+                    padding: "0 8px"
                 }}
                 selectedKeys={[queryClient.getQueryData(['sidebarItem'])]}
                 mode="inline" items={items}

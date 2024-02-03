@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import {
     AppstoreOutlined,
@@ -13,8 +14,10 @@ import {
     Button
 } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
-
+import GridListContext from '../../context/GridListContext';
 const Bread = (props) => {
+    let [gridList, dispatchGridList] = useContext(GridListContext)
+    console.log('gridList: ', gridList)
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     return (
@@ -32,13 +35,15 @@ const Bread = (props) => {
                     Upload
                 </Button>
                 <Segmented
+                    value={gridList}
+                    onChange={(value) => dispatchGridList({ type: value })}
                     options={[
                         {
-                            value: 'List',
+                            value: 'list',
                             icon: <BarsOutlined />
                         },
                         {
-                            value: 'Kanban',
+                            value: 'grid',
                             icon: <AppstoreOutlined />
                         },
                     ]}

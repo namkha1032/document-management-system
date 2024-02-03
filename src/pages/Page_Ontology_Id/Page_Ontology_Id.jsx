@@ -32,7 +32,7 @@ const Page_Ontology_Id = () => {
         edges: {
             color: modeTheme == "light" ? "#000000" : "#FFFFFF",
         },
-        height: "500px",
+        height: "100%",
     };
 
     const events = {

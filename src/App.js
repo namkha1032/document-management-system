@@ -29,6 +29,7 @@ import { getSearchResult } from './apis/searchApi';
 import { ModeThemeProvider } from './context/ModeThemeContext';
 import { SearchOptionProvider } from './context/SearchOptionContext';
 import { SearchResultProvider } from './context/SearchResultContext';
+import { GridListProvider } from './context/GridListContext';
 const App = () => {
   let modeTheme = window.localStorage.getItem("modeTheme")
   const queryClient = useQueryClient()
@@ -212,7 +213,9 @@ const App = () => {
     <ModeThemeProvider>
       <SearchOptionProvider>
         <SearchResultProvider>
-          <RouterProvider router={router} />
+          <GridListProvider>
+            <RouterProvider router={router} />
+          </GridListProvider>
         </SearchResultProvider>
       </SearchOptionProvider>
     </ModeThemeProvider>

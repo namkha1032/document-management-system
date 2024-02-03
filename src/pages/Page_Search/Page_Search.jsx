@@ -663,7 +663,7 @@ const Page_Search = (props) => {
                 return (
                     <Link to='#'>
                         <div style={{ display: 'flex', columnGap: 16 }}>
-                            <div style={{ minWidth: 100, minHeighteight: 140 }}>
+                            <div style={{ minWidth: 100, minHeight: 140 }}>
                                 <Document file={'/file/01-cp.signed.pdf'}>
                                     <Page width={100} pageNumber={1} />
                                 </Document>
