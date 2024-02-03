@@ -20,7 +20,8 @@ import {
     UserOutlined,
     TeamOutlined,
     DeleteOutlined,
-    BarsOutlined
+    BarsOutlined,
+    ShareAltOutlined
 } from '@ant-design/icons';
 import {
     Breadcrumb,
@@ -137,6 +138,11 @@ const SideBar = (props) => {
             key: '5',
             icon: <DeleteOutlined />,
             label: "Trash"
+        },
+        {
+            key: '6',
+            icon: <ShareAltOutlined />,
+            label: "Ontology"
         }
     ]
     return (
@@ -183,7 +189,10 @@ const SideBar = (props) => {
                 </Text>
             </div>
             <Menu theme={modeTheme}
-                style={{ border: 0 }}
+                style={{
+                    border: 0,
+                    background: antdTheme.token.colorBgContainer
+                }}
                 selectedKeys={[queryClient.getQueryData(['sidebarItem'])]}
                 mode="inline" items={items}
                 onSelect={(event) => {
@@ -206,6 +215,10 @@ const SideBar = (props) => {
                     else if (event.key == '5') {
                         // queryClient.setQueryData(['sidebarItem'], '5')
                         navigate("/trash")
+                    }
+                    else if (event.key == '6') {
+                        // queryClient.setQueryData(['sidebarItem'], '5')
+                        navigate("/ontology/1")
                     }
                 }}
             />

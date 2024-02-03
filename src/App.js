@@ -21,6 +21,8 @@ import Page_Shared_Documents from './pages/Page_Shared_Documents/Page_Shared_Doc
 import Page_Trash from './pages/Page_Trash/Page_Trash';
 import Page_Search from './pages/Page_Search/Page_Search';
 import Page_Upload from './pages/Page_Upload/Page_Upload';
+import Page_Ontology_Id from './pages/Page_Ontology_Id/Page_Ontology_Id';
+import Page_Login from './pages/Page_Login/Page_Login';
 // import apis
 import { getSearchResult } from './apis/searchApi';
 // import context
@@ -190,12 +192,20 @@ const App = () => {
         {
           path: "upload",
           element: <Page_Upload />,
+        },
+        {
+          path: "ontology/:id",
+          element: <Page_Ontology_Id />,
         }
       ]
     },
     {
       path: '/color',
       element: <Page_Color />
+    },
+    {
+      path: '/login',
+      element: <Page_Login />
     }
   ]);
   return (
