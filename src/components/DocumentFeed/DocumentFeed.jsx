@@ -23,7 +23,7 @@ const DocumentFeed = () => {
     useEffect(() => {
         let documentObj = {
             document_id: 1,
-            document_title: "Nghị quyết abc",
+            document_title: "Nghị quyết 19/NQ-CP",
             document_size: "1MB",
             document_owner: {
                 owner_name: "Nam Kha",

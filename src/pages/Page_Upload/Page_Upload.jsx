@@ -50,8 +50,8 @@ const PdfUploader = () => {
         await delay(1000)
         let newForm = new FormData()
         newForm.append('pdf_file', file)
-        const rawResponse = await axios.post(`https://f637-2402-800-6370-9187-a4ff-1ff8-9f7f-2fb1.ngrok-free.app/api/ocr?template_type=${template}`, newForm)
-        // const rawResponse = await axios.get('http://localhost:3000/data/metadata.json')
+        // const rawResponse = await axios.post(`https://f637-2402-800-6370-9187-a4ff-1ff8-9f7f-2fb1.ngrok-free.app/api/ocr?template_type=${template}`, newForm)
+        const rawResponse = await axios.get('http://localhost:3000/data/metadata.json')
         const data = await rawResponse.data;
         setMetadata(data.metadata);
         setShowMetadataTab(true);
