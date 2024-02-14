@@ -2,7 +2,7 @@ import axios from "axios";
 import delay from "../functions/delay";
 
 const domain = 'http://localhost:3000'
-async function getSearchResult(searchData) {
+export async function getSearchResult(searchData) {
     let newSearchData = {
         ...searchData,
         metadata: JSON.stringify(searchData.metadata)
@@ -44,5 +44,3 @@ async function getSearchResult(searchData) {
         return newResponse
     }
 }
-
-export { getSearchResult }

@@ -5,7 +5,8 @@ const Page_Trash = () => {
     console.log('---------------render Page_Trash----------------')
     return (
         <>
-            <Bread title={"Trash"} />
+            {/* <Bread title={"Trash"} /> */}
+            <Typography.Text>Page trash</Typography.Text>
         </>
     )
 }

@@ -219,7 +219,7 @@ const SideBar = (props) => {
                     }
                     else if (event.key == '6') {
                         // queryClient.setQueryData(['sidebarItem'], '5')
-                        navigate("/ontology/1")
+                        navigate("/ontology")
                     }
                 }}
             />
