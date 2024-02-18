@@ -98,7 +98,11 @@ const DocumentFeed = () => {
                     <Row gutter={[16, 16]}>
                         {documentResult.documents.map((item, index) =>
                             <Col md={4} key={index}>
-                                <Card bodyStyle={{ padding: 16 }}>
+                                <Card styles={{
+                                    body: {
+                                        padding: 16
+                                    }
+                                }}>
                                     <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
                                         <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
                                         <Typography.Title level={5} style={{ margin: 0 }}>{item.document_title}</Typography.Title>

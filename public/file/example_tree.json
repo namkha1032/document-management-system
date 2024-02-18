@@ -1,0 +1,19 @@
+{
+    "name": "Node A",
+    "children": [
+        {
+            "name": "Node B",
+            "children": [
+                {
+                    "name": "Node D"
+                },
+                {
+                    "name": "Node E"
+                }
+            ]
+        },
+        {
+            "name": "Node C"
+        }
+    ]
+}

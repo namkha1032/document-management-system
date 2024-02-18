@@ -406,7 +406,11 @@ const MetaForm = (props) => {
         if (myObj.hasOwnProperty('$and') || myObj.hasOwnProperty('$or')) {
             return (
                 <Card type="inner" size={'small'}
-                    headStyle={{ backgroundColor: antdTheme.token.colorBgLayout }}
+                    styles={{
+                        header: {
+                            backgroundColor: antdTheme.token.colorBgLayout
+                        }
+                    }}
                     style={{
                         border: `1px solid ${antdTheme.token.colorTextQuaternary}`,
                         minWidth: 482,

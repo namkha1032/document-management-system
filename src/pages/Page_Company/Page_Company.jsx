@@ -5,7 +5,6 @@ const Page_Company = () => {
     console.log('---------------render Page_Company----------------')
     return (
         <>
-            <Bread title={"Company"} />
             <DocumentFeed />
         </>
     )

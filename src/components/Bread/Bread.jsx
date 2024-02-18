@@ -11,18 +11,21 @@ import {
     theme,
     Typography,
     Segmented,
-    Button
+    Button,
+    Space,
 } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import GridListContext from '../../context/GridListContext';
 const Bread = (props) => {
-    console.log("outer: ", props.breadProp)
     let [bread, setBread] = useState([])
     let [gridList, dispatchGridList] = useContext(GridListContext)
     const navigate = useNavigate()
     const { state } = useLocation();
     let breadState = state?.breadState
     let breadProp = props.breadProp
+    let createButtonType = props.createButtonType
+    let CreateOntologyButton = props.CreateOntologyButton
+    let extraComponent = props.extraComponent
     useEffect(() => {
         let checkFlag = true
         for (let i = 0; i < bread.length; i++) {
@@ -35,61 +38,76 @@ const Bread = (props) => {
         }
         if (checkFlag) {
             if (breadState) {
-                console.log("breadState in useEffect: ", breadState)
+                // console.log("breadState in useEffect: ", breadState)
                 setBread(breadState)
             }
             else {
-                console.log("breadProp in useEffect: ", breadProp)
+                // console.log("breadProp in useEffect: ", breadProp)
                 setBread(breadProp)
             }
         }
     }, [breadProp])
     const queryClient = useQueryClient()
     return (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                {bread.map((item, index) =>
-                    <div key={index} style={{ display: "flex", alignItems: "center" }}>
-                        <Button type='text' size='large' style={{ height: "fit-content", padding: 4 }} onClick={() => { navigate(item.path, { state: { breadState: bread.slice(0, index + 1) } }) }}>
-                            <Typography.Title level={2} style={{ margin: 0 }}>
-                                {item.title}
-                            </Typography.Title>
+        <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                {/* <div className='outerdiv' style={{ display: "flex", alignItems: "center" }}> */}
+                <div>
+                    <Space>
+                        {bread.map((item, index) =>
+                            // <div className='innerdiv' key={index} style={{ display: "flex", alignItems: "center" }}>
+                            <Space key={index}>
+                                <Button type='text' size='large' style={{
+                                    height: "fit-content",
+                                    padding: 4
+                                }} onClick={() => { navigate(item.path, { state: { breadState: bread.slice(0, index + 1) } }) }}>
+                                    <Typography.Title level={2} style={{ margin: 0 }}>
+                                        {item.title}
+                                    </Typography.Title>
+                                </Button>
+                                {index < bread.length - 1
+                                    ? <Typography.Title level={2} style={{ margin: 0 }}>
+                                        {">"}
+                                    </Typography.Title>
+                                    : null
+                                }
+                            </Space>
+                            // </div>
+                        )}
+                        {extraComponent}
+                    </Space>
+                </div>
+                {/* </div> */}
+                <Space>
+                    {createButtonType == "document"
+                        ? <Button type="primary" icon={<PlusOutlined />} size={"large"}
+                            onClick={() => {
+                                queryClient.setQueryData(['sidebarItem'], 0)
+                                navigate("/upload")
+                            }}
+                        >
+                            Upload
                         </Button>
-                        {index < bread.length - 1
-                            ? <Typography.Title level={2} style={{ margin: 0 }}>
-                                {">"}
-                            </Typography.Title>
-                            : null
-                        }
-                    </div>
-                )}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
-                <Button type="primary" icon={<PlusOutlined />} size={"large"}
-                    onClick={() => {
-                        queryClient.setQueryData(['sidebarItem'], 0)
-                        navigate("/upload")
-                    }}
-                >
-                    Upload
-                </Button>
-                <Segmented
-                    value={gridList}
-                    onChange={(value) => dispatchGridList({ type: value })}
-                    options={[
-                        {
-                            value: 'list',
-                            icon: <BarsOutlined />
-                        },
-                        {
-                            value: 'grid',
-                            icon: <AppstoreOutlined />
-                        },
-                    ]}
-                />
+                        : CreateOntologyButton
+                    }
+                    <Segmented
+                        value={gridList}
+                        onChange={(value) => dispatchGridList({ type: value })}
+                        options={[
+                            {
+                                value: 'list',
+                                icon: <BarsOutlined />
+                            },
+                            {
+                                value: 'grid',
+                                icon: <AppstoreOutlined />
+                            },
+                        ]}
+                    />
 
-            </div>
-        </div >
+                </Space>
+            </div >
+        </>
     )
 }
 

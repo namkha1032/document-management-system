@@ -1,0 +1,42 @@
+{
+    "nodes": [
+        {
+            "id": "c",
+            "name": "Node C"
+        },
+        {
+            "id": "a",
+            "name": "Node A"
+        },
+        {
+            "id": "d",
+            "name": "Node D"
+        },
+        {
+            "id": "b",
+            "name": "Node B"
+        },
+        {
+            "id": "e",
+            "name": "Node E"
+        }
+    ],
+    "edges": [
+        {
+            "from": "b",
+            "to": "d"
+        },
+        {
+            "from": "b",
+            "to": "e"
+        },
+        {
+            "from": "a",
+            "to": "c"
+        },
+        {
+            "from": "a",
+            "to": "b"
+        }
+    ]
+}

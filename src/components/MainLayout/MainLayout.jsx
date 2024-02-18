@@ -38,7 +38,6 @@ const MainLayout = (props) => {
                     overflowY: "scroll"
                 }}
                 >
-                    {/* <Bread /> */}
                     <Outlet />
                 </Layout.Content>
                 {/* <Footer /> */}

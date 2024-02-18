@@ -87,7 +87,6 @@ const PdfUploader = () => {
     return (
         <>
             {contextHolder}
-            <Bread title="New Document" />
             {/* <Container> */}
             <div className='page_upload' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {!showMetadataTab
