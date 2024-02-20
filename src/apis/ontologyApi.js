@@ -55,3 +55,8 @@ export async function graphToTree(ontology_graph) {
     let response = await axios.post(`http://127.0.0.1:8000/api/ontology/download`, ontology_graph)
     return response.data.data
 }
+
+export async function renameOntology(ontologyId, ontologyName) {
+    let response = await axios.patch(`http://127.0.0.1:8000/api/ontology/renameonto/${ontologyId}`, ontologyName)
+    return response.data.data
+}

@@ -119,6 +119,44 @@ function ontologyReducer(state, action) {
             }
             return newOntology
         }
+        case "renameOntology": {
+            let newOntology = {
+                ...state,
+                name: action.payload.name,
+                url: action.payload.url,
+                nodes: state.nodes.map((node) => {
+                    if (node.id == action.payload.id) {
+                        return {
+                            ...node,
+                            label: action.payload.name
+                        }
+                    }
+                    else {
+                        return node
+                    }
+                }),
+                edges: state.edges.map((edge) => {
+                    if (edge.from == action.payload.id) {
+                        return {
+                            ...edge,
+                            from_label: action.payload.name
+                        }
+                    }
+                    else if (edge.to == action.payload.id) {
+                        return {
+                            ...edge,
+                            to_label: action.payload.name
+                        }
+                    }
+                    else {
+                        return edge
+                    }
+                }),
+                parentOptions: [...action.payload.parentOptions],
+                childrenOptions: [...action.payload.childrenOptions]
+            }
+            return newOntology
+        }
         // /////////////////////////////////////////////////////////////////////////////
         case "triggerLoadingAddNode": {
             let newOntology = {
@@ -169,6 +207,13 @@ function ontologyReducer(state, action) {
             }
             return newOntology
         }
+        case "triggerLoadingRenameOntology": {
+            let newOntology = {
+                ...state,
+                "loadingRenameOntology": !state.loadingRenameOntology
+            }
+            return newOntology
+        }
         default: {
             return action.payload
         }
@@ -191,6 +236,7 @@ const OntologyProvider = (props) => {
         "loadingDeleteParentEdge": false,
         "loadingUpdateNodeName": false,
         "loadingDownload": false,
+        "loadingRenameOntology": false
     })
     return (
         <OntologyContext.Provider value={[ontology, dispatchOntology]}>

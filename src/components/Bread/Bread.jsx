@@ -32,7 +32,7 @@ const Bread = (props) => {
             if (!bread[i].title) {
                 break;
             }
-            if (i == bread.length - 1) {
+            if (i == bread.length - 1 && !breadProp[i].title) {
                 checkFlag = false
             }
         }
@@ -61,12 +61,12 @@ const Bread = (props) => {
                                     height: "fit-content",
                                     padding: 4
                                 }} onClick={() => { navigate(item.path, { state: { breadState: bread.slice(0, index + 1) } }) }}>
-                                    <Typography.Title level={2} style={{ margin: 0 }}>
+                                    <Typography.Title level={2} style={{ margin: 0, fontWeight: index == bread.length - 1 ? "bold" : "normal" }}>
                                         {item.title}
                                     </Typography.Title>
                                 </Button>
                                 {index < bread.length - 1
-                                    ? <Typography.Title level={2} style={{ margin: 0 }}>
+                                    ? <Typography.Title level={2} style={{ margin: 0, fontWeight: "normal" }}>
                                         {">"}
                                     </Typography.Title>
                                     : null

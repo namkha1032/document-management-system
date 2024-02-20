@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Graph from "react-graph-vis";
 import ModeThemeContext from "../../context/ModeThemeContext";
 import OntologyContext from "../../context/OntologyContext";
@@ -13,13 +13,17 @@ import {
     Space,
     Input,
     Tag,
-    Skeleton
+    Skeleton,
+    Empty
 } from "antd"
 import {
     DownloadOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    EditOutlined,
+    CheckOutlined,
+    PlusOutlined,
 } from '@ant-design/icons';
-import { getOntology, addNewNode, graphToTree } from "../../apis/ontologyApi";
+import { getOntology, addNewNode, graphToTree, renameOntology } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
 import CardSelectedNode from "./CardSelectedNode/CardSelectedNode";
 
@@ -29,17 +33,28 @@ const Section_Ontology_Url = () => {
     let [ontology, dispatchOntology] = useContext(OntologyContext)
     let [selectedNode, setSelectedNode] = useState(null)
     let [selectedEdge, setSelectedEdge] = useState(null)
+    let [isRenameOntology, setIsRenameOntology] = useState(false)
+    let [newOntologyName, setNewOntologyName] = useState("")
     let [newNode, setNewNode] = useState("")
     let { ontologyUrl } = useParams()
+    const navigate = useNavigate()
+    const ontologyNameRef = useRef(null)
     useEffect(() => {
         // console.log("USE EFFECT!!!!!!!!!!!!!!!!!!!!!!!!")
         async function fetchData() {
             let result = await getOntology(ontologyUrl)
             dispatchOntology({ type: "setOntology", payload: result })
+            setNewOntologyName(result.name)
         }
         fetchData()
     }, [])
-
+    useEffect(() => {
+        if (isRenameOntology) {
+            ontologyNameRef.current.focus({
+                cursor: 'end',
+            });
+        }
+    }, [isRenameOntology])
     console.log("ontology: ", ontology)
     const graphOptions = {
         "layout": {
@@ -131,6 +146,15 @@ const Section_Ontology_Url = () => {
         URL.revokeObjectURL(url);
         dispatchOntology({ type: "triggerLoadingDownload" })
     }
+    async function handleUpdateOntologyName() {
+        dispatchOntology({ type: "triggerLoadingRenameOntology" })
+        let response = await renameOntology(ontology.ontologyId, { name: newOntologyName })
+        dispatchOntology({ type: "renameOntology", payload: response })
+        setIsRenameOntology(false)
+        navigate(`/ontology/${response.url}`)
+        setSelectedNode((oldNode) => JSON.parse(JSON.stringify(oldNode)))
+        dispatchOntology({ type: "triggerLoadingRenameOntology" })
+    }
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: "0 1 auto" }}>
@@ -167,35 +191,68 @@ const Section_Ontology_Url = () => {
                                 <Col md={8} style={{ display: "flex", flexDirection: "column", rowGap: 16, height: "100%" }}>
                                     <Card style={{ flex: "0 1 auto" }}>
                                         <div style={{ display: "flex", flexDirection: "column", rowGap: 16, justifyContent: "space-between" }}>
-                                            <Space>
-                                                <Typography.Title level={3} style={{ margin: 0 }}>
-                                                    {ontology.name}
-                                                </Typography.Title>
-                                                <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"green"}>{ontology.nodes.length} nodes</Tag>
-                                                <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"cyan"}>{ontology.edges.length} edges</Tag>
-                                            </Space>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <>
+                                                    {
+                                                        isRenameOntology
+                                                            ? <Space.Compact onBlur={(e) => {
+                                                                if (e.relatedTarget && e.relatedTarget.tagName === 'BUTTON') {
+                                                                    return;
+                                                                }
+                                                                setIsRenameOntology(false)
+                                                                setNewOntologyName(ontology.name)
+                                                            }}>
+                                                                <Input size="large" value={newOntologyName} ref={ontologyNameRef} onChange={(e) => { setNewOntologyName(e.target.value) }} />
+                                                                <Button
+                                                                    size="large"
+                                                                    onClick={() => { handleUpdateOntologyName() }}
+                                                                    loading={ontology.loadingRenameOntology}
+                                                                    disabled={newOntologyName == ontology.name}
+                                                                    icon={<CheckOutlined />} />
+                                                            </Space.Compact>
+                                                            : <Space onClick={() => {
+                                                                setIsRenameOntology(true)
+                                                            }}>
+                                                                <Typography.Title level={3} style={{ margin: 0 }}>
+                                                                    {ontology.name}
+                                                                </Typography.Title>
+                                                                <Typography.Title level={3} style={{ margin: 0 }}>
+                                                                    <EditOutlined />
+                                                                </Typography.Title>
+                                                            </Space>
+                                                    }
+                                                </>
+                                                <Space>
+                                                    <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"green"}>{ontology.nodes.length} nodes</Tag>
+                                                    <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"cyan"}>{ontology.edges.length} edges</Tag>
+                                                </Space>
+                                            </div>
                                             <Space.Compact
                                                 style={{
                                                     width: '100%',
                                                 }}
                                             >
-                                                <Input value={newNode} onChange={(e) => setNewNode(e.target.value)} />
-                                                <Button loading={ontology.loadingAddNode} disabled={newNode ? false : true} onClick={() => handleAddNode()}>Add new node</Button>
+                                                <Input placeholder="Enter node name..." value={newNode} onChange={(e) => setNewNode(e.target.value)} />
+                                                <Button icon={<PlusOutlined />} loading={ontology.loadingAddNode} disabled={newNode ? false : true} onClick={() => handleAddNode()}>Add node</Button>
                                             </Space.Compact>
                                         </div>
                                     </Card>
                                     {selectedNode
                                         ? <CardSelectedNode selectedNode={selectedNode} setSelectedNode={setSelectedNode} />
-                                        : null}
-                                    {selectedEdge
-                                        ? <Card title={"Selected Edge"}>
-                                            <Typography.Text>From: </Typography.Text>
-                                            <Typography.Text>{selectedEdge.from_label} </Typography.Text>
-                                            <br />
-                                            <Typography.Text>To: </Typography.Text>
-                                            <Typography.Text>{selectedEdge.to_label} </Typography.Text>
-                                        </Card>
-                                        : null}
+                                        : (selectedEdge
+                                            ? <Card title={"Selected Edge"}>
+                                                <Typography.Text>From: </Typography.Text>
+                                                <Typography.Text>{selectedEdge.from_label} </Typography.Text>
+                                                <br />
+                                                <Typography.Text>To: </Typography.Text>
+                                                <Typography.Text>{selectedEdge.to_label} </Typography.Text>
+                                            </Card>
+                                            : <div style={{ flex: "1 1 auto", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                                <Empty image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                                                    description={<Typography.Text>Please select a node or an edge to start editing</Typography.Text>} />
+                                            </div>
+                                        )
+                                    }
                                 </Col>
                             </Row>
                         </div>

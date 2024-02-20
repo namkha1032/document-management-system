@@ -145,7 +145,7 @@ const CardSelectedNode = (props) => {
         let newNode = await updateNodeName(selectedNode.id, { name: nodeName })
         dispatchOntology({ type: "updateNodeName", payload: newNode })
         setIsRename(false)
-        setNodeName("")
+        // setNodeName("")
         setSelectedNode({ "id": newNode.id, "label": newNode.label })
         dispatchOntology({ type: "triggerLoadingUpdateNodeName" })
     }
@@ -169,12 +169,16 @@ const CardSelectedNode = (props) => {
                                 icon={<CheckOutlined />} />
                         </Space.Compact>
                         : <Space onClick={() => {
-                            setIsRename(true)
+                            if (!selectedNode.hasOwnProperty("color")) {
+                                setIsRename(true)
+                            }
                         }}>
                             <Typography.Title level={5} style={{ margin: 0 }}>
                                 {selectedNode.label}
                             </Typography.Title>
-                            <EditOutlined />
+                            {!selectedNode.hasOwnProperty("color")
+                                ? <EditOutlined />
+                                : null}
                         </Space>
                 }
             </>
@@ -207,7 +211,7 @@ const CardSelectedNode = (props) => {
                                     options={ontology.parentOptions.filter((opt) => opt.label != selectedNode.label)}
                                     value={newParent}
                                     onChange={(id, node) => { setNewParent(id) }}
-                                    placeholder="Add some parent"
+                                    placeholder="Enter parent name..."
                                     showSearch={{
                                         filter: filterParent
                                     }}
@@ -244,7 +248,7 @@ const CardSelectedNode = (props) => {
                             options={ontology.childrenOptions.filter((opt) => opt.label != selectedNode.label)}
                             value={newChildren}
                             onChange={(id, node) => { setNewChildren(id) }}
-                            placeholder="Add some children"
+                            placeholder="Enter children name..."
                             showSearch={{
                                 filter: filterParent
                             }}
