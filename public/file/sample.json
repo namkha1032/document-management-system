@@ -1,0 +1,27 @@
+{
+    "name": "Ontology thử nghiệm",
+    "children": [
+        {
+            "name": "siu mạnh a",
+            "children": [
+                {
+                    "name": "cực vjp c"
+                },
+                {
+                    "name": "trứng chiên d"
+                }
+            ]
+        },
+        {
+            "name": "dưa hấu b",
+            "children": [
+                {
+                    "name": "bắp cải e"
+                },
+                {
+                    "name": "cà chua f"
+                }
+            ]
+        }
+    ]
+}
