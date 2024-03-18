@@ -16,16 +16,18 @@ import {
 } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import GridListContext from '../../context/GridListContext';
+import Create_Ontology from '../../pages/Page_Ontology/Create_Ontology/Create_Ontology';
 const Bread = (props) => {
+    const { state } = useLocation();
+    let breadState = state?.breadState
+    // -----------props-----------------
+    let breadProp = props.breadProp
+    let createButtonType = props.createButtonType
+    let extraComponent = props.extraComponent
+    // -----------props-----------------
     let [bread, setBread] = useState([])
     let [gridList, dispatchGridList] = useContext(GridListContext)
     const navigate = useNavigate()
-    const { state } = useLocation();
-    let breadState = state?.breadState
-    let breadProp = props.breadProp
-    let createButtonType = props.createButtonType
-    let CreateOntologyButton = props.CreateOntologyButton
-    let extraComponent = props.extraComponent
     useEffect(() => {
         let checkFlag = true
         for (let i = 0; i < bread.length; i++) {
@@ -88,7 +90,7 @@ const Bread = (props) => {
                         >
                             Upload
                         </Button>
-                        : CreateOntologyButton
+                        : <Create_Ontology />
                     }
                     <Segmented
                         value={gridList}

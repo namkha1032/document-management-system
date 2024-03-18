@@ -14,7 +14,8 @@ import {
     Input,
     Tag,
     Skeleton,
-    Empty
+    Empty,
+    Cascader
 } from "antd"
 import {
     DownloadOutlined,
@@ -22,6 +23,7 @@ import {
     EditOutlined,
     CheckOutlined,
     PlusOutlined,
+    SearchOutlined
 } from '@ant-design/icons';
 import { getOntology, addNewNode, graphToTree, renameOntology } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
@@ -35,7 +37,9 @@ const Section_Ontology_Url = () => {
     let [selectedEdge, setSelectedEdge] = useState(null)
     let [isRenameOntology, setIsRenameOntology] = useState(false)
     let [newOntologyName, setNewOntologyName] = useState("")
+    let [graphState, setGraphState] = useState(null)
     let [newNode, setNewNode] = useState("")
+    let [searchNode, setSearchNode] = useState(null)
     let { ontologyUrl } = useParams()
     const navigate = useNavigate()
     const ontologyNameRef = useRef(null)
@@ -120,6 +124,16 @@ const Section_Ontology_Url = () => {
             }
         }
     };
+    function removeAccents(str) {
+        return str.normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    }
+    function filterSearchNode(inputValue, path) {
+        return path.some((option) => {
+            return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+        });
+    }
     async function handleAddNode() {
         dispatchOntology({ type: "triggerLoadingAddNode" })
         let newlyAddedNode = await addNewNode({ name: newNode, ontologyId: ontology.ontologyId })
@@ -155,6 +169,26 @@ const Section_Ontology_Url = () => {
         setSelectedNode((oldNode) => JSON.parse(JSON.stringify(oldNode)))
         dispatchOntology({ type: "triggerLoadingRenameOntology" })
     }
+    async function handleSearchNode(id) {
+        if (id) {
+            const findNode = ontology.nodes.find((node) => node.id == id)
+            await graphState.focus(findNode.id, {
+                scale: 1.0,
+                // offset: {x:Number, y:Number}
+                locked: true,
+                animation: {
+                    duration: 1000,
+                    easingFunction: "easeInOutCubic"
+                }
+            })
+            graphState.selectNodes([findNode.id])
+            setSearchNode(findNode.id)
+            setSelectedNode(findNode)
+        }
+        else {
+            setSearchNode(null)
+        }
+    }
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: "0 1 auto" }}>
@@ -168,7 +202,8 @@ const Section_Ontology_Url = () => {
                         "path": `/ontology/${ontology?.url}`
                     }
                 ]}
-                    extraComponent={<Button loading={ontology.loadingDownload} icon={<DownloadOutlined />} onClick={() => { handleDownloadOntology() }}>Export JSON</Button>} />
+                    extraComponent={<Button loading={ontology.loadingDownload} icon={<DownloadOutlined />} onClick={() => { handleDownloadOntology() }}>Export JSON</Button>}
+                />
             </div>
             {
                 ontology.nodes.length > 0 ?
@@ -185,13 +220,17 @@ const Section_Ontology_Url = () => {
                                             graph={ontology}
                                             options={graphOptions}
                                             events={graphEvents}
+                                            getNetwork={network => {
+                                                //  if you want access to vis.js network api you can set the state in a parent component using this property
+                                                setGraphState(network)
+                                            }}
                                         />
                                     </Card>
                                 </Col>
                                 <Col md={8} style={{ display: "flex", flexDirection: "column", rowGap: 16, height: "100%" }}>
                                     <Card style={{ flex: "0 1 auto" }}>
-                                        <div style={{ display: "flex", flexDirection: "column", rowGap: 16, justifyContent: "space-between" }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <Row gutter={[0, 16]}>
+                                            <Col md={14}>
                                                 <>
                                                     {
                                                         isRenameOntology
@@ -222,23 +261,43 @@ const Section_Ontology_Url = () => {
                                                             </Space>
                                                     }
                                                 </>
+                                            </Col>
+                                            <Col md={10}>
+                                                <Cascader
+                                                    style={{ width: "100%" }}
+                                                    options={ontology.parentOptions}
+                                                    value={searchNode}
+                                                    onChange={(id, node) => {
+                                                        console.log("id: ", id)
+                                                        console.log("node: ", node)
+                                                        handleSearchNode(id)
+                                                    }}
+                                                    placeholder="Search node..."
+                                                    showSearch={{
+                                                        filter: filterSearchNode
+                                                    }}
+                                                />
+                                            </Col>
+                                            <Col md={14}>
                                                 <Space>
                                                     <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"green"}>{ontology.nodes.length} nodes</Tag>
                                                     <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"cyan"}>{ontology.edges.length} edges</Tag>
                                                 </Space>
-                                            </div>
-                                            <Space.Compact
-                                                style={{
-                                                    width: '100%',
-                                                }}
-                                            >
-                                                <Input placeholder="Enter node name..." value={newNode} onChange={(e) => setNewNode(e.target.value)} />
-                                                <Button icon={<PlusOutlined />} loading={ontology.loadingAddNode} disabled={newNode ? false : true} onClick={() => handleAddNode()}>Add node</Button>
-                                            </Space.Compact>
-                                        </div>
+                                            </Col>
+                                            <Col md={10}>
+                                                <Space.Compact
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                >
+                                                    <Input style={{ width: "100%" }} placeholder="Add new node..." value={newNode} onChange={(e) => setNewNode(e.target.value)} />
+                                                    <Button icon={<PlusOutlined />} loading={ontology.loadingAddNode} disabled={newNode ? false : true} onClick={() => handleAddNode()}></Button>
+                                                </Space.Compact>
+                                            </Col>
+                                        </Row>
                                     </Card>
                                     {selectedNode
-                                        ? <CardSelectedNode selectedNode={selectedNode} setSelectedNode={setSelectedNode} />
+                                        ? <CardSelectedNode setSearchNode={setSearchNode} graphState={graphState} selectedNode={selectedNode} setSelectedNode={setSelectedNode} />
                                         : (selectedEdge
                                             ? <Card title={"Selected Edge"}>
                                                 <Typography.Text>From: </Typography.Text>

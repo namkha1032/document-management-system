@@ -52,6 +52,8 @@ const ChildrenRow = (props) => {
 const CardSelectedNode = (props) => {
     const selectedNode = props.selectedNode
     const setSelectedNode = props.setSelectedNode
+    const setSearchNode = props.setSearchNode
+    const graphState = props.graphState
     const nodeNameRef = useRef(null)
     let [ontology, dispatchOntology] = useContext(OntologyContext)
     let [parent, setParent] = useState(null)
@@ -89,9 +91,11 @@ const CardSelectedNode = (props) => {
     }
     async function handleDeleteNode() {
         dispatchOntology({ type: "triggerLoadingDeleteNode" })
+        graphState.releaseNode()
         let deletedNode = await deleteNode(selectedNode.id)
         dispatchOntology({ type: "deleteNode", payload: deletedNode })
         setSelectedNode(null)
+        setSearchNode(null)
         dispatchOntology({ type: "triggerLoadingDeleteNode" })
     }
     async function handleAddParentEdge() {

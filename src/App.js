@@ -24,6 +24,7 @@ import Page_Upload from './pages/Page_Upload/Page_Upload';
 import Page_Ontology from './pages/Page_Ontology/Page_Ontology';
 import Page_Ontology_Url from './pages/Page_Ontology_Url/Page_Ontology_Url';
 import Page_Login from './pages/Page_Login/Page_Login';
+import Page_Document_Id from './pages/Page_Document_Id/Page_Document_Id';
 // import apis
 import { getSearchResult } from './apis/searchApi';
 // import context
@@ -202,6 +203,10 @@ const App = () => {
         {
           path: "ontology/:ontologyUrl",
           element: <Page_Ontology_Url />,
+        },
+        {
+          path: "document/:id",
+          element: <Page_Document_Id />,
         }
       ]
     },
