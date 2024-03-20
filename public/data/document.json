@@ -1,0 +1,38 @@
+{
+    "data": {
+        "document_id": 2,
+        "file_name": "document 2",
+        "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+        "metadata": [
+            {
+                "Document number": "03/2023/TT-BTP"
+            },
+            {
+                "Document type": "THÔNG TƯ"
+            },
+            {
+                "Agency": "BỘ TƯ PHÁP"
+            },
+            {
+                "Document title": "Sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP ngày 04 tháng 01 năm 2022 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Nghị định số 87/2020/NĐ-CP ngày 28 tháng 7 năm 2020 của Chính phủ quy định về Cơ sở dữ liệu hộ tịch điện tử, đăng ký hộ tịch trực tuyến"
+            },
+            {
+                "Issued date": "02/08/2023"
+            },
+            {
+                "Effective date": "02/08/2023"
+            },
+            {
+                "Văn bản liên quan": "['Luật Hộ tịch ngày 20 tháng 11 năm 2014','Nghị định số 98/2022/NĐ-CP','Nghị định số 87/2020/NĐ-CP','Nghị định số 42/2022/NĐ-CP']"
+            }
+        ],
+        "owner": {
+            "full_name": "Nguyen Ngoc Hoa",
+            "avatar": "/file/avatar.png"
+        },
+        "file_url": "/file/sample.pdf",
+        "file_size": "5 MB",
+        "created_date": "2024-01-05T22:36:32.995Z",
+        "updated_date": "2024-01-06T22:36:32.995Z"
+    }
+}

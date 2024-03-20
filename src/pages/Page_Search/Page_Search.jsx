@@ -1,5 +1,4 @@
 // import packages
-import { useQueryClient, useMutation, useMutationState, useQuery } from "@tanstack/react-query"
 import { useEffect, useState, useContext } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -155,45 +154,7 @@ function recurAddMetadata(obj_id, type, myObj) {
         }
     }
 }
-async function handleAddMetadata(obj_id, type, queryClient) {
-    if (obj_id == null) {
-        queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
-            let newMetadata1 = [
-                ...oldSearchOption.metadata,
-                {
-                    obj_id: randomString(),
-                    key: '',
-                    value: '',
-                }
-            ]
-            let newMetadata2 = [
-                {
-                    obj_id: randomString(),
-                    $and: [
-                        ...oldSearchOption.metadata,
-                        {
-                            obj_id: randomString(),
-                            key: '',
-                            value: '',
-                        }
-                    ]
-                }
-            ]
-            return {
-                ...oldSearchOption,
-                metadata: type == 1 ? newMetadata1 : newMetadata2
-            }
-        })
-    }
-    else {
-        queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
-            return {
-                ...oldSearchOption,
-                metadata: oldSearchOption.metadata.map((item, index) => recurAddMetadata(obj_id, type, item))
-            }
-        })
-    }
-}
+
 function recurTypeKeyValue(obj_id, keyvalue, type, myObj) {
     if (myObj.obj_id == obj_id) {
         let newObject = null
@@ -245,14 +206,7 @@ function recurTypeKeyValue(obj_id, keyvalue, type, myObj) {
         }
     }
 }
-function handleTypeKeyValue(obj_id, keyvalue, type, queryClient) {
-    queryClient.setQueryData(['searchOption'], oldSearchOption => {
-        return {
-            ...oldSearchOption,
-            metadata: oldSearchOption.metadata.map((item, index) => recurTypeKeyValue(obj_id, keyvalue, type, item))
-        }
-    })
-}
+
 
 function recurChangeIsNot(obj_id, val, myObj) {
     if (myObj.obj_id == obj_id) {
@@ -288,14 +242,7 @@ function recurChangeIsNot(obj_id, val, myObj) {
         }
     }
 }
-async function handleChangeIsNot(obj_id, val, queryClient) {
-    queryClient.setQueryData(['searchOption'], oldSearchOption => {
-        return {
-            ...oldSearchOption,
-            metadata: oldSearchOption.metadata.map((item, index) => recurChangeIsNot(obj_id, val, item))
-        }
-    })
-}
+
 
 function recurDeleteMetadata(obj_id, myObj) {
     if (myObj.hasOwnProperty('$and')) {
@@ -327,22 +274,7 @@ function recurDeleteMetadata(obj_id, myObj) {
     }
 }
 
-async function handleDeleteMetadata(obj_id, queryClient) {
-    queryClient.setQueryData(['searchOption'], oldSearchOption => {
-        if (oldSearchOption.metadata[0].obj_id == obj_id) {
-            return {
-                ...oldSearchOption,
-                metadata: []
-            }
-        }
-        else {
-            return {
-                ...oldSearchOption,
-                metadata: oldSearchOption.metadata.map((item, index) => recurDeleteMetadata(obj_id, item))
-            }
-        }
-    })
-}
+
 function recurChangeAndOr(obj_id, val, myObj) {
     if (myObj.obj_id == obj_id) {
         let newReturn = val == '$and'
@@ -376,13 +308,44 @@ function recurChangeAndOr(obj_id, val, myObj) {
         }
     }
 }
-async function handleChangeAndOr(obj_id, val, queryClient) {
-    queryClient.setQueryData(['searchOption'], oldSearchOption => {
-        return {
+
+function handleAddMetadata(obj_id, type, searchOption, dispatchSearchOption) {
+    let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+    let newSearchOption = null
+    if (obj_id == null) {
+        let newMetadata1 = [
+            ...oldSearchOption.metadata,
+            {
+                obj_id: randomString(),
+                key: '',
+                value: '',
+            }
+        ]
+        let newMetadata2 = [
+            {
+                obj_id: randomString(),
+                $and: [
+                    ...oldSearchOption.metadata,
+                    {
+                        obj_id: randomString(),
+                        key: '',
+                        value: '',
+                    }
+                ]
+            }
+        ]
+        newSearchOption = {
             ...oldSearchOption,
-            metadata: oldSearchOption.metadata.map((item, index) => recurChangeAndOr(obj_id, val, item))
+            metadata: type == 1 ? newMetadata1 : newMetadata2
         }
-    })
+    }
+    else {
+        newSearchOption = {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurAddMetadata(obj_id, type, item))
+        }
+    }
+    dispatchSearchOption({ type: "update", payload: newSearchOption })
 }
 const MetaForm = (props) => {
     const antdTheme = theme.useToken()
@@ -390,7 +353,50 @@ const MetaForm = (props) => {
     const treeHeight = props.treeHeight
     const currHeight = props.currHeight
     const cardWidth = props.cardWidth
-    let queryClient = useQueryClient()
+    let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
+    let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+
+    function handleTypeKeyValue(obj_id, keyvalue, type) {
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurTypeKeyValue(obj_id, keyvalue, type, item))
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
+    }
+    function handleChangeIsNot(obj_id, val) {
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurChangeIsNot(obj_id, val, item))
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
+    }
+    function handleDeleteMetadata(obj_id) {
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = null
+        if (oldSearchOption.metadata[0].obj_id == obj_id) {
+            newSearchOption = {
+                ...oldSearchOption,
+                metadata: []
+            }
+        }
+        else {
+            newSearchOption = {
+                ...oldSearchOption,
+                metadata: oldSearchOption.metadata.map((item, index) => recurDeleteMetadata(obj_id, item))
+            }
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
+    }
+    function handleChangeAndOr(obj_id, val) {
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurChangeAndOr(obj_id, val, item))
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
+    }
     if (Array.isArray(myObj)) {
         return (
             <>
@@ -424,10 +430,10 @@ const MetaForm = (props) => {
                                 type="primary"
                                 onClick={() => {
                                     if (myObj.hasOwnProperty('$and')) {
-                                        handleChangeAndOr(myObj.obj_id, '$or', queryClient)
+                                        handleChangeAndOr(myObj.obj_id, '$or')
                                     }
                                     else {
-                                        handleChangeAndOr(myObj.obj_id, '$and', queryClient)
+                                        handleChangeAndOr(myObj.obj_id, '$and')
                                     }
                                 }}>
                                 {myObj.hasOwnProperty('$and') ? 'AND' : 'OR'}
@@ -436,23 +442,23 @@ const MetaForm = (props) => {
                                 color: antdTheme.token.colorSuccess,
                                 borderColor: antdTheme.token.colorSuccess,
                                 backgroundColor: antdTheme.token.colorBgLayout
-                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'metadata', queryClient) }}>metadata</Button>
+                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'metadata', searchOption, dispatchSearchOption) }}>metadata</Button>
                             <Button style={{
                                 color: antdTheme.token.colorWarning,
                                 borderColor: antdTheme.token.colorWarning,
                                 backgroundColor: antdTheme.token.colorBgLayout
-                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'inner', queryClient) }}>inner</Button>
+                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'inner', searchOption, dispatchSearchOption) }}>inner</Button>
                             <Button style={{
                                 color: antdTheme.token.colorWarning,
                                 borderColor: antdTheme.token.colorWarning,
                                 backgroundColor: antdTheme.token.colorBgLayout
-                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'outer', queryClient) }}>outer</Button>
+                            }} size="small" icon={<PlusOutlined />} onClick={() => { handleAddMetadata(myObj.obj_id, 'outer', searchOption, dispatchSearchOption) }}>outer</Button>
                         </div>
                     }
                     extra={
                         <>
                             <Button danger shape="circle" size='small' type='text' icon={<CloseCircleOutlined />}
-                                onClick={() => handleDeleteMetadata(myObj.obj_id, queryClient)}
+                                onClick={() => handleDeleteMetadata(myObj.obj_id)}
                             />
                         </>
                     }
@@ -487,25 +493,25 @@ const MetaForm = (props) => {
                         }}
                         placeholder="key"
                         value={myObj.hasOwnProperty('$not') ? myObj.$not.key : myObj.key}
-                        onChange={val => handleTypeKeyValue(myObj.obj_id, val, 'key', queryClient)}
+                        onChange={val => handleTypeKeyValue(myObj.obj_id, val, 'key')}
                     />
                     <Button
                         style={{ width: 80 }}
                         onClick={() => {
                             if (myObj.hasOwnProperty('$not')) {
-                                handleChangeIsNot(myObj.obj_id, 'is', queryClient)
+                                handleChangeIsNot(myObj.obj_id, 'is')
                             }
                             else {
-                                handleChangeIsNot(myObj.obj_id, 'isnot', queryClient)
+                                handleChangeIsNot(myObj.obj_id, 'isnot')
                             }
                         }}>
                         {myObj.hasOwnProperty('$not') ? 'IS NOT' : 'IS'}
                     </Button>
                     <Input
                         value={myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value}
-                        onChange={e => handleTypeKeyValue(myObj.obj_id, e.target.value, 'value', queryClient)}
+                        onChange={e => handleTypeKeyValue(myObj.obj_id, e.target.value, 'value')}
                         style={{ width: 160 }} placeholder='value' />
-                    <Button shape="circle" type="text" icon={<CloseOutlined />} onClick={() => handleDeleteMetadata(myObj.obj_id, queryClient)} />
+                    <Button shape="circle" type="text" icon={<CloseOutlined />} onClick={() => handleDeleteMetadata(myObj.obj_id)} />
                 </div>
             )
         }
@@ -528,126 +534,115 @@ const MetadataList = (props) => {
         </div>
     )
 }
-const Page_Search = (props) => {
+const Page_Search = () => {
     // props
-    // const searchOptionQuery = props.searchOptionQuery
-    // const searchResultQuery = props.searchResultQuery
-    const searchMutation = props.searchMutation
     const [inp, setInp] = useState('')
     const [test, setTest] = useState('')
     // const [loading, setLoading] = useState(false)
-    const queryClient = useQueryClient()
     let antdTheme = theme.useToken()
-    // const searchOption = queryClient.getQueryData(['searchOption'])
-    // const searchResult = queryClient.getQueryData(['searchResult'])
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+    console.log("searchOption: ", searchOption)
+    console.log("searchResult: ", searchResult)
     console.log('searchResult in Page_Search', searchResult)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
-        await queryClient.setQueryData(['searchResult'], oldSearchResult => {
-            const newBroader = type == 'broader'
-                ? {
-                    ...oldSearchResult.broader,
-                    [oriTerm]: oldSearchResult.broader[oriTerm].filter(termItem => termItem != extendTerm)
-                }
-                : oldSearchResult.broader
-            const newRelated = type == 'related'
-                ? {
-                    ...oldSearchResult.related,
-                    [oriTerm]: oldSearchResult.related[oriTerm].filter(termItem => termItem != extendTerm)
-                }
-                : oldSearchResult.related
-            const newNarrower = type == 'narrower'
-                ? {
-                    ...oldSearchResult.narrower,
-                    [oriTerm]: oldSearchResult.narrower[oriTerm].filter(termItem => termItem != extendTerm)
-                }
-                : oldSearchResult.narrower
-            return {
-                ...oldSearchResult,
-                broader: newBroader,
-                related: newRelated,
-                narrower: newNarrower
+        let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
+        const newBroaderResult = type == 'broader'
+            ? {
+                ...oldSearchResult.broader,
+                [oriTerm]: oldSearchResult.broader[oriTerm].filter(termItem => termItem != extendTerm)
             }
-        })
-        await queryClient.setQueryData(['searchOption'], oldSearchOption => {
-            const newBroader = type == 'broader'
-                ? (
-                    oldSearchOption.broader.hasOwnProperty(oriTerm)
-                        ? {
-                            ...oldSearchOption.broader,
-                            [oriTerm]: [...oldSearchOption.broader[oriTerm], extendTerm]
-                        }
-                        : {
-                            ...oldSearchOption.broader,
-                            [oriTerm]: [extendTerm]
-                        }
-                )
-                : oldSearchOption.broader
-            const newRelated = type == 'related'
-                ? (
-                    oldSearchOption.related.hasOwnProperty(oriTerm)
-                        ? {
-                            ...oldSearchOption.related,
-                            [oriTerm]: [...oldSearchOption.related[oriTerm], extendTerm]
-                        }
-                        : {
-                            ...oldSearchOption.related,
-                            [oriTerm]: [extendTerm]
-                        }
-                )
-                : oldSearchOption.related
-            const newNarrower = type == 'narrower'
-                ? (
-                    oldSearchOption.narrower.hasOwnProperty(oriTerm)
-                        ? {
-                            ...oldSearchOption.narrower,
-                            [oriTerm]: [...oldSearchOption.narrower[oriTerm], extendTerm]
-                        }
-                        : {
-                            ...oldSearchOption.narrower,
-                            [oriTerm]: [extendTerm]
-                        }
-                )
-                : oldSearchOption.narrower
-            return {
-                ...oldSearchOption,
-                broader: newBroader,
-                related: newRelated,
-                narrower: newNarrower
+            : oldSearchResult.broader
+        const newRelatedResult = type == 'related'
+            ? {
+                ...oldSearchResult.related,
+                [oriTerm]: oldSearchResult.related[oriTerm].filter(termItem => termItem != extendTerm)
             }
-        })
+            : oldSearchResult.related
+        const newNarrowerResult = type == 'narrower'
+            ? {
+                ...oldSearchResult.narrower,
+                [oriTerm]: oldSearchResult.narrower[oriTerm].filter(termItem => termItem != extendTerm)
+            }
+            : oldSearchResult.narrower
+        let newSearchResult = {
+            ...oldSearchResult,
+            broader: newBroaderResult,
+            related: newRelatedResult,
+            narrower: newNarrowerResult
+        }
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        const newBroaderOption = type == 'broader'
+            ? (
+                oldSearchOption.broader.hasOwnProperty(oriTerm)
+                    ? {
+                        ...oldSearchOption.broader,
+                        [oriTerm]: [...oldSearchOption.broader[oriTerm], extendTerm]
+                    }
+                    : {
+                        ...oldSearchOption.broader,
+                        [oriTerm]: [extendTerm]
+                    }
+            )
+            : oldSearchOption.broader
+        const newRelatedOption = type == 'related'
+            ? (
+                oldSearchOption.related.hasOwnProperty(oriTerm)
+                    ? {
+                        ...oldSearchOption.related,
+                        [oriTerm]: [...oldSearchOption.related[oriTerm], extendTerm]
+                    }
+                    : {
+                        ...oldSearchOption.related,
+                        [oriTerm]: [extendTerm]
+                    }
+            )
+            : oldSearchOption.related
+        const newNarrowerOption = type == 'narrower'
+            ? (
+                oldSearchOption.narrower.hasOwnProperty(oriTerm)
+                    ? {
+                        ...oldSearchOption.narrower,
+                        [oriTerm]: [...oldSearchOption.narrower[oriTerm], extendTerm]
+                    }
+                    : {
+                        ...oldSearchOption.narrower,
+                        [oriTerm]: [extendTerm]
+                    }
+            )
+            : oldSearchOption.narrower
+        let newSearchOption = {
+            ...oldSearchOption,
+            broader: newBroaderOption,
+            related: newRelatedOption,
+            narrower: newNarrowerOption
+        }
+        dispatchSearchResult({ type: "update", payload: newSearchResult })
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
     async function handleChangeSearchScope(value) {
-        queryClient.setQueryData(['searchOption'], oldSearchOption => {
-            return {
-                ...oldSearchOption,
-                search_scope: value
-            }
-        })
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            search_scope: value
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
-    const trashQuery = useQuery({
-        queryKey: ['trash'],
-        queryFn: () => '',
-        // refetchOnMount: false,
-        // refetchOnWindowFocus: false,
-        // refetchOnReconnect: false
-    })
     async function handleChangeDomain(value) {
-        queryClient.setQueryData(['searchOption'], oldSearchOption => {
-            return {
-                ...oldSearchOption,
-                domain: value
-            }
-        })
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            domain: value
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
     async function handleChangeMethod(value) {
-        queryClient.setQueryData(['searchOption'], oldSearchOption => {
-            return {
-                ...oldSearchOption,
-                method: value
-            }
-        })
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            method: value
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
     const searchResultsColumn = [
         {
@@ -668,7 +663,7 @@ const Page_Search = (props) => {
                     <Link to='#'>
                         <div style={{ display: 'flex', columnGap: 16 }}>
                             <div style={{ minWidth: 100, minHeight: 140 }}>
-                                <Document file={'/file/01-cp.signed.pdf'}>
+                                <Document file={'/file/sample.pdf'}>
                                     <Page width={100} pageNumber={1} />
                                 </Document>
                             </div>
@@ -736,27 +731,6 @@ const Page_Search = (props) => {
             }
         },
     ];
-    async function handleTableChange(obj) {
-        // setTableParams({
-        //     pagination,
-        //     filters,
-        //     ...sorter,
-        // });
-        let newSearchOption = {
-            ...searchOption,
-            pagination: {
-                ...searchOption.pagination,
-                current: obj.current,
-                pageSize: obj.pageSize
-            }
-        }
-        queryClient.setQueryData(['searchOption'], newSearchOption)
-        await searchMutation.mutateAsync(newSearchOption)
-        // // `dataSource` is useless since `pageSize` changed
-        // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-        //     setData([]);
-        // }
-    };
     async function handlePaginationChange(page, pageSize) {
         let newSearchOption = {
             ...searchOption,
@@ -766,7 +740,6 @@ const Page_Search = (props) => {
                 pageSize: pageSize
             }
         }
-        // queryClient.setQueryData(['searchOption'], newSearchOption)
         // await searchMutation.mutateAsync(newSearchOption)
         await dispatchSearchResult({ type: 'loading', payload: true })
         let newSearchResult = await getSearchResult(newSearchOption)
@@ -788,7 +761,7 @@ const Page_Search = (props) => {
         searchOption && searchResult
             ?
             <>
-                <Bread title={
+                {/* <Bread title={
                     <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                         <Typography.Title level={2} style={{ margin: 0 }}>
                             Search in
@@ -836,7 +809,14 @@ const Page_Search = (props) => {
                             ]}
                         />
                     </div>
-                } />
+                } /> */}
+                <Bread breadProp={[
+                    {
+                        "title": "Search result",
+                        "path": "/search"
+                    }
+                ]}
+                />
                 <Container>
                     <Row gutter={[16, 16]}>
                         <Col span={12}>
@@ -983,7 +963,7 @@ const Page_Search = (props) => {
                                                 color: antdTheme.token.colorSuccess,
                                                 borderColor: antdTheme.token.colorSuccess,
                                             }}
-                                                size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', queryClient) }}>metadata</Button>
+                                                size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', searchOption, dispatchSearchOption) }}>metadata</Button>
                                         </div>
                                         : null
                                     }
@@ -999,7 +979,7 @@ const Page_Search = (props) => {
                                         ? <Card>
                                             {searchResult?.documents.map((doc, index) => (
                                                 <div style={{ width: 100 }}>
-                                                    <Document file="/file/01-cp.signed.pdf">
+                                                    <Document file="/file/sample.pdf">
                                                         <Page width={100} pageNumber={1} />
                                                     </Document>
 
@@ -1012,14 +992,53 @@ const Page_Search = (props) => {
                             }
                         </Col> */}
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
                             <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                <SearchOutlined
+                                <Typography.Title level={2} style={{ margin: 0 }}>
+                                    Search in
+                                </Typography.Title>
+                                <Select
+                                    value={searchOption?.search_scope}
                                     style={{
-                                        fontSize: 24,
-                                        color: antdTheme.token.colorTextHeading
+                                        width: 200,
                                     }}
+                                    size={'large'}
+                                    onChange={handleChangeSearchScope}
+                                    options={[
+                                        {
+                                            value: 'all',
+                                            label:
+                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                    <FileDoneOutlined />
+                                                    <Typography.Text>All</Typography.Text>
+                                                </div>
+                                        },
+                                        {
+                                            value: 'company',
+                                            label:
+                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                    <HddOutlined />
+                                                    <Typography.Text>Company documents</Typography.Text>
+                                                </div>
+                                        },
+                                        {
+                                            value: 'my',
+                                            label:
+                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                    <FileDoneOutlined />
+                                                    <Typography.Text>My documents</Typography.Text>
+                                                </div>
+                                        },
+                                        {
+                                            value: 'shared',
+                                            label:
+                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                    <FileDoneOutlined />
+                                                    <Typography.Text>Shared documents</Typography.Text>
+                                                </div>
+                                        },
+                                    ]}
                                 />
-                                <Typography.Title level={2} style={{ margin: 0 }}>Search result</Typography.Title>
                             </div>
                             <Pagination
                                 current={searchResult.pagination.current}
@@ -1048,15 +1067,6 @@ const Page_Search = (props) => {
                             />
                         </Col>
                     </Row>
-                    {/* <Input
-                        value={queryClient.getQueryData(['trash'])}
-                        onChange={(e) => {
-                        let newVal = e.target.value
-                        queryClient.setQueryData(['trash'], newVal)
-                        }}
-                        // value={test}
-                        // onChange={(e) => { setTest(e.target.value) }}
-                    /> */}
                 </Container>
             </>
             : null

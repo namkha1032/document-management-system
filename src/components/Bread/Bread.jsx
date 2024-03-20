@@ -14,9 +14,9 @@ import {
     Button,
     Space,
 } from 'antd';
-import { useQueryClient } from '@tanstack/react-query';
 import GridListContext from '../../context/GridListContext';
-import Create_Ontology from '../../pages/Page_Ontology/Create_Ontology/Create_Ontology';
+import Create_Ontology from './Create_Ontology/Create_Ontology';
+import Create_Document from './Create_Document/Create_Document';
 const Bread = (props) => {
     const { state } = useLocation();
     let breadState = state?.breadState
@@ -49,7 +49,6 @@ const Bread = (props) => {
             }
         }
     }, [breadProp])
-    const queryClient = useQueryClient()
     return (
         <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -63,7 +62,7 @@ const Bread = (props) => {
                                     height: "fit-content",
                                     padding: 4
                                 }} onClick={() => { navigate(item.path, { state: { breadState: bread.slice(0, index + 1) } }) }}>
-                                    <Typography.Title level={2} style={{ margin: 0, fontWeight: index == bread.length - 1 ? "bold" : "normal" }}>
+                                    <Typography.Title level={2} style={{ margin: 0, fontWeight: index == bread.length - 1 ? 500 : "normal" }}>
                                         {item.title}
                                     </Typography.Title>
                                 </Button>
@@ -82,14 +81,17 @@ const Bread = (props) => {
                 {/* </div> */}
                 <Space>
                     {createButtonType == "document"
-                        ? <Button type="primary" icon={<PlusOutlined />} size={"large"}
-                            onClick={() => {
-                                queryClient.setQueryData(['sidebarItem'], 0)
-                                navigate("/upload")
-                            }}
-                        >
-                            Upload
-                        </Button>
+                        ? <>
+                            {/* <Button type="primary" icon={<PlusOutlined />} size={"large"}
+                                onClick={() => {
+                                    queryClient.setQueryData(['sidebarItem'], 0)
+                                    navigate("/upload")
+                                }}
+                            >
+                                Upload
+                            </Button> */}
+                            <Create_Document />
+                        </>
                         : <Create_Ontology />
                     }
                     <Segmented

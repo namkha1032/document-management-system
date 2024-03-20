@@ -1,48 +1,44 @@
-import { Outlet } from 'react-router-dom';
+import { useContext } from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 import {
     Layout,
     theme
 } from 'antd';
-import { useQueryClient } from '@tanstack/react-query';
 import SideBar from '../SideBar/SideBar';
 import NavBar from "../NavBar/NavBar"
 import Footer from '../Footer/Footer';
 import Bread from '../Bread/Bread';
+import UserContext from '../../context/UserContext';
 // //////////////////////////////////////////////////////
 
-const MainLayout = (props) => {
-    // props
-    // const searchOptionQuery = props.searchOptionQuery
-    // const searchResultQuery = props.searchResultQuery
-    const searchMutation = props.searchMutation
+const MainLayout = () => {
+    let [user, dispatchUser] = useContext(UserContext)
+    let userStorage = localStorage.getItem("user")
     // hooks
     const antdTheme = theme.useToken()
-    let queryClient = useQueryClient()
     return (
-        <Layout style={{
-            minHeight: '100vh',
-        }}
-        >
-            <SideBar />
-            <Layout style={{ background: antdTheme.token.colorBgContainer }}>
-                <NavBar
-                    searchMutation={searchMutation}
-                    // searchOptionQuery={searchOptionQuery}
-                    // searchResultQuery={searchResultQuery}
-                />
-                <Layout.Content style={{
-                    margin: 0,
-                    borderRadius: antdTheme.token.borderRadiusLG,
-                    padding: "16px",
-                    backgroundColor: antdTheme.token.colorBgLayout,
-                    overflowY: "scroll"
-                }}
-                >
-                    <Outlet />
-                </Layout.Content>
-                {/* <Footer /> */}
-            </Layout>
-        </Layout >
+        userStorage
+            ? <Layout style={{
+                minHeight: '100vh',
+            }}
+            >
+                <SideBar />
+                <Layout style={{ background: antdTheme.token.colorBgContainer }}>
+                    <NavBar />
+                    <Layout.Content style={{
+                        margin: 0,
+                        borderRadius: antdTheme.token.borderRadiusLG,
+                        padding: "16px",
+                        backgroundColor: antdTheme.token.colorBgLayout,
+                        overflowY: "scroll"
+                    }}
+                    >
+                        <Outlet />
+                    </Layout.Content>
+                    {/* <Footer /> */}
+                </Layout>
+            </Layout >
+            : <Navigate to="/login" replace={true} />
     );
 };
 export default MainLayout;

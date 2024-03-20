@@ -13,11 +13,35 @@ import {
     LockOutlined
 } from '@ant-design/icons';
 import ModeThemeContext from "../../context/ModeThemeContext";
+import { userLogin, getMe } from "../../apis/userApi";
+import { useState, useEffect, useContext } from "react";
+import UserContext from "../../context/UserContext";
+import { useNavigate } from 'react-router-dom';
 const Page_Login = () => {
+    let [loadingLogin, setLoadingLogin] = useState(false)
+    let [user, dispatchUser] = useContext(UserContext)
     const antdTheme = theme.useToken()
     let loginColor = antdTheme.token.colorFill
-    const handleLogin = (values) => {
+    const navigate = useNavigate()
+    async function handleLogin(values) {
+        setLoadingLogin(true)
         console.log('Received values of form: ', values);
+        try {
+            let response = await userLogin(values)
+            console.log("response: ", response)
+            let userInfo = await getMe(response.access_token)
+            let finalInfo = {
+                ...userInfo,
+                ...response
+            }
+            dispatchUser({ type: "login", payload: finalInfo })
+            navigate(`/company`)
+
+        }
+        catch (e) {
+            console.log("error: ", e)
+        }
+        setLoadingLogin(false)
     };
     return (
         <div style={{
@@ -55,15 +79,15 @@ const Page_Login = () => {
                     onFinish={handleLogin}
                 >
                     <Form.Item
-                        name="username"
+                        name="email"
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your Username!',
+                                message: 'Please input your Email!',
                             },
                         ]}
                     >
-                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Email" />
                     </Form.Item>
                     <Form.Item
                         name="password"
@@ -85,7 +109,7 @@ const Page_Login = () => {
                     </a>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className="login-form-button" style={{ width: "100%" }}>
+                        <Button loading={loadingLogin} type="primary" htmlType="submit" className="login-form-button" style={{ width: "100%" }}>
                             Log in
                         </Button>
                     </Form.Item>

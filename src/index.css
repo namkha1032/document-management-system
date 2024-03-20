@@ -15,6 +15,9 @@
     background-color: rgb(200, 200, 200);
 }
 
+#pdfThumbnail::-webkit-scrollbar {
+    display: none;
+}
 
 body {
     margin: 0;

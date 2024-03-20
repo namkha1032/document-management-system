@@ -1,5 +1,4 @@
 // import packages
-import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import { useNavigate, useLocation, Link, redirect } from 'react-router-dom';
 import { useContext } from 'react';
 // import my components
@@ -15,13 +14,16 @@ import {
     Col,
     Avatar,
     Tag,
-    Popover
+    Popover,
+    Dropdown
 } from 'antd';
 // import icons
 import {
     SlidersOutlined,
     SearchOutlined,
-    CloseOutlined
+    CloseOutlined,
+    UserOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -33,6 +35,7 @@ import { getSearchResult } from '../../apis/searchApi';
 import ModeThemeContext from '../../context/ModeThemeContext';
 import SearchOptionContext from '../../context/SearchOptionContext';
 import SearchResultContext from '../../context/SearchResultContext';
+import UserContext from '../../context/UserContext';
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 const AdvancedSearchButton = (props) => {
     const navigate = useNavigate()
@@ -47,18 +50,25 @@ const AdvancedSearchButton = (props) => {
     )
 }
 
-const NavBar = (props) => {
-    // props
-    // const searchOptionQuery = props.searchOptionQuery
-    // const searchResultQuery = props.searchResultQuery
-    const searchMutation = props.searchMutation
+const NavBar = () => {
+    let [user, dispatchUser] = useContext(UserContext)
     const antdTheme = theme.useToken()
-    let queryClient = useQueryClient()
     const navigate = useNavigate()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
     // const location = useLocation()
-
+    const dropdownItems = [
+        {
+            label: 'My profile',
+            key: '1',
+            icon: <UserOutlined />,
+        },
+        {
+            label: 'Log out',
+            key: '2',
+            icon: <LogoutOutlined />,
+        },
+    ]
     async function handleSearch(value) {
         // if (!location.pathname.includes('search')) {
         navigate('/search')
@@ -71,8 +81,6 @@ const NavBar = (props) => {
                 pageSize: searchOption.pagination.pageSize
             }
         }
-        // await queryClient.setQueryData(['searchOption'], newSearchOption)
-        // await searchMutation.mutateAsync(newSearchOption)
         await dispatchSearchResult({ type: 'loading', payload: true })
         let newSearchResult = await getSearchResult(newSearchOption)
         await dispatchSearchResult({ type: 'search', payload: { newSearchResult, newSearchOption } })
@@ -81,107 +89,107 @@ const NavBar = (props) => {
     }
     async function handleRemoveKeyword(e, extendTerm, oriTerm, type) {
         e.preventDefault()
-        queryClient.setQueryData(['searchResult'], (oldSearchResult) => {
-            const newBroader = type == 'broader'
-                ? (oldSearchResult.broader.hasOwnProperty(oriTerm)
-                    ? {
-                        ...oldSearchResult.broader,
-                        [oriTerm]: [...oldSearchResult.broader[oriTerm], extendTerm]
-                    }
-                    : oldSearchResult.broader
-                )
+        let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
+        const newBroaderResult = type == 'broader'
+            ? (oldSearchResult.broader.hasOwnProperty(oriTerm)
+                ? {
+                    ...oldSearchResult.broader,
+                    [oriTerm]: [...oldSearchResult.broader[oriTerm], extendTerm]
+                }
                 : oldSearchResult.broader
-            const newRelated = type == 'related'
-                ? (oldSearchResult.related.hasOwnProperty(oriTerm)
-                    ? {
-                        ...oldSearchResult.related,
-                        [oriTerm]: [...oldSearchResult.related[oriTerm], extendTerm]
-                    }
-                    : oldSearchResult.related
-                )
+            )
+            : oldSearchResult.broader
+        const newRelatedResult = type == 'related'
+            ? (oldSearchResult.related.hasOwnProperty(oriTerm)
+                ? {
+                    ...oldSearchResult.related,
+                    [oriTerm]: [...oldSearchResult.related[oriTerm], extendTerm]
+                }
                 : oldSearchResult.related
-            const newNarrower = type == 'narrower'
-                ? (oldSearchResult.narrower.hasOwnProperty(oriTerm)
-                    ? {
-                        ...oldSearchResult.narrower,
-                        [oriTerm]: [...oldSearchResult.narrower[oriTerm], extendTerm]
-                    }
-                    : oldSearchResult.narrower
-                )
+            )
+            : oldSearchResult.related
+        const newNarrowerResult = type == 'narrower'
+            ? (oldSearchResult.narrower.hasOwnProperty(oriTerm)
+                ? {
+                    ...oldSearchResult.narrower,
+                    [oriTerm]: [...oldSearchResult.narrower[oriTerm], extendTerm]
+                }
                 : oldSearchResult.narrower
-            return {
-                ...oldSearchResult,
-                broader: newBroader,
-                related: newRelated,
+            )
+            : oldSearchResult.narrower
+        let newSearchResult = {
+            ...oldSearchResult,
+            broader: newBroaderResult,
+            related: newRelatedResult,
+            narrower: newNarrowerResult
+        }
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = null
+        if (type == 'broader') {
+            let newBroader = {}
+            if (oldSearchOption.broader[oriTerm].length >= 2) {
+                newBroader = {
+                    ...oldSearchOption.broader,
+                    [oriTerm]: oldSearchOption.broader[oriTerm].filter((item, index) => item != extendTerm)
+                }
+            }
+            else {
+                Object.entries(oldSearchOption.broader).forEach(([keyTerm, extendArray], index) => {
+                    if (keyTerm != oriTerm) {
+                        newBroader[keyTerm] = extendArray
+                    }
+                })
+            }
+            newSearchOption = {
+                ...oldSearchOption,
+                broader: newBroader
+            }
+        }
+        else if (type == 'related') {
+            let newRelated = {}
+            if (oldSearchOption.related[oriTerm].length >= 2) {
+                newRelated = {
+                    ...oldSearchOption.related,
+                    [oriTerm]: oldSearchOption.related[oriTerm].filter((item, index) => item != extendTerm)
+                }
+            }
+            else {
+                Object.entries(oldSearchOption.related).forEach(([keyTerm, extendArray], index) => {
+                    if (keyTerm != oriTerm) {
+                        newRelated[keyTerm] = extendArray
+                    }
+                })
+            }
+            newSearchOption = {
+                ...oldSearchOption,
+                related: newRelated
+            }
+        }
+        else if (type == 'narrower') {
+            let newNarrower = {}
+            if (oldSearchOption.narrower[oriTerm].length >= 2) {
+                newNarrower = {
+                    ...oldSearchOption.narrower,
+                    [oriTerm]: oldSearchOption.narrower[oriTerm].filter((item, index) => item != extendTerm)
+                }
+            }
+            else {
+                Object.entries(oldSearchOption.narrower).forEach(([keyTerm, extendArray], index) => {
+                    if (keyTerm != oriTerm) {
+                        newNarrower[keyTerm] = extendArray
+                    }
+                })
+            }
+            newSearchOption = {
+                ...oldSearchOption,
                 narrower: newNarrower
             }
-        })
-        queryClient.setQueryData(['searchOption'], (oldSearchOption) => {
-            if (type == 'broader') {
-                let newBroader = {}
-                if (oldSearchOption.broader[oriTerm].length >= 2) {
-                    newBroader = {
-                        ...oldSearchOption.broader,
-                        [oriTerm]: oldSearchOption.broader[oriTerm].filter((item, index) => item != extendTerm)
-                    }
-                }
-                else {
-                    Object.entries(oldSearchOption.broader).forEach(([keyTerm, extendArray], index) => {
-                        if (keyTerm != oriTerm) {
-                            newBroader[keyTerm] = extendArray
-                        }
-                    })
-                }
-                return {
-                    ...oldSearchOption,
-                    broader: newBroader
-                }
-            }
-            else if (type == 'related') {
-                let newRelated = {}
-                if (oldSearchOption.related[oriTerm].length >= 2) {
-                    newRelated = {
-                        ...oldSearchOption.related,
-                        [oriTerm]: oldSearchOption.related[oriTerm].filter((item, index) => item != extendTerm)
-                    }
-                }
-                else {
-                    Object.entries(oldSearchOption.related).forEach(([keyTerm, extendArray], index) => {
-                        if (keyTerm != oriTerm) {
-                            newRelated[keyTerm] = extendArray
-                        }
-                    })
-                }
-                return {
-                    ...oldSearchOption,
-                    related: newRelated
-                }
-            }
-            else if (type == 'narrower') {
-                let newNarrower = {}
-                if (oldSearchOption.narrower[oriTerm].length >= 2) {
-                    newNarrower = {
-                        ...oldSearchOption.narrower,
-                        [oriTerm]: oldSearchOption.narrower[oriTerm].filter((item, index) => item != extendTerm)
-                    }
-                }
-                else {
-                    Object.entries(oldSearchOption.narrower).forEach(([keyTerm, extendArray], index) => {
-                        if (keyTerm != oriTerm) {
-                            newNarrower[keyTerm] = extendArray
-                        }
-                    })
-                }
-                return {
-                    ...oldSearchOption,
-                    narrower: newNarrower
-                }
-            }
-        })
+        }
+        dispatchSearchResult({ type: "update", payload: newSearchResult })
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
     // logics
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
-    // let searchOption = queryClient.getQueryData(['searchOption'])
     // HTMl
     return (
         searchOption
@@ -246,8 +254,19 @@ const NavBar = (props) => {
                                     dispatchModeTheme({ type: "light" })
                                 }
                             }} />
-                        <Typography.Text>Peter Parker</Typography.Text>
-                        <Avatar size={"large"} src="/file/avatar.png" />
+                        <Typography.Text>{user?.first_name + " " + user?.last_name}</Typography.Text>
+                        <Dropdown menu={{
+                            items: dropdownItems,
+                            onClick: (e) => {
+                                if (e.key == "2") {
+                                    // delete localStorage here
+                                    dispatchUser({ type: "logout" })
+                                    navigate("/login")
+                                }
+                            },
+                        }} placement='bottomLeft' arrow={true} trigger={["click"]}>
+                            <Avatar style={{ cursor: "pointer" }} size={"large"} src="/file/avatar.png" />
+                        </Dropdown>
                     </Col>
                 </Row>
             </Layout.Header >

@@ -1,0 +1,14 @@
+{
+    "metadata":[
+        {
+            "key A": "value A"
+        },
+        {
+            "key B": "value B"
+        },
+        {
+            "key C": "value C"
+        }
+    ],
+    "message": "update metadata blah blah"
+}

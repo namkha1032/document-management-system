@@ -26,7 +26,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
 ).toString();
-const DocumentFeed = () => {
+const DocumentFeed = (props) => {
+    let originTitle = props.originTitle
+    let originPath = props.originPath
+    let document = props.document
+    let setDocument = props.setDocument
     let [gridList, dispatchGridList] = useContext(GridListContext)
     let [selectedDoc, setSelectedDoc] = useState(false)
     let [documentResult, setDocumentResult] = useState(null)
@@ -34,6 +38,7 @@ const DocumentFeed = () => {
     const navigate = useNavigate()
     useEffect(() => {
         let documentObj = {
+            file_name: "filename.pdf",
             document_title: "Nghị quyết 19/NQ-CP",
             document_size: "1MB",
             document_owner: {
@@ -42,7 +47,7 @@ const DocumentFeed = () => {
             },
             document_created: '2024-02-03T13:47:56.668Z',
             document_updated: '2024-02-03T13:47:56.668Z',
-            document_pdf: '/file/01-cp.signed.pdf',
+            document_pdf: '/file/sample.pdf',
         }
         let tempArr = Array.from('X'.repeat(24));
         let docArr = tempArr.map((item, index) => {
@@ -64,7 +69,7 @@ const DocumentFeed = () => {
                 return (
                     <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
                         <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                        <Typography.Text>{obj.document_title}</Typography.Text>
+                        <Typography.Text>{obj.versions[obj.versions.length - 1].file_name}</Typography.Text>
                     </div>
                 )
             }
@@ -73,7 +78,7 @@ const DocumentFeed = () => {
             title: "Size",
             render: (obj) => {
                 return (
-                    <Typography.Text>{obj.document_size}</Typography.Text>
+                    <Typography.Text>{"1 MB"}</Typography.Text>
                 )
             }
         },
@@ -82,8 +87,8 @@ const DocumentFeed = () => {
             render: (obj) => {
                 return (
                     <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
-                        <Avatar src={obj.document_owner.owner_avatar} />
-                        <Typography.Text>{obj.document_owner.owner_name}</Typography.Text>
+                        <Avatar src={`/file/avatar.png`} />
+                        <Typography.Text>{obj.owner.first_name + " " + obj.owner.last_name}</Typography.Text>
                     </div>
                 )
             }
@@ -92,7 +97,7 @@ const DocumentFeed = () => {
             title: "Created date",
             render: (obj) => {
                 return (
-                    <Typography.Text>{new Date(obj.document_created).toLocaleDateString()}</Typography.Text>
+                    <Typography.Text>{new Date(obj.created_date).toLocaleDateString()}</Typography.Text>
                 )
             }
         },
@@ -100,13 +105,13 @@ const DocumentFeed = () => {
             title: "Last updated",
             render: (obj) => {
                 return (
-                    <Typography.Text>{new Date(obj.document_updated).toLocaleDateString()}</Typography.Text>
+                    <Typography.Text>{new Date(obj.updated_date).toLocaleDateString()}</Typography.Text>
                 )
             }
         }
     ]
     return (
-        documentResult
+        document
             ?
             <div style={{ flex: "1 1 auto" }}>
                 {gridList == "grid"
@@ -122,27 +127,71 @@ const DocumentFeed = () => {
                                     bottom: 0,
                                     overflowY: "scroll"
                                 }} gutter={[16, 16]}>
-                                    {documentResult.documents.map((item, index) =>
+                                    {document.map((item, index) =>
                                         <Col md={selectedDoc ? 6 : 4} key={index}>
                                             <Card
-                                                onDoubleClick={() => { navigate(`/document/${item.document_id}`) }}
-                                                style={{ backgroundColor: selectedDoc?.document_id == item?.document_id ? antdTheme.token.controlItemBgActive : antdTheme.token.colorBgContainer }}
+                                                onDoubleClick={() => {
+                                                    navigate(`/document/${item.uid}`, {
+                                                        state: {
+                                                            breadState: [
+                                                                { "title": originTitle, "path": `/${originPath}` },
+                                                                { "title": `${item.versions[item.versions.length - 1].file_name}`, "path": `/document/${item.uid}` }
+                                                            ]
+
+                                                        }
+                                                    })
+                                                }}
+                                                style={{ backgroundColor: selectedDoc?.uid == item?.uid ? antdTheme.token.controlItemBgActive : antdTheme.token.colorBgContainer }}
                                                 onClick={() => { setSelectedDoc(item) }} hoverable styles={{
                                                     body: {
-                                                        padding: 16
+                                                        paddingTop: 16,
+                                                        paddingLeft: 16,
+                                                        paddingBottom: 16,
+                                                        paddingRight: 16
                                                     }
                                                 }}>
                                                 <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
                                                     <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                                                    <Typography.Title level={5} style={{ margin: 0 }}>{item.document_title}</Typography.Title>
+                                                    <Typography.Title ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[item.versions.length - 1].file_name}</Typography.Title>
                                                 </div>
-                                                <div style={{ height: 150, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
-                                                    <Document file={item.document_pdf}>
+                                                <div className="pdfBorder" style={{ height: 150, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
+                                                    {/* <Document file={item.versions[item.versions.length - 1].url}>
                                                         <Page
                                                             width={250}
                                                             pageNumber={1} />
-                                                    </Document>
+                                                    </Document> */}
+                                                    {/* <div style={{ width: 260, height: 200, overflow: "hidden" }}> */}
+                                                    <div className="overlayDiv" style={{
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        left: 0,
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        zIndex: 999, /* Make sure the z-index is higher than the iframe */
+                                                        backgroundColor: "rgba(0, 0, 0, 0)"/* Semi-transparent background */
+                                                    }} />
+                                                    <iframe src={`${item.versions[item.versions.length - 1].url}`}
+                                                        style={{
+                                                            // width: "100%",
+                                                            // height: "217px",
+                                                            border: 0,
+                                                            position: "relative",
+                                                            zIndex: 1
+                                                        }}
+                                                    ></iframe>
+                                                    {/* </div> */}
                                                 </div>
+                                                {/* <div style={{ width: 260, height: 200, overflow: "hidden" }}>
+                                                    <iframe id="pdfThumbnail" src="/file/sample.pdf#view=fitH&toolbar=0"
+                                                        // width={"100%"} height={"100%"} style={{ overflow: "hidden" }}
+                                                        style={{
+                                                            width: "276px",
+                                                            height: "217px",
+                                                            border: 0,
+                                                            overflow: "scroll"
+                                                        }}
+                                                    ></iframe>
+                                                </div> */}
                                             </Card>
                                         </Col>
                                     )}
@@ -173,8 +222,8 @@ const DocumentFeed = () => {
                     <>
                         <Table
                             columns={documentColumns}
-                            rowKey={(record) => record.document_id}
-                            dataSource={documentResult.documents}
+                            rowKey={(record) => record.uid}
+                            dataSource={document}
                             style={{ borderRadius: 8 }}
                         // loading={searchResult.loading}
                         // pagination={{

@@ -45,7 +45,6 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { useSearchParams, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
 import FolderTree from '../FolderTree/FolderTree';
 // import context
 import ModeThemeContext from '../../context/ModeThemeContext';
@@ -57,59 +56,31 @@ const { Header, Content, Footer, Sider } = Layout;
 const SideBar = (props) => {
     const [collapsed, setCollapsed] = useState(false);
     const [openFolderTree, setOpenFolderTree] = useState([])
-    let queryClient = useQueryClient()
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
     const antdTheme = theme.useToken()
     const location = useLocation()
     const navigate = useNavigate()
-    const sidebarItemQuery = useQuery(
-        {
-            queryKey: ["sidebarItem"],
-            queryFn: () => {
-                if (location.pathname.includes("company")) {
-                    return '1'
-                }
-                else if (location.pathname.includes("my-documents")) {
-                    return '2'
-                }
-                else if (location.pathname.includes("shared-documents")) {
-                    return '3'
-                }
-                else if (location.pathname.includes("search")) {
-                    return '4'
-                }
-                else if (location.pathname.includes("trash")) {
-                    return '5'
-                }
-                else {
-                    return '0'
-                }
-                // return '1'
-            },
-            refetchOnMount: false,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false
-        }
-    )
+    let [sidebarItem, setSidebarItem] = useState("0")
+
     useEffect(() => {
         // if (location) {
         if (location.pathname.includes("company")) {
-            queryClient.setQueryData(['sidebarItem'], '1')
+            setSidebarItem('1')
         }
         else if (location.pathname.includes("my-documents")) {
-            queryClient.setQueryData(['sidebarItem'], '2')
+            setSidebarItem('2')
         }
         else if (location.pathname.includes("shared-documents")) {
-            queryClient.setQueryData(['sidebarItem'], '3')
+            setSidebarItem('3')
         }
         else if (location.pathname.includes("search")) {
-            queryClient.setQueryData(['sidebarItem'], '4')
+            setSidebarItem('4')
         }
         else if (location.pathname.includes("trash")) {
-            queryClient.setQueryData(['sidebarItem'], '5')
+            setSidebarItem('5')
         }
         else {
-            queryClient.setQueryData(['sidebarItem'], '0')
+            setSidebarItem('0')
         }
         // }
     }, [location])
@@ -194,31 +165,31 @@ const SideBar = (props) => {
                     background: antdTheme.token.colorBgContainer,
                     padding: "0 8px"
                 }}
-                selectedKeys={[queryClient.getQueryData(['sidebarItem'])]}
+                selectedKeys={[sidebarItem]}
                 mode="inline" items={items}
                 onSelect={(event) => {
                     if (event.key == '1') {
-                        // queryClient.setQueryData(['sidebarItem'], '1')
+                        // setSidebarItem('1')
                         navigate("/company")
                     }
                     else if (event.key == '2') {
-                        // queryClient.setQueryData(['sidebarItem'], '2')
+                        // setSidebarItem('2')
                         navigate("/my-documents")
                     }
                     else if (event.key == '3') {
-                        // queryClient.setQueryData(['sidebarItem'], '3')
+                        // setSidebarItem('3')
                         navigate("/shared-documents")
                     }
                     else if (event.key == '4') {
-                        // queryClient.setQueryData(['sidebarItem'], '4')
+                        // setSidebarItem('4')
                         navigate("/search")
                     }
                     else if (event.key == '5') {
-                        // queryClient.setQueryData(['sidebarItem'], '5')
+                        // setSidebarItem('5')
                         navigate("/trash")
                     }
                     else if (event.key == '6') {
-                        // queryClient.setQueryData(['sidebarItem'], '5')
+                        // setSidebarItem('5')
                         navigate("/ontology")
                     }
                 }}
