@@ -35,7 +35,7 @@ const Page_Login = () => {
                 ...response
             }
             dispatchUser({ type: "login", payload: finalInfo })
-            navigate(`/company`)
+            navigate(`/my-documents`)
 
         }
         catch (e) {

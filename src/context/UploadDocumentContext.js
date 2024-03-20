@@ -33,6 +33,14 @@ function UploadDocumentReducer(state, action) {
                 metadata: action.payload
             }
         }
+        case "reset": {
+            return {
+                fileList: [],
+                fileUrl: [],
+                current: 0,
+                metadata: null
+            }
+        }
         default: {
             localStorage.removeItem("user")
             return null

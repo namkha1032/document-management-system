@@ -89,7 +89,16 @@ const Create_Document = () => {
         console.log("newForm: ", newForm)
         let response = await saveDocumentToCloud(userStorage.access_token, newForm)
         console.log("response in handleSave: ", response)
-        navigate(`/document/${response.document.uid}`)
+        dispatchUploadDocument({ type: "reset" })
+        navigate(`/document/${response.document.uid}`, {
+            state: {
+                breadState: [
+                    { "title": "My documents", "path": `/my-documents` },
+                    { "title": Array.isArray(response.versions) ? `${response.versions[0].file_name}` : `${response.versions.file_name}`, "path": `/document/${response.document.uid}` }
+                ]
+
+            }
+        })
         setLoadingUpload(false)
     }
     async function handleOCR() {

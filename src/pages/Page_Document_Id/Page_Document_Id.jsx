@@ -24,13 +24,14 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { getDocument } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
-
+import { updateMetadata } from "../../apis/documentApi";
 
 
 const Page_Document_Id = () => {
     let [modalOpen, setModalOpen] = useState(false)
     let [document, setDocument] = useState(null)
     let [newMetadata, setNewMetadata] = useState(null)
+    let [loadingUpdateMetadata, setLoadingUpdateMetadata] = useState(false)
     console.log("newMetadata", newMetadata)
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
@@ -39,13 +40,32 @@ const Page_Document_Id = () => {
         async function fetchData() {
             let documentResponse = await getDocument(userStorage.access_token, document_id)
             setDocument(documentResponse)
-            setNewMetadata(documentResponse.versions[0].metadata)
+            setNewMetadata(documentResponse.versions[documentResponse.versions.length - 1].metadata)
         }
         fetchData()
     }, [])
     console.log("document in Page", document)
-    function handleUpdateMetadata(key, value) {
+    async function handleUpdateMetadata(key, value) {
+        setLoadingUpdateMetadata(true)
         // original function in Page_Upload_Metadata.jsx
+        let newForm = new FormData()
+        // newForm.append('files', uploadDocument.fileList[0])
+        newForm.append("data", JSON.stringify({
+            "message": "update metadata",
+            "metadata": newMetadata
+        }))
+        console.log("newForm: ", newForm)
+        let response = await updateMetadata(userStorage.access_token, document_id, newForm)
+        let documentResponse = await getDocument(userStorage.access_token, document_id)
+        setDocument(documentResponse)
+        setNewMetadata(documentResponse.versions[documentResponse.versions.length - 1].metadata)
+        setLoadingUpdateMetadata(false)
+        setModalOpen(false)
+    }
+    function deleteMetadataPair(index) {
+        let newlyMetadataPair = JSON.parse(JSON.stringify(newMetadata))
+        newlyMetadataPair.splice(index, 1)
+        setNewMetadata(newlyMetadataPair)
     }
     return (
         <>
@@ -55,7 +75,7 @@ const Page_Document_Id = () => {
                     "path": "/company"
                 },
                 {
-                    "title": document?.versions[0].file_name,
+                    "title": document?.versions[document.versions.length - 1].file_name,
                     "path": `/document/${document?.uid}`
                 }
             ]}
@@ -65,7 +85,7 @@ const Page_Document_Id = () => {
                     {/* <Container style={{ height: "100%" }}> */}
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
                         <Col md={16}>
-                            <iframe src={document.versions[0].url} style={{ width: "100%", height: "100%" }}>
+                            <iframe src={document.versions[document.versions.length - 1].url} style={{ width: "100%", height: "100%" }}>
                             </iframe>
                         </Col>
                         <Col md={8}>
@@ -78,7 +98,7 @@ const Page_Document_Id = () => {
                                     }}
                                     // style={{ backgroundColor: antdTheme.token.colorPrimaryBgHover }}
                                     >
-                                        <Statistic title="Filename" value={"filename.pdf"} prefix={<TagOutlined />}
+                                        <Statistic title="Filename" value={document.versions[document.versions.length - 1].file_name} prefix={<TagOutlined />}
                                         // valueStyle={{ color: antdTheme.token.colorPrimaryActive }}
                                         />
                                     </Card>
@@ -91,7 +111,7 @@ const Page_Document_Id = () => {
                                     }}
                                     // style={{ backgroundColor: antdTheme.token.colorSuccessBgHover }}
                                     >
-                                        <Statistic title="Created" value={"2024-01-01"} prefix={<ClockCircleOutlined />}
+                                        <Statistic title="Created" value={new Date(document.created_date).toLocaleDateString()} prefix={<ClockCircleOutlined />}
                                         // valueStyle={{ color: antdTheme.token.colorSuccessActive }}
                                         />
                                     </Card>
@@ -117,14 +137,14 @@ const Page_Document_Id = () => {
                                     }}
                                     // style={{ backgroundColor: antdTheme.token.colorWarningBgHover }}
                                     >
-                                        <Statistic title="Owner" value={"Nguyen Nam Kha"} prefix={<Avatar src={"/file/avatar.png"} />}
+                                        <Statistic title="Owner" value={document.owner.first_name + " " + document.owner.last_name} prefix={<Avatar src={"/file/avatar.png"} />}
                                         // valueStyle={{ color: antdTheme.token.colorWarningActive }}
                                         />
                                     </Card>
                                 </Col>
                                 <Col md={24}>
                                     <Card title={"Metadata"} extra={<Button onClick={() => { setModalOpen(true) }}>Edit metadata</Button>}>
-                                        {document.versions[0].metadata.map((item, index) => {
+                                        {document.versions[document.versions.length - 1].metadata.map((item, index) => {
                                             return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
                                                 <Col span={10}>
                                                     <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text>
@@ -153,7 +173,7 @@ const Page_Document_Id = () => {
                         </Col>
                     </Row>
                     <Modal footer={null} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
-                        {document.versions[0].metadata.map((item, index) => {
+                        {newMetadata.map((item, index) => {
                             return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
                                 <Col span={8}>
                                     <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text>
@@ -167,13 +187,16 @@ const Page_Document_Id = () => {
                                     }
                                 </Col>
                                 <Col span={2}>
-                                    <Button type={"text"} shape={"circle"} icon={<CloseOutlined />}>
+                                    <Button onClick={() => deleteMetadataPair(index)} type={"text"} shape={"circle"} icon={<CloseOutlined />}>
 
                                     </Button>
                                 </Col>
                             </Row>)
                         }
                         )}
+                        <div style={{ width: "100%", marginTop: 16, display: "flex", justifyContent: 'flex-end' }}>
+                            <Button loading={loadingUpdateMetadata} type="primary" onClick={() => handleUpdateMetadata()}>Save</Button>
+                        </div>
                     </Modal>
                     {/* </Container> */}
                 </>

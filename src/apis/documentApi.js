@@ -55,14 +55,23 @@ export async function getSharedDocuments(token, page, page_size) {
 
 export async function extractMetadata(newForm) {
     // await delay(2000)
-    const rawResponse = await axios.post(`${endpoint}/api/ocr`, newForm, {
-        headers: {
-            ...originHeader
+    let rawResponse = null
+    let i = 0
+    while (rawResponse?.data?.data == null) {
+        console.log("Number of loop: ", i)
+        rawResponse = await axios.post(`${endpoint}/api/ocr`, newForm, {
+            headers: {
+                ...originHeader
+            }
+        })
+        if (rawResponse.data.data) {
+            return rawResponse.data.data
         }
-    })
-    console.log("rawResponse", rawResponse)
+        console.log("rawResponse", rawResponse)
+        i += 1
+    }
     // const rawResponse = await axios.get('http://localhost:3000/data/metadata.json')
-    return rawResponse.data.data
+    // return rawResponse.data.data
 }
 
 export async function saveDocumentToCloud(token, data) {
@@ -78,4 +87,17 @@ export async function saveDocumentToCloud(token, data) {
     // return 1
     console.log("rawResponse in saveDocument: ", rawResponse)
     return rawResponse.data
+}
+
+export async function updateMetadata(token, uid, data) {
+    // await delay(2000)
+    const rawResponse = await axios.post(`${endpoint}/api/documents/update/${uid}`, data, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    console.log("updateMetadataResponse", rawResponse)
+    // const rawResponse = await axios.get('http://localhost:3000/data/metadata.json')
+    return rawResponse.data.data
 }
