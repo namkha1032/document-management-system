@@ -1,5 +1,5 @@
 import { createContext, useReducer, useEffect } from "react";
-
+import { getAllOntologies } from "../apis/ontologyApi";
 let SearchOptionContext = createContext(null)
 function SearchOptionReducer(state, action) {
     switch (action.type) {
@@ -19,7 +19,8 @@ const SearchOptionProvider = (props) => {
             narrower: {},
             metadata: [],
             method: 'fulltext',
-            domain: 'legal',
+            domain: '',
+            domainList: [],
             pagination: {
                 current: 1,
                 pageSize: 10,
@@ -27,7 +28,21 @@ const SearchOptionProvider = (props) => {
             search_scope: 'all'
         }
     )
-
+    useEffect(() => {
+        async function fetchData() {
+            let response = await getAllOntologies()
+            let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+            dispatchSearchOption({
+                type: "update",
+                payload: {
+                    ...oldSearchOption,
+                    domainList: response,
+                    domain: response[0].ontologyId
+                }
+            })
+        }
+        fetchData()
+    }, [])
     return (
         <SearchOptionContext.Provider value={[searchOption, dispatchSearchOption]}>
             {props.children}

@@ -192,7 +192,7 @@ const Section_Ontology_Url = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: "0 1 auto" }}>
-                <Bread breadProp={[
+                <Bread createButtonType={"ontology"} breadProp={[
                     {
                         "title": "Ontology",
                         "path": "/ontology"

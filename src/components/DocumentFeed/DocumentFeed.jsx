@@ -67,9 +67,19 @@ const DocumentFeed = (props) => {
             title: "Name",
             render: (obj) => {
                 return (
-                    <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
+                    <div onClick={() => {
+                        navigate(`/document/${obj.uid}`, {
+                            state: {
+                                breadState: [
+                                    { "title": originTitle, "path": `/${originPath}` },
+                                    { "title": `${obj.versions[0].file_name}`, "path": `/document/${obj.uid}` }
+                                ]
+
+                            }
+                        })
+                    }} style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
                         <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                        <Typography.Text>{obj.versions[obj.versions.length - 1].file_name}</Typography.Text>
+                        <Typography.Text>{obj.versions[0].file_name}</Typography.Text>
                     </div>
                 )
             }
@@ -97,7 +107,7 @@ const DocumentFeed = (props) => {
             title: "Created date",
             render: (obj) => {
                 return (
-                    <Typography.Text>{new Date(obj.created_date).toLocaleDateString()}</Typography.Text>
+                    <Typography.Text>{new Date(obj.created_date).toLocaleString()}</Typography.Text>
                 )
             }
         },
@@ -135,7 +145,7 @@ const DocumentFeed = (props) => {
                                                         state: {
                                                             breadState: [
                                                                 { "title": originTitle, "path": `/${originPath}` },
-                                                                { "title": `${item.versions[item.versions.length - 1].file_name}`, "path": `/document/${item.uid}` }
+                                                                { "title": `${item.versions[0].file_name}`, "path": `/document/${item.uid}` }
                                                             ]
 
                                                         }
@@ -152,10 +162,10 @@ const DocumentFeed = (props) => {
                                                 }}>
                                                 <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
                                                     <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                                                    <Typography.Title ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[item.versions.length - 1].file_name}</Typography.Title>
+                                                    <Typography.Title ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0].file_name}</Typography.Title>
                                                 </div>
                                                 <div className="pdfBorder" style={{ height: 150, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
-                                                    {/* <Document file={item.versions[item.versions.length - 1].url}>
+                                                    {/* <Document file={item.versions[0].url}>
                                                         <Page
                                                             width={250}
                                                             pageNumber={1} />
@@ -170,7 +180,7 @@ const DocumentFeed = (props) => {
                                                         zIndex: 999, /* Make sure the z-index is higher than the iframe */
                                                         backgroundColor: "rgba(0, 0, 0, 0)"/* Semi-transparent background */
                                                     }} />
-                                                    <iframe src={`${item.versions[item.versions.length - 1].url}`}
+                                                    <iframe src={`${item.versions[0].url}`}
                                                         style={{
                                                             // width: "100%",
                                                             // height: "217px",
@@ -224,7 +234,7 @@ const DocumentFeed = (props) => {
                             columns={documentColumns}
                             rowKey={(record) => record.uid}
                             dataSource={document}
-                            style={{ borderRadius: 8 }}
+                            style={{ borderRadius: 8, cursor: "pointer" }}
                         // loading={searchResult.loading}
                         // pagination={{
                         //     ...searchResult.pagination,

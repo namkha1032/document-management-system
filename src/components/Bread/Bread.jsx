@@ -80,7 +80,7 @@ const Bread = (props) => {
                 </div>
                 {/* </div> */}
                 <Space>
-                    {createButtonType == "document"
+                    {createButtonType == "ontology"
                         ? <>
                             {/* <Button type="primary" icon={<PlusOutlined />} size={"large"}
                                 onClick={() => {
@@ -90,9 +90,10 @@ const Bread = (props) => {
                             >
                                 Upload
                             </Button> */}
-                            <Create_Document />
+
+                            <Create_Ontology />
                         </>
-                        : <Create_Ontology />
+                        : <Create_Document />
                     }
                     <Segmented
                         value={gridList}
