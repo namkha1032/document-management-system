@@ -1,652 +1,654 @@
 {
-    "documents": [
-        {
-            "document_id": 1,
-            "file_name": "document 1",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
+    "data": {
+        "documents": [
+            {
+                "document_id": 1,
+                "file_name": "document 1",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "keyord": [
+                    "abc",
+                    "edf"
+                ],
+                "owner": {
+                    "full_name": "Tran Le Trung Chanh",
+                    "avatar": "/file/avatar.png"
                 },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "keyord": [
-                "abc",
-                "edf"
-            ],
-            "owner": {
-                "full_name": "Tran Le Trung Chanh",
-                "avatar": "/file/avatar.png"
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
             },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
+            {
+                "document_id": 2,
+                "file_name": "document 2",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Ngoc Hoa",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 3,
+                "file_name": "document 3",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Nam Kha",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 4,
+                "file_name": "document 4",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Tran Le Trung Chanh",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 5,
+                "file_name": "document 5",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Ngoc Hoa",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 6,
+                "file_name": "document 6",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Nam Kha",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 7,
+                "file_name": "document 7",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Tran Le Trung Chanh",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 8,
+                "file_name": "document 8",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Ngoc Hoa",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 9,
+                "file_name": "document 9",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Nam Kha",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 10,
+                "file_name": "document 10",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Tran Le Trung Chanh",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 11,
+                "file_name": "document 11",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Ngoc Hoa",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 12,
+                "file_name": "document 12",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Nam Kha",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 13,
+                "file_name": "document 13",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Tran Le Trung Chanh",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 14,
+                "file_name": "document 14",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Ngoc Hoa",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            },
+            {
+                "document_id": 15,
+                "file_name": "document 15",
+                "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
+                "metadata": [
+                    {
+                        "key 1": "value 1"
+                    },
+                    {
+                        "key 2": "value 2"
+                    },
+                    {
+                        "key 3": "value 3"
+                    },
+                    {
+                        "key 4": "value 4"
+                    },
+                    {
+                        "key 5": "value 5"
+                    },
+                    {
+                        "key 6": "value 6"
+                    },
+                    {
+                        "key 7": "value 7"
+                    },
+                    {
+                        "key 8": "value 8"
+                    }
+                ],
+                "owner": {
+                    "full_name": "Nguyen Nam Kha",
+                    "avatar": "/file/avatar.png"
+                },
+                "file_url": "/file/sample.pdf",
+                "file_size": "5 MB",
+                "created_date": "2024-01-05T22:36:32.995Z",
+                "updated_date": "2024-01-06T22:36:32.995Z"
+            }
+        ],
+        "broader": {
+            "thông tư": [
+                "broader 1",
+                "broader 2"
+            ],
+            "lao động": [
+                "broader 3",
+                "broader 4"
+            ]
         },
-        {
-            "document_id": 2,
-            "file_name": "document 2",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
+        "related": {
+            "thông tư": [
+                "related 1",
+                "related 2",
+                "related 3",
+                "related 4",
+                "related 5",
+                "related 6",
+                "related 7",
+                "related 8"
             ],
-            "owner": {
-                "full_name": "Nguyen Ngoc Hoa",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
+            "lao động": [
+                "related 9",
+                "related 10",
+                "related 11",
+                "related 12",
+                "related 13",
+                "related 14",
+                "related 15",
+                "related 16"
+            ]
         },
-        {
-            "document_id": 3,
-            "file_name": "document 3",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
+        "narrower": {
+            "thông tư": [
+                "narrower 1",
+                "narrower 2",
+                "narrower 3",
+                "narrower 4",
+                "narrower 5",
+                "narrower 6",
+                "narrower 7",
+                "narrower 8"
             ],
-            "owner": {
-                "full_name": "Nguyen Nam Kha",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
+            "lao động": [
+                "narrower 9",
+                "narrower 10",
+                "narrower 11",
+                "narrower 12",
+                "narrower 13",
+                "narrower 14",
+                "narrower 15",
+                "narrower 16"
+            ]
         },
-        {
-            "document_id": 4,
-            "file_name": "document 4",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Tran Le Trung Chanh",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 5,
-            "file_name": "document 5",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Ngoc Hoa",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 6,
-            "file_name": "document 6",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Nam Kha",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 7,
-            "file_name": "document 7",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Tran Le Trung Chanh",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 8,
-            "file_name": "document 8",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Ngoc Hoa",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 9,
-            "file_name": "document 9",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Nam Kha",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 10,
-            "file_name": "document 10",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Tran Le Trung Chanh",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 11,
-            "file_name": "document 11",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Ngoc Hoa",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 12,
-            "file_name": "document 12",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Nam Kha",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 13,
-            "file_name": "document 13",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Tran Le Trung Chanh",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 14,
-            "file_name": "document 14",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Ngoc Hoa",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
-        },
-        {
-            "document_id": 15,
-            "file_name": "document 15",
-            "content": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus non culpa id ab eum, mollitia pariatur maxime rerum dolor quo possimus nesciunt. Totam fugit odio reprehenderit quod maxime. Ad, mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti consequatur, magnam sed cum voluptate vero possimus, non in nobis rem, libero dolores tempore. Rerum iste repellendus ad porro corrupti eum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum amet ratione voluptate deleniti totam iste, veniam nulla qui optio ea nesciunt beatae! Incidunt, at. Laborum saepe quasi cumque nemo corporis.",
-            "metadata": [
-                {
-                    "key 1": "value 1"
-                },
-                {
-                    "key 2": "value 2"
-                },
-                {
-                    "key 3": "value 3"
-                },
-                {
-                    "key 4": "value 4"
-                },
-                {
-                    "key 5": "value 5"
-                },
-                {
-                    "key 6": "value 6"
-                },
-                {
-                    "key 7": "value 7"
-                },
-                {
-                    "key 8": "value 8"
-                }
-            ],
-            "owner": {
-                "full_name": "Nguyen Nam Kha",
-                "avatar": "/file/avatar.png"
-            },
-            "file_url": "/file/sample.pdf",
-            "file_size": "5 MB",
-            "created_date": "2024-01-05T22:36:32.995Z",
-            "updated_date": "2024-01-06T22:36:32.995Z"
+        "pagination": {
+            "current": 0,
+            "pageSize": 0,
+            "total": 12
         }
-    ],
-    "broader": {
-        "thông tư": [
-            "broader 1",
-            "broader 2"
-        ],
-        "lao động": [
-            "broader 3",
-            "broader 4"
-        ]
-    },
-    "related": {
-        "thông tư": [
-            "related 1",
-            "related 2",
-            "related 3",
-            "related 4",
-            "related 5",
-            "related 6",
-            "related 7",
-            "related 8"
-        ],
-        "lao động": [
-            "related 9",
-            "related 10",
-            "related 11",
-            "related 12",
-            "related 13",
-            "related 14",
-            "related 15",
-            "related 16"
-        ]
-    },
-    "narrower": {
-        "thông tư": [
-            "narrower 1",
-            "narrower 2",
-            "narrower 3",
-            "narrower 4",
-            "narrower 5",
-            "narrower 6",
-            "narrower 7",
-            "narrower 8"
-        ],
-        "lao động": [
-            "narrower 9",
-            "narrower 10",
-            "narrower 11",
-            "narrower 12",
-            "narrower 13",
-            "narrower 14",
-            "narrower 15",
-            "narrower 16"
-        ]
-    },
-    "pagination": {
-        "current": 0,
-        "pageSize": 0,
-        "total": 12
     }
 }

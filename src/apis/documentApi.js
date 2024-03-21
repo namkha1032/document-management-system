@@ -54,7 +54,7 @@ export async function getSharedDocuments(token, page, page_size) {
 }
 
 export async function extractMetadata(newForm) {
-    // await delay(2000)
+    await delay(4000)
     let rawResponse = null
     let i = 0
     while (rawResponse?.data?.data == null) {

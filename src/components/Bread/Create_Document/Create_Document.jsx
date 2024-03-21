@@ -42,16 +42,16 @@ const Create_Document = () => {
     const items = [
         {
             key: 0,
-            title: "First"
+            title: "Upload document"
         },
         {
             key: 1,
             icon: uploadDocument.current == 1 ? <LoadingOutlined /> : null,
-            title: "Second"
+            title: "Extract metadata"
         },
         {
             key: 2,
-            title: "Third"
+            title: "Save file"
         },
     ]
     const handleChange = (info) => {

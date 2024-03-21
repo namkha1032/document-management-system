@@ -8,7 +8,8 @@ import {
     theme,
     Table,
     Avatar,
-    Button
+    Button,
+    Skeleton
 } from "antd"
 import {
     DownloadOutlined,
@@ -84,14 +85,14 @@ const DocumentFeed = (props) => {
                 )
             }
         },
-        {
-            title: "Size",
-            render: (obj) => {
-                return (
-                    <Typography.Text>{"1 MB"}</Typography.Text>
-                )
-            }
-        },
+        // {
+        //     title: "Size",
+        //     render: (obj) => {
+        //         return (
+        //             <Typography.Text>{"1 MB"}</Typography.Text>
+        //         )
+        //     }
+        // },
         {
             title: "Owner",
             render: (obj) => {
@@ -247,7 +248,7 @@ const DocumentFeed = (props) => {
                 }
             </div>
             :
-            <Typography.Text>hehehe</Typography.Text>
+            <Skeleton active />
     )
 
 }

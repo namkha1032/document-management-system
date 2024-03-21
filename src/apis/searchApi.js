@@ -9,11 +9,11 @@ export async function getSearchResult(searchData) {
         metadata: JSON.stringify(searchData.metadata)
     }
     await delay(1000)
-    const response = await axios.post(`${endpoint}/api/search`, newSearchData, {
-        headers: { ...originHeader }
-    })
-    console.log("responsesearch", response)
-    // const response = await axios.get('http://localhost:3000/data/searchresult.json')
+    // const response = await axios.post(`${endpoint}/api/search`, newSearchData, {
+    //     headers: { ...originHeader }
+    // })
+    // console.log("responsesearch", response)
+    const response = await axios.get('http://localhost:3000/data/searchresult.json')
     // const newResponse = {
     //     ...response.data,
     //     pagination: {
