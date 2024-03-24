@@ -7,12 +7,10 @@ import {
     Typography,
     Affix
 } from "antd"
-import { useQueryClient } from "@tanstack/react-query"
 import { useState, useContext } from "react"
 // import context
 import ModeThemeContext from "../context/ModeThemeContext"
 const PageColor = () => {
-    let queryClient = useQueryClient()
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
     let colorArray = []
     let controlArray = []

@@ -1,7 +1,7 @@
 import axios from "axios";
 import delay from "../functions/delay";
-import endpoint from "./endpoint";
-import { originHeader } from "./endpoint";
+import endpoint from "./_domain";
+import { originHeader } from "./_domain";
 const domain = 'http://localhost:3000'
 export async function getSearchResult(searchData) {
     let newSearchData = {

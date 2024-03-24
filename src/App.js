@@ -6,10 +6,12 @@ import {
 import {
   createBrowserRouter,
   RouterProvider,
+  useNavigate
 } from "react-router-dom";
 import Page_Color from './pages/Page_Color';
 import MainLayout from './components/MainLayout/MainLayout';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { Skeleton } from "antd"
 // import pages
 import PageTest from './pages/PageTest';
 import FolderTree from './components/FolderTree/FolderTree';
@@ -26,23 +28,16 @@ import Page_Login from './pages/Page_Login/Page_Login';
 import Page_Document_Id from './pages/Page_Document_Id/Page_Document_Id';
 // import apis
 import { getSearchResult } from './apis/searchApi';
-// import context
-import { ModeThemeProvider } from './context/ModeThemeContext';
-import { SearchOptionProvider } from './context/SearchOptionContext';
-import { SearchResultProvider } from './context/SearchResultContext';
-import { GridListProvider } from './context/GridListContext';
-import { UserProvider } from './context/UserContext';
-import { UploadDocumentProvider } from './context/UploadDocumentContext';
-
-
+import { getMe } from './apis/userApi';
+// import Context
+import UserContext from './context/UserContext';
 const App = () => {
-  let modeTheme = window.localStorage.getItem("modeTheme")
   // search
   // router
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <MainLayout/>,
+      element: <MainLayout />,
       children: [
         {
           path: "company",
@@ -58,7 +53,7 @@ const App = () => {
         },
         {
           path: "search",
-          element: <Page_Search/>,
+          element: <Page_Search />,
         },
         {
           path: "trash",
@@ -92,19 +87,7 @@ const App = () => {
     }
   ]);
   return (
-    <UserProvider>
-      <ModeThemeProvider>
-        <UploadDocumentProvider>
-          <SearchOptionProvider>
-            <SearchResultProvider>
-              <GridListProvider>
-                <RouterProvider router={router} />
-              </GridListProvider>
-            </SearchResultProvider>
-          </SearchOptionProvider>
-        </UploadDocumentProvider>
-      </ModeThemeProvider>
-    </UserProvider>
+    <RouterProvider router={router} />
   );
 };
 

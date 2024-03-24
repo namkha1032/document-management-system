@@ -1,7 +1,7 @@
 import axios from "axios";
 import delay from "../functions/delay";
-import endpoint from "./endpoint";
-import { originHeader } from "./endpoint";
+import endpoint from "./_domain";
+import { originHeader } from "./_domain";
 export async function getAllOntologies() {
     let response = await axios.get(`${endpoint}/api/ontology/all`, { headers: { ...originHeader } })
     return response.data.data

@@ -1,7 +1,7 @@
 import axios from "axios";
 import delay from "../functions/delay";
-import endpoint from "./endpoint";
-import { originHeader } from "./endpoint";
+import endpoint from "./_domain";
+import { originHeader } from "./_domain";
 export async function userLogin(credential) {
     // await delay(2000)
     let response = await axios.post(`${endpoint}/api/users/login`, credential, {

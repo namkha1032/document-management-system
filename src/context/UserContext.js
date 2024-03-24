@@ -19,13 +19,8 @@ function userReducer(state, action) {
 }
 
 const UserProvider = (props) => {
-    let userStorage = localStorage.getItem("user")
+    // let userStorage = localStorage.getItem("user")
     const [user, dispatchUser] = useReducer(userReducer, null)
-    useEffect(() => {
-        if (userStorage) {
-            dispatchUser({ type: "login", payload: JSON.parse(userStorage) })
-        }
-    }, [])
     return (
         <UserContext.Provider value={[user, dispatchUser]}>
             {props.children}

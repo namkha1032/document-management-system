@@ -7,7 +7,7 @@ import UserContext from '../../context/UserContext';
 const Page_My_Documents = () => {
     // console.log('---------------render Page_Company----------------')
     let [user, dispatchUser] = useContext(UserContext)
-    let [document, setDocument] = useState(null)
+    let [documents, setDocuments] = useState(null)
     let [page, setPage] = useState(1)
     let [pageSize, setPageSize] = useState(10)
     let userStorage = JSON.parse(localStorage.getItem("user"))
@@ -21,8 +21,8 @@ const Page_My_Documents = () => {
             //         response.documents[0]
             //     ]
             // }
-            // setDocument(newDocument)
-            setDocument(response.documents)
+            // setDocuments(newDocument)
+            setDocuments(response.documents)
         }
         fetchData()
     }, [])
@@ -31,7 +31,7 @@ const Page_My_Documents = () => {
             <div style={{ flex: "0 1 auto" }}>
                 <Bread breadProp={[{ "title": "Shared with me", "path": "/shared-documents" }]} createButtonType={"document"} />
             </div>
-            <DocumentFeed originTitle={"Shared with me"} originPath={"shared-documents"} document={document} setDocument={setDocument} />
+            <DocumentFeed originTitle={"Shared with me"} originPath={"shared-documents"} documents={documents} setDocuments={setDocuments} />
         </div>
     )
 }

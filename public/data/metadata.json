@@ -1,25 +1,27 @@
 {
-    "metadata": [
-        {
-            "Document number": "03/2023/TT-BTP"
-        },
-        {
-            "Document type": "THÔNG TƯ"
-        },
-        {
-            "Agency": "BỘ TƯ PHÁP"
-        },
-        {
-            "Document title": "Sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP ngày 04 tháng 01 năm 2022"
-        },
-        {
-            "Issued date": "02/08/2023"
-        },
-        {
-            "Effective date": "02/08/2023"
-        },
-        {
-            "Văn bản liên quan": "['Luật Hộ tịch ngày 20 tháng 11 năm 2014','Nghị định số 98/2022/NĐ-CP','Nghị định số 87/2020/NĐ-CP','Nghị định số 42/2022/NĐ-CP']"
-        }
-    ]
+    "data": {
+        "metadata": [
+            {
+                "Document number": "03/2023/TT-BTP"
+            },
+            {
+                "Document type": "THÔNG TƯ"
+            },
+            {
+                "Agency": "BỘ TƯ PHÁP"
+            },
+            {
+                "Document title": "Sửa đổi, bổ sung một số nội dung của Thông tư số 01/2022/TT-BTP ngày 04 tháng 01 năm 2022"
+            },
+            {
+                "Issued date": "02/08/2023"
+            },
+            {
+                "Effective date": "02/08/2023"
+            },
+            {
+                "Văn bản liên quan": "['Luật Hộ tịch ngày 20 tháng 11 năm 2014','Nghị định số 98/2022/NĐ-CP','Nghị định số 87/2020/NĐ-CP','Nghị định số 42/2022/NĐ-CP']"
+            }
+        ]
+    }
 }
