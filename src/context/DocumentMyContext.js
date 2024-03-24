@@ -28,7 +28,7 @@ const DocumentMyProvider = (props) => {
     const [documentMy, dispatchDocumentMy] = useReducer(documentMyReducer, {
         documents: null,
         current: 1,
-        pageSize: 12,
+        pageSize: 24,
         total: null,
         totalPage: null,
         loading: false

@@ -20,8 +20,11 @@ import {
     EditOutlined,
     CheckOutlined,
     PlusOutlined,
-    CloseOutlined
+    CloseOutlined,
+    LinkOutlined
 } from '@ant-design/icons';
+import { MdVpnKey } from "react-icons/md";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { Document, Page, pdfjs } from "react-pdf"
@@ -226,7 +229,21 @@ const DocumentFeed = (props) => {
                 {/* <PdfToPngConverter /> */}
                 {/* <img src={convertToPng("/file/sample.pdf")} /> */}
                 {/* <img src="//image.thum.io/get/https://digital-document-ms.s3.ap-southeast-1.amazonaws.com/nobita/documents/trung.pdf_20240324_182344" /> */}
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16, flex: "0 1 auto" }}>
+                <div style={{ height: "40px", display: "flex", justifyContent: "space-between", marginBottom: 16, flex: "0 1 auto", alignItems: "center" }}>
+                    <div style={{ overflow: "hidden", transition: "width 0.5s", width: selectedDoc.length > 0 ? 300 : 0, backgroundColor: antdTheme.token.colorBgContainer, borderRadius: 100, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <Button size="large" shape="circle" type="text" icon={<CloseOutlined />} onClick={() => {
+                                setSelectedDoc([])
+                                setSelectedKey([])
+                            }} />
+                            <Typography.Text ellipsis style={{ fontSize: 16, fontWeight: 500 }}>{selectedDoc.length} selected</Typography.Text>
+                        </div>
+                        <div style={{ display: 'flex', columnGap: 8, alignItems: 'center' }}>
+                            <Button size="large" shape="circle" type="text" icon={<DownloadOutlined />} />
+                            <Button size="large" shape="circle" type="text" icon={<DeleteOutlined />} />
+                            <Button size="large" shape="circle" type="text" icon={<LinkOutlined rotate={45} />} />
+                        </div>
+                    </div>
                     <Pagination
                         pageSizeOptions={[12, 24, 36, 48]}
                         showQuickJumper showSizeChanger
@@ -290,38 +307,10 @@ const DocumentFeed = (props) => {
                                                                     setSelectedDoc([item])
                                                                     setSelectedKey([item.uid])
                                                                 }} className="pdfBorder" style={{ height: 150, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
-                                                                    {/* <Document file={item.versions[0].url}>
-                                                        <Page
-                                                            width={250}
-                                                            pageNumber={1} />
-                                                    </Document> */}
-                                                                    {/* <div style={{ width: 260, height: 200, overflow: "hidden" }}> */}
-                                                                    {/* <iframe src={`${item.versions[0].url ? item.versions[0].url : "/file/sample.pdf"}`}
-                                                            style={{
-                                                                // width: "100%",
-                                                                // height: "217px",
-                                                                border: 0,
-                                                                position: "relative",
-                                                                zIndex: 1
-                                                            }}
-                                                        ></iframe> */}
                                                                     <Image src={item.versions[0].url.length > 0
                                                                         ? `//image.thum.io/get/pdfSource/page/1/${item.versions[0].url}`
                                                                         : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} preview={false} />
-
-                                                                    {/* </div> */}
                                                                 </div>
-                                                                {/* <div style={{ width: 260, height: 200, overflow: "hidden" }}>
-                                                    <iframe id="pdfThumbnail" src="/file/sample.pdf#view=fitH&toolbar=0"
-                                                        // width={"100%"} height={"100%"} style={{ overflow: "hidden" }}
-                                                        style={{
-                                                            width: "276px",
-                                                            height: "217px",
-                                                            border: 0,
-                                                            overflow: "scroll"
-                                                        }}
-                                                    ></iframe>
-                                                </div> */}
                                                             </Card>
                                                         </Col>
                                                     )
@@ -374,14 +363,57 @@ const DocumentFeed = (props) => {
                             </div>
                         </div>
                         <Card
-                            title={selectedDoc[0]?.uid}
+                            title={selectedDoc.length == 1 ? selectedDoc[0]?.uid : " "}
                             className="selectCard"
                             extra={selectedDoc.length == 1 ? <Button type={"text"} icon={<CloseOutlined />} onClick={() => {
                                 setSelectedDoc([])
                                 setSelectedKey([])
                             }} /> : null}
-                            style={{ height: "100%", width: selectedDoc.length == 1 ? "30%" : 0, transition: "width 0.5s, border-width 0.5s", borderWidth: selectedDoc.length == 1 ? "1px" : "0px" }}
+                            style={{ display: "flex", flexDirection: "column", height: "100%", width: selectedDoc.length == 1 ? "30%" : 0, transition: "width 0.5s, border-width 0.5s", borderWidth: selectedDoc.length == 1 ? "1px" : "0px" }}
+                            styles={{
+                                header: {
+                                    flex: "0 1 auto"
+                                },
+                                body: {
+                                    flex: "1 1 auto",
+                                    display: 'flex',
+                                    flexDirection: "column"
+                                }
+                            }}
                         >
+                            <div style={{ flex: 1, position: "relative" }}>
+                                <div
+                                    id={"cardSelectedDoc"}
+                                    style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        overflowY: "scroll"
+                                    }}>
+                                    <div style={{ height: 300, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
+                                        <Image src={selectedDoc[0]?.versions[0].url.length > 0
+                                            ? `//image.thum.io/get/pdfSource/page/1/${selectedDoc[0]?.versions[0].url}`
+                                            : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
+                                    </div>
+                                    <Typography.Title ellipsis level={4}>Who has access</Typography.Title>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <Avatar.Group size={48}>
+                                            <Avatar src={`/file/giga1.png`} />
+                                            <Avatar src={`/file/giga2.png`} />
+                                            <Avatar src={`/file/giga3.png`} />
+                                            <Avatar src={`/file/giga4.png`} />
+                                        </Avatar.Group>
+                                        <Button icon={<MdVpnKey />} style={{ display: "flex", alignItems: "center", height: 48, fontSize: 16, borderColor: antdTheme.token.colorText, color: antdTheme.token.colorText }}>Manage access</Button>
+                                    </div>
+                                    <Typography.Title ellipsis level={4}>Owner</Typography.Title>
+                                    <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", columnGap: 8 }}>
+                                        <Avatar size={48} src={`/file/giga1.png`} />
+                                        <Typography.Text style={{ fontSize: 24 }} ellipsis>{`${selectedDoc[0]?.owner.first_name} ${selectedDoc[0]?.owner.last_name}`}</Typography.Text>
+                                    </div>
+                                </div>
+                            </div>
                         </Card>
                     </div>
                 </>

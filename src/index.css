@@ -15,7 +15,7 @@
     background-color: rgb(200, 200, 200);
 }
 
-#pdfThumbnail::-webkit-scrollbar {
+#cardSelectedDoc::-webkit-scrollbar {
     display: none;
 }
 
