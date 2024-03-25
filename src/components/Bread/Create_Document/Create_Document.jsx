@@ -114,66 +114,64 @@ const Create_Document = () => {
                 <Steps current={uploadDocument.current} items={items} style={{ marginBottom: 16 }} />
 
                 {uploadDocument.fileList.length > 0
-                    ? <Row style={{ width: "100%" }} justify={"center"}>
-                        <Col md={14}>
+                    ? <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
+                        <div md={14} style={{ width: "50%" }}>
                             <iframe src={uploadDocument.fileUrl[0]} style={{ width: "100%", height: 600, border: 0 }}>
                             </iframe>
-                        </Col>
-                        {uploadDocument.current != 0
-                            ? <Col md={10}>
-                                <Card title={uploadDocument.current == 1 ? "Your document is being processed..." : "OCR result"}
-                                    style={{ height: 600, display: "flex", flexDirection: "column", marginLeft: 16 }}
-                                    styles={{
-                                        header: {
-                                            flex: "0 1 auto"
-                                        },
-                                        body: {
-                                            flex: "1 1 auto",
-                                            overflowY: "scroll"
-                                        }
-                                    }}
-                                >
-                                    {uploadDocument.current == 1
-                                        ? <Skeleton active />
-                                        : <>
-                                            {uploadDocument.metadata.map((item, index) => {
-                                                return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
-                                                    <Col span={10}>
-                                                        <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text>
-                                                    </Col>
-                                                    <Col span={14}>
-                                                        {Object.entries(item)[0][0] == 'Văn bản liên quan'
-                                                            ? JSON.parse(Object.entries(item)[0][1].replaceAll("'", '"')).map((ite, index, arr) =>
-                                                                <Input.TextArea style={{ marginBottom: index + 1 == arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
-                                                            )
-                                                            : <Input.TextArea onChange={(e) => handleUpdateMetadata(Object.entries(item)[0][0], e.target.value)} autoSize={{ minRows: 1, maxRows: 4 }} value={Object.entries(item)[0][1]} />
-                                                        }
-
-                                                    </Col>
-                                                </Row>)
-                                            }
-                                            )}
-                                            <Typography.Title level={4}>Add new metadata</Typography.Title>
-                                            {/* <div className="metadata-input metadata-item value-item"> */}
-                                            <Row gutter={[8, 8]}>
+                        </div>
+                        <div style={{ transition: "width 0.3s", overflowX: "hidden", width: uploadDocument.current != 0 ? "50%" : 0 }}>
+                            <Card title={uploadDocument.current == 1 ? "Your document is being processed..." : "OCR result"}
+                                style={{ height: 600, display: "flex", flexDirection: "column", marginLeft: 16 }}
+                                styles={{
+                                    header: {
+                                        flex: "0 1 auto"
+                                    },
+                                    body: {
+                                        flex: "1 1 auto",
+                                        overflowY: "scroll"
+                                    }
+                                }}
+                            >
+                                {uploadDocument.current == 1
+                                    ? <Skeleton active />
+                                    : <>
+                                        {uploadDocument?.metadata?.map((item, index) => {
+                                            return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
                                                 <Col span={10}>
-                                                    <Input.TextArea autoSize value={newKey} placeholder='New key' onChange={(e) => setNewKey(e.target.value)} style={{ width: '100%' }} />
+                                                    <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text>
                                                 </Col>
-                                                <Col span={11}>
-                                                    <Input.TextArea autoSize value={newValue} placeholder='New value' onChange={(e) => setNewValue(e.target.value)} style={{ width: '100%' }} />
+                                                <Col span={14}>
+                                                    {Object.entries(item)[0][0] == 'Văn bản liên quan'
+                                                        ? JSON.parse(Object.entries(item)[0][1].replaceAll("'", '"')).map((ite, index, arr) =>
+                                                            <Input.TextArea style={{ marginBottom: index + 1 == arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
+                                                        )
+                                                        : <Input.TextArea onChange={(e) => handleUpdateMetadata(Object.entries(item)[0][0], e.target.value)} autoSize={{ minRows: 1, maxRows: 4 }} value={Object.entries(item)[0][1]} />
+                                                    }
+
                                                 </Col>
-                                                <Col span={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                    <Button icon={<PlusOutlined />}
-                                                        onClick={handleAddPair}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                            {/* </div> */}
-                                        </>}
-                                </Card>
-                            </Col>
-                            : null}
-                    </Row>
+                                            </Row>)
+                                        }
+                                        )}
+                                        <Typography.Title level={4}>Add new metadata</Typography.Title>
+                                        {/* <div className="metadata-input metadata-item value-item"> */}
+                                        <Row gutter={[8, 8]}>
+                                            <Col span={10}>
+                                                <Input.TextArea autoSize value={newKey} placeholder='New key' onChange={(e) => setNewKey(e.target.value)} style={{ width: '100%' }} />
+                                            </Col>
+                                            <Col span={11}>
+                                                <Input.TextArea autoSize value={newValue} placeholder='New value' onChange={(e) => setNewValue(e.target.value)} style={{ width: '100%' }} />
+                                            </Col>
+                                            <Col span={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                                <Button icon={<PlusOutlined />}
+                                                    onClick={handleAddPair}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        {/* </div> */}
+                                    </>}
+                            </Card>
+                        </div>
+                    </div>
                     : null}
                 {uploadDocument.current == 0 && (
                     <>
@@ -214,22 +212,30 @@ const Create_Document = () => {
                                 }
                             </Upload>
                         </div>
-                        {uploadDocument.fileList.length > 0
+                        {/* {uploadDocument.fileList.length > 0
                             ? <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                                <Button type="primary" onClick={() => handleOCR()}>
-                                    Start OCR
-                                </Button>
+                                <Button danger>Discard</Button>
+
                             </div>
-                            : null}
+                            : null} */}
                     </>
                 )}
-                {uploadDocument.current == 2 && (
-                    <div style={{ display: 'flex', justifyContent: "flex-end", marginTop: 16 }}>
+                <div style={{ display: 'flex', justifyContent: "flex-end", marginTop: 16, columnGap: 16 }}>
+                    {uploadDocument.current == 0 && uploadDocument.fileList.length > 0
+                        ? <Button type="primary" onClick={() => handleOCR()}>
+                            Start OCR
+                        </Button>
+                        : null}
+                    {uploadDocument.current == 2 ?
+                        <Button danger onClick={() => { dispatchUploadDocument({ type: "reset" }) }}>Discard</Button>
+                        : null}
+                    {uploadDocument.current == 2 ?
                         <Button loading={loadingUpload} type="primary" icon={<CheckOutlined />} onClick={() => handleSave()}>
                             Save document
                         </Button>
-                    </div>
-                )}
+                        : null}
+
+                </div>
             </Modal >
             <Button onClick={() => { setModalOpen(true) }} type="primary"
                 style={{ backgroundColor: uploadDocument.current == 0 ? antdTheme.token.colorPrimary : (uploadDocument.current == 1 ? antdTheme.token.colorWarning : antdTheme.token.colorSuccess) }}

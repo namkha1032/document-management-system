@@ -4,6 +4,7 @@ import { AiFillDatabase } from "react-icons/ai";
 import endpoint from "./_domain";
 import { originHeader } from "./_domain";
 export async function getDocument(token, documentId) {
+    await delay(1000)
     let response = await axios.get(`${endpoint}/api/documents/detail/${documentId}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -54,7 +55,7 @@ export async function getSharedDocuments(token, page, page_size) {
 }
 
 export async function extractMetadata(newForm) {
-    // await delay(4000)
+    await delay(4000)
     let rawResponse = null
     let i = 0
     while (rawResponse?.data?.data == null) {

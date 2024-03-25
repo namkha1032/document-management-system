@@ -9,7 +9,8 @@ function documentMyReducer(state, action) {
         case "pagination": {
             return {
                 ...state,
-                current: action.payload
+                current: action.payload.newPage,
+                pageSize: action.payload.newPageSize
             }
         }
         case "loading": {

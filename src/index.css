@@ -19,6 +19,11 @@
     display: none;
 }
 
+.mySkele {
+    height: 100% !important;
+}
+
+
 body {
     margin: 0;
     /* overflow: hidden; */

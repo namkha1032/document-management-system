@@ -22,6 +22,7 @@ const Bread = (props) => {
     let breadState = state?.breadState
     // -----------props-----------------
     let breadProp = props.breadProp
+    let breadSelectedDoc = props.breadSelectedDoc
     let createButtonType = props.createButtonType
     let extraComponent = props.extraComponent
     // -----------props-----------------
@@ -61,7 +62,14 @@ const Bread = (props) => {
                                 <Button type='text' size='large' style={{
                                     height: "fit-content",
                                     padding: 4
-                                }} onClick={() => { navigate(item.path, { state: { breadState: bread.slice(0, index + 1) } }) }}>
+                                }} onClick={() => {
+                                    navigate(item.path, {
+                                        state: {
+                                            breadState: bread.slice(0, index + 1),
+                                            breadSelectedDoc: breadSelectedDoc
+                                        }
+                                    })
+                                }}>
                                     <Typography.Title level={2} style={{ margin: 0, fontWeight: index == bread.length - 1 ? 500 : "normal" }}>
                                         {item.title}
                                     </Typography.Title>
