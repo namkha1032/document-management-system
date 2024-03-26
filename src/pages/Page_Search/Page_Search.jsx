@@ -50,16 +50,13 @@ import { hover } from "@testing-library/user-event/dist/hover"
 // import context
 import SearchOptionContext from "../../context/SearchOptionContext";
 import SearchResultContext from "../../context/SearchResultContext";
+import randomString from "../../functions/randomString";
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
 ).toString();
 
-function randomString() {
-    const result = Math.random().toString(36).substring(2, 7);
-    return result
-}
 function calculateTreeHeight(subTree) {
     if (subTree.hasOwnProperty('key') || subTree.hasOwnProperty('$not')) {
         return 1
@@ -542,9 +539,6 @@ const Page_Search = () => {
     let antdTheme = theme.useToken()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
-    console.log("searchOption: ", searchOption)
-    console.log("searchResult: ", searchResult)
-    console.log('searchResult in Page_Search', searchResult)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
         const newBroaderResult = type == 'broader'

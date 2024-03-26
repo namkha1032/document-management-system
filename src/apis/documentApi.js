@@ -16,7 +16,6 @@ export async function getDocument(token, documentId) {
 }
 
 export async function getCompanyDocument(token, page, page_size) {
-    console.log("endpoint: ", endpoint)
     let response = await axios.get(`${endpoint}/api/documents/matrix?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -24,12 +23,10 @@ export async function getCompanyDocument(token, page, page_size) {
             ...originHeader
         }
     })
-    console.log("response: ", response)
     return response.data.data
 }
 
 export async function getMyDocuments(token, page, page_size) {
-    console.log("endpoint: ", endpoint)
     let response = await axios.get(`${endpoint}/api/documents/matrix/me?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -37,12 +34,10 @@ export async function getMyDocuments(token, page, page_size) {
             ...originHeader
         }
     })
-    console.log("response: ", response)
     return response.data.data
 }
 
 export async function getSharedDocuments(token, page, page_size) {
-    console.log("endpoint: ", endpoint)
     let response = await axios.get(`${endpoint}/api/documents/matrix/shared?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -50,7 +45,7 @@ export async function getSharedDocuments(token, page, page_size) {
             ...originHeader
         }
     })
-    console.log("response: ", response)
+    
     return response.data.data
 }
 
@@ -59,7 +54,6 @@ export async function extractMetadata(newForm) {
     let rawResponse = null
     let i = 0
     while (rawResponse?.data?.data == null) {
-        console.log("Number of loop: ", i)
         // rawResponse = await axios.post(`${endpoint}/api/ocr`, newForm, {
         //     headers: {
         //         ...originHeader
@@ -69,7 +63,6 @@ export async function extractMetadata(newForm) {
         if (rawResponse.data.data) {
             return rawResponse.data.data
         }
-        console.log("rawResponse", rawResponse)
         i += 1
     }
     // const rawResponse = await axios.get('http://localhost:3000/data/metadata.json')
@@ -78,8 +71,6 @@ export async function extractMetadata(newForm) {
 
 export async function saveDocumentToCloud(token, data) {
     // await delay(1000)
-    console.log("token: ", token)
-    console.log("data: ", data)
     let rawResponse = await axios.post(`${endpoint}/api/documents/create`, data, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -87,7 +78,6 @@ export async function saveDocumentToCloud(token, data) {
         }
     })
     // return 1
-    console.log("rawResponse in saveDocument: ", rawResponse)
     return rawResponse.data
 }
 
@@ -99,7 +89,6 @@ export async function updateMetadata(token, uid, data) {
             ...originHeader
         }
     })
-    console.log("updateMetadataResponse", rawResponse)
     // const rawResponse = await axios.get('http://localhost:3000/data/metadata.json')
     return rawResponse.data.data
 }
@@ -131,7 +120,6 @@ export async function convertToPng(pdfUrl) {
 
         // Convert canvas content to PNG
         const pngDataUrl = canvas.toDataURL('image/jpg');
-        console.log(pngDataUrl);
         // setPngUrl(pngDataUrl)
         return pngDataUrl
         // Use pngDataUrl for your purpose, e.g., displaying it or downloading it
@@ -169,7 +157,6 @@ export async function convertToJpg(pdfUrl) {
         const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.8); // Adjust quality as needed (0.0 - 1.0)
 
         // Use jpgDataUrl for your purpose, e.g., displaying it or downloading it
-        console.log(jpgDataUrl);
         return jpgDataUrl
     } catch (error) {
         console.error('There was a problem fetching or processing the PDF:', error);
@@ -210,7 +197,6 @@ export async function convertFileToJpg(pdfFile) {
             const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.8); // Adjust quality as needed (0.0 - 1.0)
 
             // Use jpgDataUrl for your purpose, e.g., displaying it or downloading it
-            console.log(jpgDataUrl);
         };
 
         fileReader.readAsArrayBuffer(pdfFile);

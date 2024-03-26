@@ -35,7 +35,6 @@ const Create_Document = () => {
     const [newValue, setNewValue] = useState('');
     const antdTheme = theme.useToken()
     const [uploadDocument, dispatchUploadDocument] = useContext(UploadDocumentContext)
-    console.log("uploadDocument: ", uploadDocument)
     const [fileList, setFileList] = useState([]);
     let userStorage = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate()
@@ -69,7 +68,6 @@ const Create_Document = () => {
             }
             return file;
         });
-        console.log("newFileList: ", newFileList)
         setFileList(newFileList);
     };
     const handleAddPair = () => {
@@ -86,9 +84,7 @@ const Create_Document = () => {
             "message": "hehehe",
             "metadata": uploadDocument.metadata
         }))
-        console.log("newForm: ", newForm)
         let response = await saveDocumentToCloud(userStorage.access_token, newForm)
-        console.log("response in handleSave: ", response)
         dispatchUploadDocument({ type: "reset" })
         navigate(`/document/${response.document.uid}`, {
             state: {

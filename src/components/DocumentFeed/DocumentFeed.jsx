@@ -104,7 +104,6 @@ const DocumentFeed = (props) => {
     let [selectedKey, setSelectedKey] = useState([])
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
-    console.log("documentResult", documentResult)
     // fetch("http://localhost:3000/file/sample.pdf")
     //     .then(response => {
     //         if (!response.ok) {
@@ -396,7 +395,6 @@ const DocumentFeed = (props) => {
                                                     hideSelectAll: true,
                                                     type: "checkbox",
                                                     onChange: (selectedRowKeys, selectedRows) => {
-                                                        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                                                         setSelectedDoc(selectedRows)
                                                         setSelectedKey(selectedRowKeys)
                                                     },

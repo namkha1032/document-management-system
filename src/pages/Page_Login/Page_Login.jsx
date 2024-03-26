@@ -25,10 +25,9 @@ const Page_Login = () => {
     const navigate = useNavigate()
     async function handleLogin(values) {
         setLoadingLogin(true)
-        console.log('Received values of form: ', values);
         try {
             let response = await userLogin(values)
-            console.log("response: ", response)
+            
             let userInfo = await getMe(response.access_token)
             let finalInfo = {
                 ...userInfo,
@@ -39,7 +38,6 @@ const Page_Login = () => {
 
         }
         catch (e) {
-            console.log("error: ", e)
         }
         setLoadingLogin(false)
     };

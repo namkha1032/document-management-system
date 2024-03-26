@@ -28,11 +28,9 @@ const PdfUploader = () => {
                 'Your document has been saved successfully.',
         });
     };
-    console.log('metadata', metadata)
     const pagesPerView = 1;
 
     const onFileChange = (e) => {
-        console.log("e: ", e)
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
         setNumPages(null);

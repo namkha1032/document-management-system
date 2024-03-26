@@ -5,7 +5,6 @@ import { useState, useEffect, useContext } from "react"
 import { getCompanyDocument } from "../../apis/documentApi";
 import UserContext from '../../context/UserContext';
 const Page_Company = () => {
-    console.log('---------------render Page_Company----------------')
     let [user, dispatchUser] = useContext(UserContext)
     let [documents, setDocuments] = useState(null)
     let [page, setPage] = useState(1)

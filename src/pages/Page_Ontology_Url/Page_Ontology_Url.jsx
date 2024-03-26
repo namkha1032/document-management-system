@@ -59,7 +59,6 @@ const Section_Ontology_Url = () => {
             });
         }
     }, [isRenameOntology])
-    console.log("ontology: ", ontology)
     const graphOptions = {
         "layout": {
             // "randomSeed": 69,
@@ -268,8 +267,6 @@ const Section_Ontology_Url = () => {
                                                     options={ontology.parentOptions}
                                                     value={searchNode}
                                                     onChange={(id, node) => {
-                                                        console.log("id: ", id)
-                                                        console.log("node: ", node)
                                                         handleSearchNode(id)
                                                     }}
                                                     placeholder="Search node..."

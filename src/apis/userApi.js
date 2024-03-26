@@ -7,7 +7,6 @@ export async function userLogin(credential) {
     let response = await axios.post(`${endpoint}/api/users/login`, credential, {
         headers: { ...originHeader }
     })
-    console.log("responseLogin: ", response)
     return response.data.data
 }
 

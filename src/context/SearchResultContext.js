@@ -5,7 +5,6 @@ let SearchResultContext = createContext(null)
 function SearchResultReducer(state, action) {
     switch (action.type) {
         case "update": {
-            console.log('searchResult in context', action.payload)
             return action.payload
         }
         case "search": {

@@ -4,7 +4,6 @@ let SearchOptionContext = createContext(null)
 function SearchOptionReducer(state, action) {
     switch (action.type) {
         case "update": {
-            console.log('searchOption in context', action.payload)
             return action.payload
         }
     }

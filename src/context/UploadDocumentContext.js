@@ -26,7 +26,6 @@ function UploadDocumentReducer(state, action) {
             }
         }
         case "setResult": {
-            console.log("action.payload: ", action.payload)
             return {
                 ...state,
                 current: 2,
