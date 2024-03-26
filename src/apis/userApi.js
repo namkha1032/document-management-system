@@ -20,3 +20,15 @@ export async function getMe(token) {
     })
     return response.data.data
 }
+
+export async function getUserList(token) {
+    // await delay(2000)
+    let response = await axios.get(`/data/userlist.json`)
+    // let response = await axios.get(`${endpoint}/api/users/get/me`, {
+    //     headers: {
+    //         "Authorization": `Bearer ${token}`,
+    //         ...originHeader
+    //     }
+    // })
+    return response.data.data
+}

@@ -26,10 +26,10 @@ import {
     PlusOutlined
 } from '@ant-design/icons';
 import { useParams, useNavigate } from "react-router-dom";
-import { getDocument } from "../../apis/documentApi";
+import { getDocument, updateMetadata } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
-import { updateMetadata } from "../../apis/documentApi";
 import randomString from "../../functions/randomString";
+import PermissionModal from "../../components/PermissionModal/PermissionModal";
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -102,6 +102,30 @@ const ModalUpdateMetadata = (props) => {
     useEffect(() => {
         setNewMetadata(document?.versions[0].metadata)
     }, [document])
+    // ///////////////////////////////////////////////
+    const [inputValue, setInputValue] = useState('');
+
+    // Debounce function
+    const debounce = (func, delay) => {
+        let timer;
+        return function (...args) {
+            const context = this;
+            clearTimeout(timer);
+            timer = setTimeout(() => func.apply(context, args), delay);
+        };
+    };
+
+    // Debounced setInputValue function
+    const setInputValueDebounced = debounce((value) => {
+        setInputValue(value);
+    }, 2000);
+
+    // Handle input change
+    const handleInputChange = (event) => {
+        const { value } = event.target;
+        setInputValueDebounced(value);
+    };
+    // ///////////////////////////////////////////////
     async function handleUpdateMetadata(data) {
         console.log("CAUTION: handleUpdateMetadata", data)
         setLoadingUpdateMetadata(true)
@@ -377,7 +401,7 @@ const Page_Document_Id = () => {
                                 <Button style={{ width: "100%" }} type="primary">Lock file</Button>
                             </Col>
                             <Col md={24}>
-                                <Button style={{ width: "100%" }} type="primary">Manage access</Button>
+                                <PermissionModal document={document} modalButton={<Button style={{ width: "100%" }} type="primary">Manage access</Button>} />
                             </Col>
                         </Row>
                     </Col>

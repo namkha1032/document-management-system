@@ -41,6 +41,7 @@ const Section_Ontology_Url = () => {
     let [newNode, setNewNode] = useState("")
     let [searchNode, setSearchNode] = useState(null)
     let { ontologyUrl } = useParams()
+    console.log("Page_Ontology_Url: ontology", ontology)
     const navigate = useNavigate()
     const ontologyNameRef = useRef(null)
     useEffect(() => {

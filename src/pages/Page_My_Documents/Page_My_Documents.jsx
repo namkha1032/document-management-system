@@ -11,6 +11,7 @@ const Page_My_Documents = () => {
     let [user, dispatchUser] = useContext(UserContext)
     let [documentMy, dispatchDocumentMy] = useContext(DocumentMyContext)
     let userStorage = JSON.parse(localStorage.getItem("user"))
+    console.log("Page_My_Document: documentMy", documentMy)
     useEffect(() => {
         // async function fetchData() {
         //     let response = await getMyDocuments(userStorage.access_token, documentMy.current, documentMy.pageSize)
