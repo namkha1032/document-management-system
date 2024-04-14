@@ -27,7 +27,7 @@ import {
     HourglassOutlined
 } from '@ant-design/icons';
 import UploadDocumentContext from "../../../context/UploadDocumentContext";
-import { extractMetadata, saveDocumentToCloud } from "../../../apis/documentApi";
+import { apiExtractMetadata, apiSaveDocumentToCloud } from "../../../apis/documentApi";
 const Create_Document = () => {
     let [modalOpen, setModalOpen] = useState(false)
     let [loadingUpload, setLoadingUpload] = useState(false)
@@ -79,29 +79,31 @@ const Create_Document = () => {
     async function handleSave() {
         setLoadingUpload(true)
         let newForm = new FormData()
-        newForm.append('files', uploadDocument.fileList[0])
+        // newForm.append('files', uploadDocument.fileList[0])
         newForm.append("data", JSON.stringify({
             "message": "hehehe",
             "metadata": uploadDocument.metadata
         }))
-        let response = await saveDocumentToCloud(userStorage.access_token, newForm)
-        dispatchUploadDocument({ type: "reset" })
+        // for (let i = 0; i < 100; i++) {
+        //     let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
+        // }
+        let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
         navigate(`/document/${response.document.uid}`, {
             state: {
                 breadState: [
                     { "title": "My documents", "path": `/my-documents` },
                     { "title": Array.isArray(response.versions) ? `${response.versions[0].file_name}` : `${response.versions.file_name}`, "path": `/document/${response.document.uid}` }
                 ]
-
             }
         })
+        dispatchUploadDocument({ type: "reset" })
         setLoadingUpload(false)
     }
     async function handleOCR() {
         dispatchUploadDocument({ type: "setStep", payload: 1 })
         let newForm = new FormData()
         newForm.append('pdf_file', uploadDocument.fileList[0])
-        let response = await extractMetadata(newForm)
+        let response = await apiExtractMetadata(newForm)
         dispatchUploadDocument({ type: "setResult", payload: response.metadata })
     }
     return (

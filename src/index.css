@@ -38,3 +38,8 @@ body,
 #root>.ant-layout {
     height: 100%
 }
+
+.namkha-message>div {
+    padding: 0 !important;
+}
+

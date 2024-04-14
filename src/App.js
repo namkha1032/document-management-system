@@ -16,9 +16,9 @@ import { Skeleton } from "antd"
 import PageTest from './pages/PageTest';
 import FolderTree from './components/FolderTree/FolderTree';
 
-import Page_Company from './pages/Page_Company/Page_Company';
-import Page_My_Documents from './pages/Page_My_Documents/Page_My_Documents';
-import Page_Shared_Documents from './pages/Page_Shared_Documents/Page_Shared_Documents';
+import Page_Company from './pages/Page_Documents_Company/Page_Documents_Company';
+import Page_Documents_My from './pages/Page_Documents_My/Page_Documents_My';
+import Page_Documents_Shared from './pages/Page_Documents_Shared/Page_Documents_Shared';
 import Page_Trash from './pages/Page_Trash/Page_Trash';
 import Page_Search from './pages/Page_Search/Page_Search';
 import Page_Upload from './pages/Page_Upload/Page_Upload';
@@ -31,6 +31,7 @@ import { getSearchResult } from './apis/searchApi';
 import { getMe } from './apis/userApi';
 // import Context
 import UserContext from './context/UserContext';
+import Page_Documents_Company from './pages/Page_Documents_Company/Page_Documents_Company';
 const App = () => {
   // search
   // router
@@ -41,15 +42,15 @@ const App = () => {
       children: [
         {
           path: "company",
-          element: <Page_Company />,
+          element: <Page_Documents_Company />,
         },
         {
           path: "my-documents",
-          element: <Page_My_Documents />,
+          element: <Page_Documents_My />,
         },
         {
           path: "shared-documents",
-          element: <Page_Shared_Documents />,
+          element: <Page_Documents_Shared />,
         },
         {
           path: "search",

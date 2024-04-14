@@ -344,6 +344,52 @@ function handleAddMetadata(obj_id, type, searchOption, dispatchSearchOption) {
     }
     dispatchSearchOption({ type: "update", payload: newSearchOption })
 }
+const FormValue = (props) => {
+    const myObj = props.myObj
+    const handleTypeKeyValue = props.handleTypeKeyValue
+    let [inputText, setInputText] = useState(myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            handleTypeKeyValue(myObj.obj_id, inputText, 'value')
+        }, 1000)
+
+        return () => clearTimeout(timer)
+    }, [inputText])
+    useEffect(() => {
+        setInputText(myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value)
+    }, [myObj])
+    return (
+        <Input
+            value={inputText}
+            onChange={e => setInputText(e.target.value)}
+            style={{ width: 160 }} placeholder='value' />
+    )
+}
+const FormKey = (props) => {
+    const myObj = props.myObj
+    const handleTypeKeyValue = props.handleTypeKeyValue
+    let [inputText, setInputText] = useState(myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            handleTypeKeyValue(myObj.obj_id, inputText, 'key')
+        }, 1000)
+
+        return () => clearTimeout(timer)
+    }, [inputText])
+    useEffect(() => {
+        setInputText(myObj.hasOwnProperty('$not') ? myObj.$not.key : myObj.key)
+    }, [myObj])
+    return (
+        <AutoComplete
+            style={{
+                width: 160,
+            }}
+            placeholder="key"
+            value={inputText}
+            onChange={val => setInputText(val)}
+        />
+    )
+}
 const MetaForm = (props) => {
     const antdTheme = theme.useToken()
     const myObj = props.myObj
@@ -484,14 +530,9 @@ const MetaForm = (props) => {
                     display: 'flex', columnGap: 8, justifyContent: 'flex-start', alignItems: 'center'
                     // marginLeft: (treeHeight - currHeight) * 25
                 }}>
-                    <AutoComplete
-                        style={{
-                            width: 160,
-                        }}
-                        placeholder="key"
-                        value={myObj.hasOwnProperty('$not') ? myObj.$not.key : myObj.key}
-                        onChange={val => handleTypeKeyValue(myObj.obj_id, val, 'key')}
-                    />
+                    {/* FormKey */}
+                    <FormKey myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} />
+
                     <Button
                         style={{ width: 80 }}
                         onClick={() => {
@@ -504,10 +545,9 @@ const MetaForm = (props) => {
                         }}>
                         {myObj.hasOwnProperty('$not') ? 'IS NOT' : 'IS'}
                     </Button>
-                    <Input
-                        value={myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value}
-                        onChange={e => handleTypeKeyValue(myObj.obj_id, e.target.value, 'value')}
-                        style={{ width: 160 }} placeholder='value' />
+                    {/* FormValue */}
+                    <FormValue myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} />
+
                     <Button shape="circle" type="text" icon={<CloseOutlined />} onClick={() => handleDeleteMetadata(myObj.obj_id)} />
                 </div>
             )
@@ -539,6 +579,7 @@ const Page_Search = () => {
     let antdTheme = theme.useToken()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+    console.log("searchOption", searchOption)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
         const newBroaderResult = type == 'broader'

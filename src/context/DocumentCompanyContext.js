@@ -1,7 +1,7 @@
 import { createContext, useReducer, useEffect } from "react";
 
-let DocumentSharedContext = createContext(null)
-function documentSharedReduer(state, action) {
+let DocumentCompanyContext = createContext(null)
+function documentCompanyReduer(state, action) {
     switch (action.type) {
         case "set": {
             return action.payload
@@ -25,8 +25,8 @@ function documentSharedReduer(state, action) {
     }
 }
 
-const DocumentSharedProvider = (props) => {
-    const [documentShared, dispatchDocumentShared] = useReducer(documentSharedReduer, {
+const DocumentCompanyProvider = (props) => {
+    const [documentCompany, dispatchDocumentCompany] = useReducer(documentCompanyReduer, {
         documents: null,
         current: 1,
         pageSize: 24,
@@ -35,11 +35,11 @@ const DocumentSharedProvider = (props) => {
         loading: false
     })
     return (
-        <DocumentSharedContext.Provider value={[documentShared, dispatchDocumentShared]}>
+        <DocumentCompanyContext.Provider value={[documentCompany, dispatchDocumentCompany]}>
             {props.children}
-        </DocumentSharedContext.Provider>
+        </DocumentCompanyContext.Provider>
     )
 }
 
-export { DocumentSharedProvider }
-export default DocumentSharedContext
+export { DocumentCompanyProvider }
+export default DocumentCompanyContext

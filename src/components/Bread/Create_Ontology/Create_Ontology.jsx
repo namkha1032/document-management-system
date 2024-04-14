@@ -63,7 +63,7 @@ import {
     xt256,
     zenburn
 } from 'react-code-blocks';
-import { getAllOntologies, uploadOntologyFile, deleteOntology, createNewOntology}  from "../../../apis/ontologyApi";
+import { getAllOntologies, uploadOntologyFile, deleteOntology, createNewOntology } from "../../../apis/ontologyApi";
 
 
 
@@ -107,11 +107,15 @@ const Create_Ontology = () => {
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
                     <Upload fileList={fileList} name={"file"} multiple={false}
                         beforeUpload={(file) => {
+                            console.log("file in beforeUpload: ", file)
                             setFileList([
                                 ...fileList,
                                 file
                             ])
                             return false
+                        }}
+                        onChange={(file) => {
+                            console.log("file in onChange: ", file)
                         }}
                         onRemove={(file) => {
                             const index = fileList.indexOf(file);

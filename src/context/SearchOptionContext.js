@@ -36,7 +36,7 @@ const SearchOptionProvider = (props) => {
                 payload: {
                     ...oldSearchOption,
                     domainList: response,
-                    domain: response[0].ontologyId
+                    domain: response[0]?.ontologyId
                 }
             })
         }

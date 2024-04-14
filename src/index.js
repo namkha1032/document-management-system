@@ -10,6 +10,8 @@ import { GridListProvider } from './context/GridListContext';
 import { UserProvider } from './context/UserContext';
 import { UploadDocumentProvider } from './context/UploadDocumentContext';
 import { DocumentMyProvider } from './context/DocumentMyContext';
+import { DocumentCompanyProvider } from './context/DocumentCompanyContext';
+import { DocumentSharedProvider } from './context/DocumentSharedContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
@@ -21,7 +23,11 @@ root.render(
           <SearchResultProvider>
             <GridListProvider>
               <DocumentMyProvider>
-                <App />
+                <DocumentCompanyProvider>
+                  <DocumentSharedProvider>
+                    <App />
+                  </DocumentSharedProvider>
+                </DocumentCompanyProvider>
               </DocumentMyProvider>
             </GridListProvider>
           </SearchResultProvider>

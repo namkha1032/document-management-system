@@ -2,9 +2,10 @@ import { Typography } from "antd"
 import Bread from "../../components/Bread/Bread"
 import DocumentFeed from "../../components/DocumentFeed/DocumentFeed"
 import { useState, useEffect, useContext } from "react"
-import { getCompanyDocument } from "../../apis/documentApi";
+import { apiGetSharedDocument } from "../../apis/documentApi";
 import UserContext from '../../context/UserContext';
-const Page_Company = () => {
+const Page_Documents_Shared = () => {
+    // console.log('---------------render Page_Company----------------')
     let [user, dispatchUser] = useContext(UserContext)
     let [documents, setDocuments] = useState(null)
     let [page, setPage] = useState(1)
@@ -12,7 +13,7 @@ const Page_Company = () => {
     let userStorage = JSON.parse(localStorage.getItem("user"))
     useEffect(() => {
         async function fetchData() {
-            let response = await getCompanyDocument(userStorage.access_token, page, pageSize)
+            let response = await apiGetSharedDocument(userStorage.access_token, page, pageSize)
             // let newDocument = []
             // for (let i = 0; i < 50; i++) {
             //     newDocument = [
@@ -28,11 +29,11 @@ const Page_Company = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: "0 1 auto" }}>
-                <Bread breadProp={[{ "title": "Company documents", "path": "/company" }]} createButtonType={"document"} />
+                <Bread breadProp={[{ "title": "Shared with me", "path": "/shared-documents" }]} createButtonType={"document"} />
             </div>
-            <DocumentFeed originTitle={"Company documents"} originPath={"company"} documents={documents} setDocuments={setDocuments} />
+            <DocumentFeed originTitle={"Shared with me"} originPath={"shared-documents"} documents={documents} setDocuments={setDocuments} />
         </div>
     )
 }
 
-export default Page_Company
+export default Page_Documents_Shared

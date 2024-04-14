@@ -11,9 +11,12 @@ import {
     Statistic,
     Input,
     Modal,
-    Skeleton
+    Skeleton,
+    Popconfirm,
+    message,
+    Alert,
+    Tag
 } from "antd"
-import { useForm, Controller } from "react-hook-form"
 // import Skeleton from '@mui/material/Skeleton';
 import Container from '@mui/material/Container';
 import { CiShoppingTag } from "react-icons/ci";
@@ -23,13 +26,20 @@ import {
     ClockCircleOutlined,
     UngroupOutlined,
     CloseOutlined,
-    PlusOutlined
+    PlusOutlined,
+    RollbackOutlined,
+    StopOutlined
 } from '@ant-design/icons';
+import { MdVpnKey } from "react-icons/md";
+import { FaLock, FaGlobeAsia } from "react-icons/fa";
+
 import { useParams, useNavigate } from "react-router-dom";
-import { getDocument, updateMetadata } from "../../apis/documentApi";
+import { apiGetDocument, apiUpdateMetadata, apiRestoreVersion } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
 import randomString from "../../functions/randomString";
 import PermissionModal from "../../components/PermissionModal/PermissionModal";
+import MetadataUpdateForm from "../../components/MetadataUpdateForm/MetadataUpdateForm";
+import TagButton from "../../components/TagButton/TagButton";
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -91,53 +101,25 @@ const ModalUpdateMetadata = (props) => {
     let [modalOpen, setModalOpen] = useState(false)
     let [loadingUpdateMetadata, setLoadingUpdateMetadata] = useState(false)
     let [newMetadata, setNewMetadata] = useState(null)
-    let [newMetadataId, setNewMetadataId] = useState(null)
     let [comment, setComment] = useState("")
-    let metadataKeyNum = 7
-    let metadataValueNum = 14
-    let metadataButtonNum = 2
-    let metadataColonNum = 1
-    let newMetaForm = useForm()
     console.log("newMetadata: ", newMetadata)
     useEffect(() => {
         setNewMetadata(document?.versions[0].metadata)
     }, [document])
     // ///////////////////////////////////////////////
-    const [inputValue, setInputValue] = useState('');
 
-    // Debounce function
-    const debounce = (func, delay) => {
-        let timer;
-        return function (...args) {
-            const context = this;
-            clearTimeout(timer);
-            timer = setTimeout(() => func.apply(context, args), delay);
-        };
-    };
-
-    // Debounced setInputValue function
-    const setInputValueDebounced = debounce((value) => {
-        setInputValue(value);
-    }, 2000);
-
-    // Handle input change
-    const handleInputChange = (event) => {
-        const { value } = event.target;
-        setInputValueDebounced(value);
-    };
     // ///////////////////////////////////////////////
-    async function handleUpdateMetadata(data) {
-        console.log("CAUTION: handleUpdateMetadata", data)
+    async function handleUpdateMetadata() {
         setLoadingUpdateMetadata(true)
         // original function in Page_Upload_Metadata.jsx
         let newForm = new FormData()
         // newForm.append('files', uploadDocument.fileList[0])
         newForm.append("data", JSON.stringify({
-            "message": data["message"],
+            "message": comment,
             "metadata": newMetadata
         }))
-        let response = await updateMetadata(userStorage.access_token, document_id, newForm)
-        let documentResponse = await getDocument(userStorage.access_token, document_id)
+        let response = await apiUpdateMetadata(userStorage.access_token, document_id, newForm)
+        let documentResponse = await apiGetDocument(document_id)
         setDocument(documentResponse)
         setNewMetadata(documentResponse.versions[0].metadata)
         setLoadingUpdateMetadata(false)
@@ -146,97 +128,34 @@ const ModalUpdateMetadata = (props) => {
     function resetMetadata() {
         setNewMetadata(document.versions[0].metadata)
     }
-    function deleteMetadataPair(index) {
-        let newlyMetadataPair = JSON.parse(JSON.stringify(newMetadata))
-        newlyMetadataPair.splice(index, 1)
-        setNewMetadata(newlyMetadataPair)
-    }
-    function addMetadata(data) {
-        console.log("CAUTION: addMetadata", data)
-        setNewMetadata([
-            ...newMetadata,
-            {
-                [data.newKey]: data.newValue
-            }
-        ])
-        newMetaForm.reset()
-    }
-
-    function editMetadata(idx, key, value) {
-        let newlyEditedMetadata = JSON.parse(JSON.stringify(newMetadata))
-        newlyEditedMetadata.splice(idx, 1, {
-            [key]: value
-        })
-        setNewMetadata(newlyEditedMetadata)
-    }
     return (
         <>
             <Button onClick={() => { setModalOpen(true) }}>Edit metadata</Button>
-            <Modal footer={null} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
-                <form>
-                    {newMetadata && newMetadata?.map((item, index) => {
-                        return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
-                            <Col span={metadataButtonNum}>
-                                <Button onClick={() => deleteMetadataPair(index)} type={"text"} shape={"circle"} icon={<CloseOutlined />} />
-                            </Col>
-                            <Col span={metadataKeyNum}>
-                                {/* <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text> */}
-                                <Input.TextArea onChange={(e) => editMetadata(index, e.target.value, Object.entries(item)[0][1])} autoSize={{ minRows: 1, maxRows: 4 }} value={Object.entries(item)[0][0]} />
-                            </Col>
-                            <Col span={metadataColonNum} style={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
-                                <Typography.Text>:</Typography.Text>
-                            </Col>
-                            <Col span={metadataValueNum}>
-                                {Object.entries(item)[0][0] == 'Văn bản liên quan'
-                                    ? JSON.parse(Object.entries(item)[0][1].replaceAll("'", '"')).map((ite, index, arr) =>
-                                        <Input.TextArea style={{ marginBottom: index + 1 == arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
-                                    )
-                                    : <Input.TextArea onChange={(e) => editMetadata(index, Object.entries(item)[0][0], e.target.value)} autoSize={{ minRows: 1, maxRows: 4 }} value={Object.entries(item)[0][1]} />
-                                }
-                            </Col>
-                        </Row>)
-                    }
-                    )}
-                    <Row gutter={[8, 8]} style={{ marginTop: 8 }}>
-                        <Col span={2}>
-                            <Button onClick={newMetaForm.handleSubmit(addMetadata)} shape="circle" icon={<PlusOutlined />} />
-                        </Col>
-                        <Col span={7}>
-                            <Controller name="newKey" control={newMetaForm.control} render={({ field }) => <><Input {...field} placeholder="key" /></>} />
-                        </Col>
-                        <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Typography.Text>:</Typography.Text>
-                        </Col>
-                        <Col span={14}>
-                            <Controller name="newValue" control={newMetaForm.control} render={({ field }) => <><Input {...field} placeholder="value" /></>} />
-                        </Col>
-                    </Row>
-                    <Row gutter={[8, 8]} justify={"end"}>
-                        <Col md={24}>
-                            <Typography.Title level={4}>Add some message</Typography.Title>
-                            <Controller name="message" control={newMetaForm.control}
-                                render={({ field }) => <>
-                                    <Input.TextArea placeholder="enter your message..." {...field} />
-                                </>} />
-
-                        </Col>
-                    </Row>
-
-                    <div style={{ width: "100%", marginTop: 16, display: "flex", justifyContent: 'flex-end', columnGap: 8 }}>
-                        <Button onClick={() => { resetMetadata() }}>Reset to default</Button>
-                        <Button loading={loadingUpdateMetadata} type="primary" onClick={newMetaForm.handleSubmit(handleUpdateMetadata)}>Save</Button>
-                    </div>
-                </form>
+            <Modal footer={null} width={700} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
+                <MetadataUpdateForm newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
+                <Row gutter={[8, 8]} justify={"end"}>
+                    <Col md={24}>
+                        <Typography.Title level={4}>Add some message</Typography.Title>
+                        <Input.TextArea value={comment} onChange={(e) => { setComment(e.target.value) }} placeholder="enter your message..." />
+                    </Col>
+                </Row>
+                <div style={{ width: "100%", marginTop: 16, display: "flex", justifyContent: 'flex-end', columnGap: 8 }}>
+                    <Button onClick={() => { resetMetadata() }}>Reset to default</Button>
+                    <Button loading={loadingUpdateMetadata} type="primary" onClick={() => { handleUpdateMetadata() }}>Save</Button>
+                </div>
             </Modal>
         </>
     )
 }
 const Page_Document_Id = () => {
+    const [messageApi, contextHolder] = message.useMessage();
     let [document, setDocument] = useState(null)
+    let [restoreLoading, setRestoreLoading] = useState(false)
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
     let userStorage = JSON.parse(localStorage.getItem("user"))
     console.log("Page_Document_Id: document: ", document)
+
     let versionColumns = [
         {
             "title": "VersionID",
@@ -270,22 +189,52 @@ const Page_Document_Id = () => {
             "render": ((obj) => <>
                 <Typography.Text>{obj.message}</Typography.Text>
             </>)
+        },
+        {
+            "title": "Action",
+            "render": ((obj) => <>
+                <Popconfirm
+                    title="Delete the task"
+                    description="Are you sure to delete this task?"
+                    onConfirm={() => { handleRestoreVersion(obj.uid) }}
+                    okText="Yes"
+                    cancelText="No"
+                    okButtonProps={{
+                        loading: restoreLoading
+                    }}>
+                    <Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>Restore</Button>
+                </Popconfirm>
+            </>)
         }
     ]
     useEffect(() => {
         async function fetchData() {
-            let documentResponse = await getDocument(userStorage.access_token, document_id)
+            let documentResponse = await apiGetDocument(document_id)
             setDocument(documentResponse)
         }
         fetchData()
     }, [])
+    async function handleRestoreVersion(versionUid) {
+        setRestoreLoading(true)
+        let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
+        let documentResponse = await apiGetDocument(document_id)
+        setDocument(documentResponse)
+        setRestoreLoading(false)
+        messageApi.open({
+            content: <Alert style={{ fontSize: 24 }} showIcon type="success" message="Version has been reverted successfully" closable />,
+            className: 'namkha-message',
+        });
+    }
+    async function handleLockFile() {
 
+    }
     // ///////////////////////////////////////////////////////
 
     // console.log(watch("example")) // watch input value by passing the name of it
     // ///////////////////////////////////////////////////////
     return (
         <>
+            {contextHolder}
             <Bread breadSelectedDoc={document} breadProp={[
                 {
                     "title": "Company documents",
@@ -397,11 +346,23 @@ const Page_Document_Id = () => {
                                     )}
                                 </Card>
                             </Col>
-                            <Col md={24}>
-                                <Button style={{ width: "100%" }} type="primary">Lock file</Button>
+                            <Col md={8}>
+                                <PermissionModal document={document} setDocument={setDocument}
+                                    modalButton={
+                                        <TagButton icon={<MdVpnKey />} color="geekblue" >
+                                            Manage access
+                                        </TagButton>
+                                    } />
                             </Col>
-                            <Col md={24}>
-                                <PermissionModal document={document} modalButton={<Button style={{ width: "100%" }} type="primary">Manage access</Button>} />
+                            <Col md={8}>
+                                <TagButton icon={<FaGlobeAsia />} color="green" >
+                                    Public file
+                                </TagButton>
+                            </Col>
+                            <Col md={8}>
+                                <TagButton icon={<FaLock />} color="volcano" handleClick={handleLockFile}>
+                                    Lock file
+                                </TagButton>
                             </Col>
                         </Row>
                     </Col>
