@@ -21,14 +21,17 @@ export async function getMe(token) {
     return response.data.data
 }
 
-export async function getUserList(token) {
+export async function apiLiveSearchUser(query) {
     // await delay(2000)
-    let response = await axios.get(`/data/userlist.json`)
-    // let response = await axios.get(`${endpoint}/api/users/get/me`, {
-    //     headers: {
-    //         "Authorization": `Bearer ${token}`,
-    //         ...originHeader
-    //     }
-    // })
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    const queryParams = new URLSearchParams();
+    queryParams.append("query", query);
+    // let response = await axios.get(`/data/userlist.json`)
+    let response = await axios.get(`${endpoint}/api/users/live-search-email?${queryParams.toString()}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
     return response.data.data
 }

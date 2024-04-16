@@ -37,6 +37,10 @@ const MainLayout = () => {
         fetchData()
     }, [])
     const antdTheme = theme.useToken()
+    // let primaryBgColor = antdTheme.token.colorBgLayout
+    // let secondaryBgColor = antdTheme.token.colorBgElevated
+    let primaryBgColor = antdTheme.token.colorBgElevated
+    let secondaryBgColor = antdTheme.token.colorBgLayout
     return (
         user
             ? <Layout style={{
@@ -44,14 +48,14 @@ const MainLayout = () => {
             }}
             >
                 <SideBar />
-                <Layout style={{ background: antdTheme.token.colorBgContainer }}>
+                <Layout style={{ background: secondaryBgColor }}>
                     <NavBar />
                     <Layout.Content style={{
                         margin: 0,
                         borderRadius: antdTheme.token.borderRadiusLG,
                         padding: "16px",
                         // backgroundColor: antdTheme.token.colorBgLayout,
-                        backgroundColor: antdTheme.token.colorBgLayout,
+                        backgroundColor: primaryBgColor,
                         overflowY: "scroll"
                     }}
                     >

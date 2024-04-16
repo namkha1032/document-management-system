@@ -6,7 +6,6 @@ import { originHeader } from "./_domain";
 
 export async function apiGetDocument(documentId) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
-    await delay(100)
     let response = await axios.get(`${endpoint}/api/documents/detail/${documentId}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -29,6 +28,7 @@ export async function apiGetCompanyDocument(token, page, page_size) {
 }
 
 export async function apiGetMyDocument(token, page, page_size) {
+    // await delay(60000)
     let response = await axios.get(`${endpoint}/api/documents/matrix/me?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -39,7 +39,8 @@ export async function apiGetMyDocument(token, page, page_size) {
     return response.data.data
 }
 
-export async function apiGetSharedDocument(token, page, page_size) {
+export async function apiGetSharedDocument(page, page_size) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
     let response = await axios.get(`${endpoint}/api/documents/matrix/shared?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -52,7 +53,7 @@ export async function apiGetSharedDocument(token, page, page_size) {
 }
 
 export async function apiExtractMetadata(newForm) {
-    await delay(4000)
+    await delay(1000)
     let rawResponse = null
     let i = 0
     while (rawResponse?.data?.data == null) {
@@ -120,6 +121,19 @@ export async function apiDeletePermission(data) {
 export async function apiRestoreVersion(documentUid, versionUid) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     let rawResponse = await axios.post(`${endpoint}/api/documents/restore/${documentUid}/version/${versionUid}`, { fakeBody: "hehe" }, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data
+}
+
+export async function apiLiveSearchMetadata(query) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    const queryParams = new URLSearchParams();
+    queryParams.append("query", query);
+    let rawResponse = await axios.get(`${endpoint}/api/documents/live-search-metadata?${queryParams.toString()}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
             ...originHeader

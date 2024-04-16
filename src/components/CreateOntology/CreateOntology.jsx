@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import ModeThemeContext from "../../../context/ModeThemeContext";
+import ModeThemeContext from "../../context/ModeThemeContext";
 import { Link, useNavigate } from "react-router-dom";
 import {
     Typography,
@@ -63,11 +63,11 @@ import {
     xt256,
     zenburn
 } from 'react-code-blocks';
-import { getAllOntologies, uploadOntologyFile, deleteOntology, createNewOntology } from "../../../apis/ontologyApi";
+import { getAllOntologies, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
 
 
 
-const Create_Ontology = () => {
+const CreateOntology = () => {
     let [modalOpen, setModalOpen] = useState(false)
     let [fileList, setFileList] = useState([])
     let [newOntologyName, setNewOntologyName] = useState("")
@@ -181,4 +181,4 @@ const Create_Ontology = () => {
     )
 }
 
-export default Create_Ontology
+export default CreateOntology

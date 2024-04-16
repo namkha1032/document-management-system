@@ -23,7 +23,9 @@ import {
     SearchOutlined,
     CloseOutlined,
     UserOutlined,
-    LogoutOutlined
+    LogoutOutlined,
+    HourglassOutlined,
+    CheckOutlined
 } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -36,6 +38,9 @@ import ModeThemeContext from '../../context/ModeThemeContext';
 import SearchOptionContext from '../../context/SearchOptionContext';
 import SearchResultContext from '../../context/SearchResultContext';
 import UserContext from '../../context/UserContext';
+import TagButton from '../TagButton/TagButton';
+import UploadDocumentContext from '../../context/UploadDocumentContext';
+import ExtractModal from '../ExtractModal/ExtractModal';
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 const AdvancedSearchButton = (props) => {
     const navigate = useNavigate()
@@ -56,6 +61,8 @@ const NavBar = () => {
     const navigate = useNavigate()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+    const [uploadDocument, dispatchUploadDocument] = useContext(UploadDocumentContext)
+
     // const location = useLocation()
     const dropdownItems = [
         {
@@ -190,6 +197,10 @@ const NavBar = () => {
     }
     // logics
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
+    // let primaryBgColor = antdTheme.token.colorBgLayout
+    // let secondaryBgColor = antdTheme.token.colorBgElevated
+    let primaryBgColor = antdTheme.token.colorBgElevated
+    let secondaryBgColor = antdTheme.token.colorBgLayout
     // HTMl
     return (
         searchOption
@@ -198,12 +209,13 @@ const NavBar = () => {
                 style={{
                     paddingRight: `${antdTheme.token.paddingContentHorizontal}px`,
                     paddingLeft: 0,
-                    background: antdTheme.token.colorBgContainer
+                    background: secondaryBgColor
                 }
                 }
             >
-                <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}>
-                    <Col md={10} style={{ display: "flex", alignItems: "center" }}>
+                {/* <Row justify={"space-between"} align={"center"} style={{ height: "100%" }}> */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: "center", height: "100%" }}>
+                    <div style={{ display: "flex", alignItems: "center", width: "40%" }}>
                         <Input.Search
                             placeholder="input search text"
                             // enterButton={<Typography.Text>Search</Typography.Text>}
@@ -241,20 +253,8 @@ const NavBar = () => {
                             }
                         >
                         </Input.Search>
-                    </Col>
-                    <Col md={5} style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", columnGap: 10 }}>
-                        <Switch checked={modeTheme == "dark"}
-                            checkedChildren={<FontAwesomeIcon icon={icon({ name: 'moon', style: 'solid' })} />}
-                            unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
-                            onClick={(e) => {
-                                if (e) {
-                                    dispatchModeTheme({ type: "dark" })
-                                }
-                                else {
-                                    dispatchModeTheme({ type: "light" })
-                                }
-                            }} />
-                        <Typography.Text>{user?.first_name + " " + user?.last_name}</Typography.Text>
+                    </div>
+                    <div style={{ width: '60%', display: "flex", justifyContent: "flex-start", flexDirection: 'row-reverse', alignItems: "center", columnGap: 8 }}>
                         <Dropdown menu={{
                             items: dropdownItems,
                             onClick: (e) => {
@@ -267,8 +267,31 @@ const NavBar = () => {
                         }} placement='bottomLeft' arrow={true} trigger={["click"]}>
                             <Avatar style={{ cursor: "pointer" }} size={"large"} src="/file/avatar.png" />
                         </Dropdown>
-                    </Col>
-                </Row>
+                        <Typography.Text>{user?.first_name + " " + user?.last_name}</Typography.Text>
+                        <Switch checked={modeTheme == "dark"}
+                            checkedChildren={<FontAwesomeIcon icon={icon({ name: 'moon', style: 'solid' })} />}
+                            unCheckedChildren={<FontAwesomeIcon icon={icon({ name: 'sun', style: 'solid' })} />}
+                            onClick={(e) => {
+                                if (e) {
+                                    dispatchModeTheme({ type: "dark" })
+                                }
+                                else {
+                                    dispatchModeTheme({ type: "light" })
+                                }
+                            }} />
+                        <div style={{ display: "flex", justifyContent: "flex-end", flexDirection: "row", alignItems: "center" }}>
+                            {uploadDocument.length > 0
+                                ? uploadDocument.map((item, index) =>
+                                    <div key={index}>
+                                        <ExtractModal index={index} />
+                                    </div>
+                                )
+                                : null}
+                        </div>
+
+                    </div>
+                </div>
+                {/* </Row> */}
             </Layout.Header >
             : null
 

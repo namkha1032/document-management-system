@@ -145,7 +145,7 @@ const DocumentFeed = (props) => {
             title: "Last updated",
             render: (obj) => {
                 return (
-                    <Typography.Text>{new Date(obj.updated_date).toLocaleDateString()}</Typography.Text>
+                    <Typography.Text>{new Date(obj.updated_date).toLocaleString()}</Typography.Text>
                 )
             }
         }
@@ -278,8 +278,8 @@ const DocumentFeed = (props) => {
                                                                             }}
                                                                             style={{
                                                                                 transition: "width 0.3s, height 0.3s",
-                                                                                borderColor: antdTheme.token.colorBorder,
-                                                                                backgroundColor: selectedDoc.find((seDoc) => seDoc.uid == item?.uid) ? antdTheme.token.controlItemBgActiveHover : antdTheme.token.colorBgContainer
+                                                                                // borderColor: antdTheme.token.colorBorder,
+                                                                                backgroundColor: selectedDoc.find((seDoc) => seDoc.uid == item?.uid) ? antdTheme.token.controlItemBgActiveHover : antdTheme.token.colorBgLayout
                                                                             }}
 
                                                                             hoverable styles={{
@@ -295,7 +295,10 @@ const DocumentFeed = (props) => {
                                                                                 <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0].file_name ? item.versions[0].file_name : item.uid}</Typography.Title>
                                                                                 <Checkbox checked={selectedDoc.find((seDoc) => seDoc.uid == item.uid)} onChange={(e) => { setSelectedDocuments(e, item) }} />
                                                                             </div>
-                                                                            <div onClick={(e) => ctrlSetSelectedDocuments(e, item)} className="pdfBorder" style={{ transition: "height 0.3s", height: selectedDoc.length == 1 ? 100 : 150, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
+                                                                            <div onClick={(e) => ctrlSetSelectedDocuments(e, item)} className="pdfBorder" style={{
+                                                                                transition: "height 0.3s", height: selectedDoc.length == 1 ? 100 : 150, overflow: "hidden", display: "flex", borderRadius: selectedDoc.length == 1 ? 4 : 8,
+                                                                                // border: `1px solid ${antdTheme.token.colorBorder}`
+                                                                            }}>
                                                                                 <Image src={item.versions[0].url.length > 0
                                                                                     ? `//image.thum.io/get/pdfSource/page/1/${item.versions[0].url}`
                                                                                     : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} preview={false} />
@@ -334,6 +337,7 @@ const DocumentFeed = (props) => {
                                                     dataSource={documentResult.documents}
                                                     style={{
                                                         borderRadius: 8, cursor: "pointer",
+                                                        border: `1px solid ${antdTheme.token.colorBorder}`
                                                     }}
                                                     pagination={false}
                                                     loading={documentResult.loading}
@@ -437,7 +441,35 @@ const DocumentFeed = (props) => {
                 </div>
             )
             :
-            <Skeleton active />
+            <>
+                <div style={{ height: 40, display: "flex", justifyContent: "space-between", marginBottom: 16, marginTop: 1, alignItems: "center" }}>
+                    <div style={{ height: "80%", width: "10%" }}>
+                        <Skeleton.Button active block className="mySkele" />
+                    </div>
+                    <div style={{ height: "80%", width: "30%" }}>
+                        <Skeleton.Button active block className="mySkele" />
+                    </div>
+                </div>
+                {gridList == "list" ?
+                    <Table
+                        columns={documentColumns}
+                        // rowKey={(record) => record.uid}
+                        dataSource={[]}
+                        style={{
+                            borderRadius: 8, cursor: "pointer",
+                        }}
+                        pagination={false}
+                        loading={true}
+                    />
+                    : <Row gutter={[16, 16]}>
+                        {Array.from('X'.repeat(18)).map((item, index) =>
+                            <Col md={4} key={index} style={{ height: 216 }}>
+                                <Skeleton.Button active block className="mySkele" />
+                            </Col>)}
+                    </Row>
+                }
+
+            </>
     )
 
 }

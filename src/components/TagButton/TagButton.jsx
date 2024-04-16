@@ -6,10 +6,19 @@ const TagButton = (props) => {
     const color = props.color
     const height = props.height ?? 48
     const width = props.width ?? '100%'
+    const borderRadius = props.borderRadius ?? 8
+    const fontSize = props.fontSize ?? 16
+    const borderWidth = props.borderWidth ?? 1
+    const marginLeft = props.marginLeft ?? 0
+    const columnGap = props.columnGap ?? 0
     return (
         <>
-            <Tag icon={icon} color={color} onClick={() => { handleClick() }}
-                style={{ borderRadius: 8, cursor: 'pointer', fontSize: 16, display: "flex", justifyContent: "center", alignItems: "center", columnGap: 8, width: width, height: height }}>
+            <Tag className="tagButton" icon={icon} color={color} onClick={() => { handleClick() }}
+                style={{
+                    transition: "width 0.3s, height 0.3s", overflow: "hidden", borderRadius: borderRadius, borderWidth: borderWidth,
+                    cursor: 'pointer', fontSize: fontSize, display: "flex", justifyContent: "center", alignItems: "center",
+                    width: width, height: height, marginLeft: marginLeft, marginRight: 0, padding: 0, columnGap: columnGap
+                }}>
                 {props.children}
             </Tag>
         </>

@@ -38,7 +38,7 @@ import { apiGrantPermission, apiDeletePermission } from "../../apis/documentApi"
 import randomString from "../../functions/randomString";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { getUserList } from "../../apis/userApi";
+import { apiLiveSearchUser } from "../../apis/userApi";
 
 const PermissionUserList = (props) => {
     let permissionList = props.permissionList
@@ -46,8 +46,6 @@ const PermissionUserList = (props) => {
     let setDocument = props.setDocument
 
     async function handleDeletePermission(email, document_uid) {
-        console.log("email", email)
-        console.log("document_uid", document_uid)
         let response = await apiDeletePermission({
             email: email,
             document_uid: document_uid
@@ -89,7 +87,7 @@ const PermissionUserList = (props) => {
                             <Tag
                                 icon={<Avatar size="small" src={`/file/avatar.png`} />}
                                 closeIcon={<Button onClick={() => { handleDeletePermission(oneUser.email, document.uid) }} size="small" shape="circle" type="text" icon={<CloseOutlined />} />}
-                                onClose={(e) => { console.log(e) }}
+                                onClose={(e) => { }}
                                 style={{ display: "flex", columnGap: 8, alignItems: "center", borderRadius: 100, height: 30, padding: 4 }}>
                                 <Typography.Text style={{ fontSize: 16 }}>{oneUser.email}</Typography.Text>
                             </Tag>
@@ -127,17 +125,16 @@ const PermissionModal = (props) => {
     let [permissionType, setPermissionType] = useState("VIEW")
     let [permissionCurrent, setPermissionCurrent] = useState("ALL")
     let [selectedUser, setSelectedUser] = useState(null)
-    console.log("selectedUser", selectedUser)
 
     useEffect(() => {
         async function fetchData() {
-            let response = await getUserList()
+            let response = await apiLiveSearchUser("")
             let newUserList = response.map((item, index) => {
                 return {
-                    "value": item.email,
+                    "value": item.label,
                     "label": <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
                         <Avatar size={"small"} src={`/file/avatar.png`} />
-                        <Typography.Text>{item.email}</Typography.Text>
+                        <Typography.Text>{item.label}</Typography.Text>
                     </div>
                 }
             })
@@ -145,7 +142,6 @@ const PermissionModal = (props) => {
         }
         fetchData()
     }, [])
-    console.log("document in modal", document)
     async function handleAddPermission() {
         let responsePermission = await apiGrantPermission({
             email: selectedUser,
@@ -179,7 +175,7 @@ const PermissionModal = (props) => {
                                 {document?.versions[0].file_name.length > 0 ? document?.versions[0].file_name : document?.uid}
                             </Typography.Text>
                         </Space>
-                        <Typography.Text style={{ fontWeight: 400 }}>1 MB</Typography.Text>
+                        <Typography.Text style={{ fontWeight: 400 }}>{document?.versions[0].size}</Typography.Text>
                     </div>
                     <div style={{ marginTop: 16, marginBottom: 16, display: 'flex', alignItems: "center", columnGap: selectedUser ? 8 : 0 }}>
                         <div style={{ width: selectedUser ? '60%' : '100%', transition: "width 0.3s" }}>
@@ -206,11 +202,12 @@ const PermissionModal = (props) => {
                                 showSearch
                                 allowClear
                                 options={userList}
+                                // options={[]}
                                 placeholder="Select a person"
                                 value={selectedUser}
                                 // optionFilterProp="children"
                                 onChange={(value) => { setSelectedUser(value) }}
-                                // onSearch={onSearch}
+                                // onSearch={(val) => { console.log("val", val) }}
                                 filterOption={(input, option) =>
                                     (option?.value ?? '').toLowerCase().includes(input.toLowerCase())} />
                         </div>

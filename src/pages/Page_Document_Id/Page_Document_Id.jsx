@@ -15,7 +15,8 @@ import {
     Popconfirm,
     message,
     Alert,
-    Tag
+    Tag,
+    Result
 } from "antd"
 // import Skeleton from '@mui/material/Skeleton';
 import Container from '@mui/material/Container';
@@ -40,6 +41,9 @@ import randomString from "../../functions/randomString";
 import PermissionModal from "../../components/PermissionModal/PermissionModal";
 import MetadataUpdateForm from "../../components/MetadataUpdateForm/MetadataUpdateForm";
 import TagButton from "../../components/TagButton/TagButton";
+import axios from "axios";
+import prettyBytes from 'pretty-bytes';
+import delay from "../../functions/delay";
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -102,7 +106,6 @@ const ModalUpdateMetadata = (props) => {
     let [loadingUpdateMetadata, setLoadingUpdateMetadata] = useState(false)
     let [newMetadata, setNewMetadata] = useState(null)
     let [comment, setComment] = useState("")
-    console.log("newMetadata: ", newMetadata)
     useEffect(() => {
         setNewMetadata(document?.versions[0].metadata)
     }, [document])
@@ -147,15 +150,20 @@ const ModalUpdateMetadata = (props) => {
         </>
     )
 }
+
+async function getDocumentSize(){
+
+}
 const Page_Document_Id = () => {
     const [messageApi, contextHolder] = message.useMessage();
     let [document, setDocument] = useState(null)
     let [restoreLoading, setRestoreLoading] = useState(false)
+    let [isAllowed, setIsAllowed] = useState(true)
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
     let userStorage = JSON.parse(localStorage.getItem("user"))
     console.log("Page_Document_Id: document: ", document)
-
+    const navigate = useNavigate()
     let versionColumns = [
         {
             "title": "VersionID",
@@ -210,10 +218,21 @@ const Page_Document_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
-            setDocument(documentResponse)
+            let documentCopy = JSON.parse(JSON.stringify(documentResponse))
+            let documentPromise = documentResponse.versions.map(async (docver, idx) => {
+                let fileResponse = await axios.get(documentResponse.versions[0].url != "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
+                let size = prettyBytes(parseInt(fileResponse.headers.get('Content-Length')));
+                documentCopy.versions[idx]["size"] = size
+            })
+            await Promise.all(documentPromise)
+            let findUser = documentCopy.users_with_permission.find((item, idx) => item.email == userStorage.email)
+            if (!findUser && documentCopy.owner.email != userStorage.email) {
+                setIsAllowed(false)
+            }
+            setDocument(documentCopy)
         }
         fetchData()
-    }, [])
+    }, [document_id])
     async function handleRestoreVersion(versionUid) {
         setRestoreLoading(true)
         let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
@@ -225,9 +244,6 @@ const Page_Document_Id = () => {
             className: 'namkha-message',
         });
     }
-    async function handleLockFile() {
-
-    }
     // ///////////////////////////////////////////////////////
 
     // console.log(watch("example")) // watch input value by passing the name of it
@@ -235,20 +251,22 @@ const Page_Document_Id = () => {
     return (
         <>
             {contextHolder}
-            <Bread breadSelectedDoc={document} breadProp={[
-                {
-                    "title": "Company documents",
-                    "path": "/company"
-                },
-                {
-                    "title": document?.versions[0].file_name,
-                    "path": `/document/${document?.uid}`
-                }
-            ]}
-            /><div
+            {isAllowed
+                ? <Bread breadSelectedDoc={document} breadProp={[
+                    {
+                        "title": "Company documents",
+                        "path": "/company"
+                    },
+                    {
+                        "title": document?.versions[0].file_name != "" ? document?.versions[0].file_name : document.uid,
+                        "path": `/document/${document?.uid}`
+                    }
+                ]} />
+                : null}
+            <div
                 style={{
-                    width: document ? "100%" : 0,
-                    height: document ? 'fit-content' : 0,
+                    width: document && isAllowed ? "100%" : 0,
+                    height: document && isAllowed ? 'fit-content' : 0,
                     overflow: "hidden"
                 }}
             >
@@ -302,7 +320,7 @@ const Page_Document_Id = () => {
                                     // valueStyle={{ color: antdTheme.token.colorErrorActive }}
                                     />
                                 </Card> */}
-                                <VjpStatistic direction={"vertical"} title={"File size"} prefix={<UngroupOutlined />} value={document ? "1 MB" : null} />
+                                <VjpStatistic direction={"vertical"} title={"File size"} prefix={<UngroupOutlined />} value={document?.versions[0]?.size} />
 
                             </Col>
                             <Col md={14} style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -322,7 +340,7 @@ const Page_Document_Id = () => {
                             </Col>
                             <Col md={24}>
                                 <Card style={{
-                                    height: document ? "100%" : 0, transition: "height 0.3s, min-height 0.3s", overflow: "hidden", minHeight: document ? 400 : 0,
+                                    height: document ? "100%" : 0, transition: "height 0.3s, min-height 0.3s", overflow: "hidden", minHeight: document ? 500 : 0,
                                     borderColor: antdTheme.token.colorBorder
                                 }} title={"Metadata"} extra={<ModalUpdateMetadata document={document} setDocument={setDocument} />}>
                                     {document?.versions[0].metadata.map((item, index) => {
@@ -346,24 +364,32 @@ const Page_Document_Id = () => {
                                     )}
                                 </Card>
                             </Col>
-                            <Col md={8}>
-                                <PermissionModal document={document} setDocument={setDocument}
-                                    modalButton={
-                                        <TagButton icon={<MdVpnKey />} color="geekblue" >
-                                            Manage access
-                                        </TagButton>
-                                    } />
-                            </Col>
-                            <Col md={8}>
-                                <TagButton icon={<FaGlobeAsia />} color="green" >
-                                    Public file
-                                </TagButton>
-                            </Col>
-                            <Col md={8}>
-                                <TagButton icon={<FaLock />} color="volcano" handleClick={handleLockFile}>
-                                    Lock file
-                                </TagButton>
-                            </Col>
+                            {userStorage?.email == document?.owner?.email
+                                ? <Col md={8}>
+                                    <PermissionModal document={document} setDocument={setDocument}
+                                        modalButton={
+                                            <TagButton icon={<MdVpnKey />} color="geekblue" columnGap={8}>
+                                                Manage access
+                                            </TagButton>
+                                        } />
+                                </Col>
+                                : null}
+
+                            {userStorage?.email == document?.owner?.email
+                                ? <Col md={8}>
+                                    <TagButton icon={<FaGlobeAsia />} color="green" columnGap={8} >
+                                        Public file
+                                    </TagButton>
+                                </Col>
+                                : null}
+
+                            {userStorage?.email == document?.owner?.email
+                                ? <Col md={8}>
+                                    <TagButton icon={<FaLock />} color="volcano" columnGap={8}>
+                                        Lock file
+                                    </TagButton>
+                                </Col>
+                                : null}
                         </Row>
                     </Col>
                 </Row>
@@ -389,7 +415,16 @@ const Page_Document_Id = () => {
                 />
 
             </div>
-
+            {isAllowed == false ?
+                <div style={{ display: "flex", height: "100%", justifyContent: "center", alignItems: "center" }}>
+                    <Result
+                        status="403"
+                        title="403"
+                        subTitle="Sorry, you are not authorized to access this page."
+                        extra={<Button onClick={() => { navigate(`/company`) }} type="primary">Back Home</Button>}
+                    />
+                </div>
+                : null}
             {document == null
                 ? <>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>

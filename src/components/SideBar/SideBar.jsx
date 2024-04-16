@@ -62,28 +62,25 @@ const SideBar = (props) => {
     const navigate = useNavigate()
     let [sidebarItem, setSidebarItem] = useState("0")
 
-    // useEffect(() => {
-    //     // if (location) {
-    //     if (location.pathname.includes("company")) {
-    //         setSidebarItem('1')
-    //     }
-    //     else if (location.pathname.includes("my-documents")) {
-    //         setSidebarItem('2')
-    //     }
-    //     else if (location.pathname.includes("shared-documents")) {
-    //         setSidebarItem('3')
-    //     }
-    //     else if (location.pathname.includes("search")) {
-    //         setSidebarItem('4')
-    //     }
-    //     else if (location.pathname.includes("trash")) {
-    //         setSidebarItem('5')
-    //     }
-    //     else {
-    //         setSidebarItem('0')
-    //     }
-    //     // }
-    // }, [location])
+    useEffect(() => {
+        // if (location) {
+        if (location.pathname.includes("company")) {
+            setSidebarItem('1')
+        }
+        else if (location.pathname.includes("my-documents")) {
+            setSidebarItem('2')
+        }
+        else if (location.pathname.includes("shared-documents")) {
+            setSidebarItem('3')
+        }
+        else if (location.pathname.includes("search")) {
+            setSidebarItem('4')
+        }
+        else if (location.pathname.includes("trash")) {
+            setSidebarItem('5')
+        }
+        // }
+    }, [location])
     const items = [
         {
             key: '1',
@@ -116,17 +113,21 @@ const SideBar = (props) => {
             label: "Ontology"
         }
     ]
+    // let primaryBgColor = antdTheme.token.colorBgLayout
+    // let secondaryBgColor = antdTheme.token.colorBgElevated
+    let primaryBgColor = antdTheme.token.colorBgElevated
+    let secondaryBgColor = antdTheme.token.colorBgLayout
     return (
         <Sider
             style={{
-                background: antdTheme.token.colorBgContainer
+                background: secondaryBgColor
             }}
             width="13%"
             collapsible collapsed={collapsed}
             trigger={
                 <Flex
                     justify="center" align="center"
-                    style={{ width: "100%", height: "100%", backgroundColor: antdTheme.token.colorBgContainer }}>
+                    style={{ width: "100%", height: "100%", backgroundColor: secondaryBgColor }}>
                     <Button
                         style={{ width: "100%", margin: antdTheme.token.marginXXS, backgroundColor: antdTheme.token.colorPrimaryBg, transition: "backgroundColor 0.215s" }}
                         type={modeTheme == "dark" ? "primary" : "default"}
@@ -162,7 +163,7 @@ const SideBar = (props) => {
             <Menu theme={modeTheme}
                 style={{
                     border: 0,
-                    background: antdTheme.token.colorBgContainer,
+                    background: secondaryBgColor,
                     padding: "0 8px"
                 }}
                 selectedKeys={[sidebarItem]}

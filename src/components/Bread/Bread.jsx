@@ -15,8 +15,8 @@ import {
     Space,
 } from 'antd';
 import GridListContext from '../../context/GridListContext';
-import Create_Ontology from './Create_Ontology/Create_Ontology';
-import Create_Document from './Create_Document/Create_Document';
+import CreateOntology from '../CreateOntology/CreateOntology';
+import CreateDocument from '../CreateDocument/CreateDocument';
 const Bread = (props) => {
     const { state } = useLocation();
     let breadState = state?.breadState
@@ -99,9 +99,9 @@ const Bread = (props) => {
                                 Upload
                             </Button> */}
 
-                            <Create_Ontology />
+                            <CreateOntology />
                         </>
-                        : <Create_Document />
+                        : <CreateDocument />
                     }
                     <Segmented
                         value={gridList}
