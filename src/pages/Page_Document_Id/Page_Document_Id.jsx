@@ -29,7 +29,8 @@ import {
     CloseOutlined,
     PlusOutlined,
     RollbackOutlined,
-    StopOutlined
+    StopOutlined,
+    DeleteOutlined
 } from '@ant-design/icons';
 import { MdVpnKey } from "react-icons/md";
 import { FaLock, FaGlobeAsia } from "react-icons/fa";
@@ -39,7 +40,7 @@ import { apiGetDocument, apiUpdateMetadata, apiRestoreVersion } from "../../apis
 import Bread from "../../components/Bread/Bread";
 import randomString from "../../functions/randomString";
 import PermissionModal from "../../components/PermissionModal/PermissionModal";
-import MetadataUpdateForm from "../../components/MetadataUpdateForm/MetadataUpdateForm";
+import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
 import TagButton from "../../components/TagButton/TagButton";
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
@@ -77,26 +78,6 @@ const VjpStatistic = (props) => {
     )
 }
 
-const NewMetaPair = (props) => {
-    let [newKey, setNewKey] = useState("")
-    let [newValue, setNewValue] = useState("")
-    return (
-        <Row gutter={[8, 8]} style={{ marginTop: 8 }}>
-            <Col span={2}>
-                <Button shape="circle" icon={<PlusOutlined />} />
-            </Col>
-            <Col span={7}>
-                <Input placeholder="key" value={newKey} onChange={(e) => setNewKey(e.target.value)} />
-            </Col>
-            <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Typography.Text>:</Typography.Text>
-            </Col>
-            <Col span={14}>
-                <Input placeholder="value" value={newValue} onChange={(e) => setNewValue(e.target.value)} />
-            </Col>
-        </Row>
-    )
-}
 const ModalUpdateMetadata = (props) => {
     let document = props.document
     let setDocument = props.setDocument
@@ -123,8 +104,10 @@ const ModalUpdateMetadata = (props) => {
         }))
         let response = await apiUpdateMetadata(userStorage.access_token, document_id, newForm)
         let documentResponse = await apiGetDocument(document_id)
-        setDocument(documentResponse)
-        setNewMetadata(documentResponse.versions[0].metadata)
+        let documentCopy = await getDocumentSize(documentResponse)
+        setDocument(documentCopy)
+        setNewMetadata(documentCopy.versions[0].metadata)
+        setComment("")
         setLoadingUpdateMetadata(false)
         setModalOpen(false)
     }
@@ -135,7 +118,7 @@ const ModalUpdateMetadata = (props) => {
         <>
             <Button onClick={() => { setModalOpen(true) }}>Edit metadata</Button>
             <Modal footer={null} width={700} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
-                <MetadataUpdateForm newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
+                <FormEditMetadata newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
                 <Row gutter={[8, 8]} justify={"end"}>
                     <Col md={24}>
                         <Typography.Title level={4}>Add some message</Typography.Title>
@@ -151,8 +134,15 @@ const ModalUpdateMetadata = (props) => {
     )
 }
 
-async function getDocumentSize(){
-
+async function getDocumentSize(documentResponse) {
+    let documentCopy = JSON.parse(JSON.stringify(documentResponse))
+    let documentPromise = documentResponse.versions.map(async (docver, idx) => {
+        let fileResponse = await axios.get(documentResponse.versions[0].url != "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
+        let size = prettyBytes(parseInt(fileResponse.headers.get('Content-Length')));
+        documentCopy.versions[idx]["size"] = size
+    })
+    await Promise.all(documentPromise)
+    return documentCopy
 }
 const Page_Document_Id = () => {
     const [messageApi, contextHolder] = message.useMessage();
@@ -218,13 +208,7 @@ const Page_Document_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
-            let documentCopy = JSON.parse(JSON.stringify(documentResponse))
-            let documentPromise = documentResponse.versions.map(async (docver, idx) => {
-                let fileResponse = await axios.get(documentResponse.versions[0].url != "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
-                let size = prettyBytes(parseInt(fileResponse.headers.get('Content-Length')));
-                documentCopy.versions[idx]["size"] = size
-            })
-            await Promise.all(documentPromise)
+            let documentCopy = await getDocumentSize(documentResponse)
             let findUser = documentCopy.users_with_permission.find((item, idx) => item.email == userStorage.email)
             if (!findUser && documentCopy.owner.email != userStorage.email) {
                 setIsAllowed(false)
@@ -237,7 +221,8 @@ const Page_Document_Id = () => {
         setRestoreLoading(true)
         let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
         let documentResponse = await apiGetDocument(document_id)
-        setDocument(documentResponse)
+        let documentCopy = await getDocumentSize(documentResponse)
+        setDocument(documentCopy)
         setRestoreLoading(false)
         messageApi.open({
             content: <Alert style={{ fontSize: 24 }} showIcon type="success" message="Version has been reverted successfully" closable />,
@@ -385,8 +370,8 @@ const Page_Document_Id = () => {
 
                             {userStorage?.email == document?.owner?.email
                                 ? <Col md={8}>
-                                    <TagButton icon={<FaLock />} color="volcano" columnGap={8}>
-                                        Lock file
+                                    <TagButton icon={<DeleteOutlined />} color="red" columnGap={8}>
+                                        Delete file
                                     </TagButton>
                                 </Col>
                                 : null}
@@ -400,6 +385,7 @@ const Page_Document_Id = () => {
                     dataSource={document?.versions}
                     style={{
                         borderRadius: 8, cursor: "pointer",
+                        border: `1px solid ${antdTheme.token.colorBorder}`
                     }}
                 // pagination={false}
                 // loading={documentResult.loading}

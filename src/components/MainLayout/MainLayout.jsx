@@ -11,11 +11,13 @@ import Footer from '../Footer/Footer';
 import Bread from '../Bread/Bread';
 import UserContext from '../../context/UserContext';
 import { getMe } from '../../apis/userApi';
+import ModeThemeContext from '../../context/ModeThemeContext';
 // //////////////////////////////////////////////////////
 
 const MainLayout = () => {
     // hooks
     let [user, dispatchUser] = useContext(UserContext)
+    let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
     let navigate = useNavigate()
     useEffect(() => {
         async function fetchData() {
@@ -39,8 +41,8 @@ const MainLayout = () => {
     const antdTheme = theme.useToken()
     // let primaryBgColor = antdTheme.token.colorBgLayout
     // let secondaryBgColor = antdTheme.token.colorBgElevated
-    let primaryBgColor = antdTheme.token.colorBgElevated
-    let secondaryBgColor = antdTheme.token.colorBgLayout
+    let primaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgElevated : antdTheme.token.colorBgLayout
+    let secondaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgLayout : antdTheme.token.colorBgElevated
     return (
         user
             ? <Layout style={{

@@ -24,6 +24,10 @@
 }
 
 
+.namkha-message>div {
+    padding: 0 !important;
+}
+
 body {
     margin: 0;
     /* overflow: hidden; */
@@ -39,7 +43,4 @@ body,
     height: 100%
 }
 
-.namkha-message>div {
-    padding: 0 !important;
-}
 

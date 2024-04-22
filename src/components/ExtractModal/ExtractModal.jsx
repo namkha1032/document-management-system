@@ -31,7 +31,7 @@ import {
 import UploadDocumentContext from "../../context/UploadDocumentContext";
 import { apiExtractMetadata, apiSaveDocumentToCloud } from "../../apis/documentApi";
 import TagButton from "../TagButton/TagButton";
-import MetadataUpdateForm from "../MetadataUpdateForm/MetadataUpdateForm";
+import FormEditMetadata from "../FormEditMetadata/FormEditMetadata";
 const ExtractModal = (props) => {
     let index = props.index
     let [modalOpen, setModalOpen] = useState(false)
@@ -148,7 +148,7 @@ const ExtractModal = (props) => {
                                 {uploadDocument[index].current == 1
                                     ? <Skeleton active />
                                     : <>
-                                        <MetadataUpdateForm newMetadata={uploadDocument[index]?.metadata} setNewMetadata={editMetadataArray} />
+                                        <FormEditMetadata newMetadata={uploadDocument[index]?.metadata} setNewMetadata={editMetadataArray} />
                                         {/* {uploadDocument[index]?.metadata?.map((item, index) => {
                                             return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
                                                 <Col span={10}>
