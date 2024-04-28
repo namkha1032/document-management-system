@@ -268,14 +268,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "name": "an ninh quốc gia",
-            "children":[
-                {
-                    "name": "bảo vệ an ninh quốc gia"
-                }
-            ]
         }
     ]
 }
