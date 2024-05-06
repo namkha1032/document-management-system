@@ -25,14 +25,16 @@ function ontologyReducer(state, action) {
             let newOntology = {
                 ...action.payload,
                 nodes: newOntologyCopy.nodes.map((node, idx) => {
+                    let valueId = node.id.split(":")[2]
                     return {
                         ...node,
-                        valu: node.id
+                        value: valueId
                     }
                 })
             }
             console.log('in reducer', newOntology)
             return newOntology
+            // return action.payload
         }
         case "addNode": {
             let newOntology = {

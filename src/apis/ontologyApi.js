@@ -68,6 +68,5 @@ export async function renameOntology(ontologyId, ontologyName) {
 
 export async function getOntologyId(ontologyId) {
     let response = await axios.get(`${endpoint}/api/ontology/ontologyid/${ontologyId}`, { headers: { ...originHeader } })
-    console.log("response", response.data.data)
     return response.data.data
 }

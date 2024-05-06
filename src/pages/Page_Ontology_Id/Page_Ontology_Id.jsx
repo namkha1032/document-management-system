@@ -45,7 +45,6 @@ const Section_Ontology_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let response = await getOntologyId(ontologyId)
-            console.log("after fetch", response)
             dispatchOntology({ type: "setOntology", payload: response })
             setNewOntologyName(response.ontologyName)
         }
@@ -154,17 +153,17 @@ const Section_Ontology_Id = () => {
                                                         //     enabled: true,
                                                         //     iterations: 80000, // You can adjust this to control the level of stabilization
                                                         // },
-                                                        barnesHut: {
-                                                            // gravitationalConstant: -80000, // Stronger repulsion to avoid overlap
-                                                            // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
-                                                            // springLength: 9000, // Distance between connected nodes
-                                                            // springConstant: 0.001, // Controls the spring force
-                                                            avoidOverlap: 1,
-                                                            // gravitationalConstant: -20000, // Stronger repulsion to avoid overlap
-                                                            // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
-                                                            // springLength: 95, // Distance between connected nodes
-                                                            // springConstant: 0.04, // Controls the spring force
-                                                        },
+                                                        // barnesHut: {
+                                                        //     // gravitationalConstant: -80000, // Stronger repulsion to avoid overlap
+                                                        //     // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
+                                                        //     // springLength: 9000, // Distance between connected nodes
+                                                        //     // springConstant: 0.001, // Controls the spring force
+                                                        //     avoidOverlap: 1,
+                                                        //     // gravitationalConstant: -20000, // Stronger repulsion to avoid overlap
+                                                        //     // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
+                                                        //     // springLength: 95, // Distance between connected nodes
+                                                        //     // springConstant: 0.04, // Controls the spring force
+                                                        // },
                                                         // stabilization: {
                                                         //     enabled: true,
                                                         //     iterations: 50, // Fewer iterations to speed up stabilization
