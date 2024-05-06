@@ -58,9 +58,10 @@ const Section_Ontology_Id = () => {
             .replace(/đ/g, 'd').replace(/Đ/g, 'D');
     }
     async function handleSearchNode(id) {
+        console.log("search id", id)
         if (id) {
             const findNode = ontology.nodes.find((node) => node.id == id)
-            await graphState.focus(findNode.id, {
+            await graphState.focus(id, {
                 scale: 1.0,
                 // offset: {x:Number, y:Number}
                 locked: true,
