@@ -138,6 +138,7 @@ const PermissionModal = (props) => {
                     </div>
                 }
             })
+            console.log("newUserList", newUserList)
             setUserList(newUserList)
         }
         fetchData()

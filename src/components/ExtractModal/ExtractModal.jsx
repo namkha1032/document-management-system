@@ -89,19 +89,19 @@ const ExtractModal = (props) => {
             "message": "hehehe",
             "metadata": uploadDocument[index].metadata
         }))
-        // for (let i = 0; i < 100; i++) {
-        //     let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
-        // }
-        let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
-        navigate(`/document/${response.document.uid}`, {
-            state: {
-                breadState: [
-                    { "title": "My documents", "path": `/my-documents` },
-                    { "title": response.versions.file_name != "" ? `${response.versions.file_name}` : `${response.document.uid}`, "path": `/document/${response.document.uid}` }
-                    // { "title": Array.isArray(response.versions) ? `${response.versions[0].file_name}` : `${response.versions.file_name}`, "path": `/document/${response.document.uid}` }
-                ]
-            }
-        })
+        for (let i = 0; i < 100; i++) {
+            let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
+        }
+        // let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
+        // navigate(`/document/${response.document.uid}`, {
+        //     state: {
+        //         breadState: [
+        //             { "title": "My documents", "path": `/my-documents` },
+        //             { "title": response.versions.file_name != "" ? `${response.versions.file_name}` : `${response.document.uid}`, "path": `/document/${response.document.uid}` }
+        //             // { "title": Array.isArray(response.versions) ? `${response.versions[0].file_name}` : `${response.versions.file_name}`, "path": `/document/${response.document.uid}` }
+        //         ]
+        //     }
+        // })
         dispatchUploadDocument({ type: "removeItem", payload: { index: index } })
         setLoadingUpload(false)
     }

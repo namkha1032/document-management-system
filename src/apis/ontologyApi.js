@@ -9,6 +9,7 @@ export async function getAllOntologies() {
 
 export async function getOntology(ontologyUrl) {
     let response = await axios.get(`${endpoint}/api/ontology/one/${ontologyUrl}`, { headers: { ...originHeader } })
+    console.log("ontologyUrl", response.data.data)
     return response.data.data
 }
 
@@ -59,5 +60,14 @@ export async function graphToTree(ontology_graph) {
 
 export async function renameOntology(ontologyId, ontologyName) {
     let response = await axios.patch(`${endpoint}/api/ontology/renameonto/${ontologyId}`, ontologyName, { headers: { ...originHeader } })
+    return response.data.data
+}
+
+// //////////////////////////////////////////////////////////////////////////////////////
+
+
+export async function getOntologyId(ontologyId) {
+    let response = await axios.get(`${endpoint}/api/ontology/ontologyid/${ontologyId}`, { headers: { ...originHeader } })
+    console.log("response", response.data.data)
     return response.data.data
 }

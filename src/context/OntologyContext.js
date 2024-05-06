@@ -11,16 +11,27 @@ function removeAccents(str) {
 function ontologyReducer(state, action) {
     switch (action.type) {
         case "setOntology": {
-            let newOntology = JSON.parse(JSON.stringify({
-                ...state,
-                name: action.payload.name,
-                url: action.payload.url,
-                ontologyId: action.payload.ontologyId,
-                nodes: [...action.payload.nodes],
-                edges: [...action.payload.edges],
-                childrenOptions: [...action.payload.childrenOptions],
-                parentOptions: [...action.payload.parentOptions]
-            }))
+            // let newOntology = JSON.parse(JSON.stringify({
+            //     ...state,
+            //     ontologyName: action.payload.ontologyName,
+            //     url: action.payload.url,
+            //     ontologyId: action.payload.ontologyId,
+            //     nodes: [...action.payload.nodes],
+            //     edges: [...action.payload.edges],
+            //     // childrenOptions: [...action.payload.childrenOptions],
+            //     // parentOptions: [...action.payload.parentOptions]
+            // }))
+            let newOntologyCopy = JSON.parse(JSON.stringify(action.payload))
+            let newOntology = {
+                ...action.payload,
+                nodes: newOntologyCopy.nodes.map((node, idx) => {
+                    return {
+                        ...node,
+                        valu: node.id
+                    }
+                })
+            }
+            console.log('in reducer', newOntology)
             return newOntology
         }
         case "addNode": {
@@ -33,8 +44,8 @@ function ontologyReducer(state, action) {
                         "label": action.payload.label
                     }
                 ],
-                parentOptions: [...action.payload.parentOptions],
-                childrenOptions: [...action.payload.childrenOptions]
+                // parentOptions: [...action.payload.parentOptions],
+                // childrenOptions: [...action.payload.childrenOptions]
             }
             return newOntology
         }
@@ -47,8 +58,8 @@ function ontologyReducer(state, action) {
                 edges: state.edges.filter((edge) => {
                     return edge.from != action.payload.id && edge.to != action.payload.id
                 }),
-                childrenOptions: [...action.payload.childrenOptions],
-                parentOptions: [...action.payload.parentOptions]
+                // childrenOptions: [...action.payload.childrenOptions],
+                // parentOptions: [...action.payload.parentOptions]
             }
             return newOntology
         }
@@ -83,8 +94,8 @@ function ontologyReducer(state, action) {
                         return edge
                     }
                 }),
-                parentOptions: [...action.payload.parentOptions],
-                childrenOptions: [...action.payload.childrenOptions]
+                // parentOptions: [...action.payload.parentOptions],
+                // childrenOptions: [...action.payload.childrenOptions]
             }
             return newOntology
         }
@@ -102,8 +113,8 @@ function ontologyReducer(state, action) {
                         "to_label": action.payload.to_label,
                     }
                 ],
-                childrenOptions: [...action.payload.childrenOptions],
-                parentOptions: [...action.payload.parentOptions]
+                // childrenOptions: [...action.payload.childrenOptions],
+                // parentOptions: [...action.payload.parentOptions]
             }
             return newOntology
         }
@@ -114,15 +125,15 @@ function ontologyReducer(state, action) {
                 edges: state.edges.filter((edge) => {
                     return edge.id != action.payload.id
                 }),
-                childrenOptions: [...action.payload.childrenOptions],
-                parentOptions: [...action.payload.parentOptions]
+                // childrenOptions: [...action.payload.childrenOptions],
+                // parentOptions: [...action.payload.parentOptions]
             }
             return newOntology
         }
         case "renameOntology": {
             let newOntology = {
                 ...state,
-                name: action.payload.name,
+                ontologyName: action.payload.ontologyName,
                 url: action.payload.url,
                 nodes: state.nodes.map((node) => {
                     if (node.id == action.payload.id) {
@@ -152,8 +163,8 @@ function ontologyReducer(state, action) {
                         return edge
                     }
                 }),
-                parentOptions: [...action.payload.parentOptions],
-                childrenOptions: [...action.payload.childrenOptions]
+                // parentOptions: [...action.payload.parentOptions],
+                // childrenOptions: [...action.payload.childrenOptions]
             }
             return newOntology
         }
@@ -222,7 +233,7 @@ function ontologyReducer(state, action) {
 
 const OntologyProvider = (props) => {
     const [ontology, dispatchOntology] = useReducer(ontologyReducer, {
-        "name": "",
+        "ontologyName": "",
         "url": "",
         "ontologyId": "",
         "nodes": [],
