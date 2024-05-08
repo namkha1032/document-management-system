@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import my components
 import Bread from "../../components/Bread/Bread"
 import Page_Table from "../Page_Table";
@@ -22,7 +22,8 @@ import {
     Table,
     Popover,
     Avatar,
-    Pagination
+    Pagination,
+    Image
 } from "antd"
 import Container from '@mui/material/Container';
 // import icons
@@ -579,7 +580,7 @@ const Page_Search = () => {
     let antdTheme = theme.useToken()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
-    console.log("searchOption", searchOption)
+    console.log("Page_Search: searchResult", searchResult)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
         const newBroaderResult = type == 'broader'
@@ -679,6 +680,7 @@ const Page_Search = () => {
         }
         dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
+    const navigate = useNavigate()
     const searchResultsColumn = [
         {
             title: 'Document',
@@ -695,35 +697,45 @@ const Page_Search = () => {
                     displayArray = [...obj.metadata]
                 }
                 return (
-                    <Link to='#'>
-                        <div style={{ display: 'flex', columnGap: 16 }}>
-                            <div style={{ minWidth: 100, minHeight: 140 }}>
-                                <Document file={'/file/sample.pdf'}>
+                    <div style={{ display: 'flex', columnGap: 16 }}>
+                        <div style={{ minWidth: 100, minHeight: 140 }}>
+                            {/* <Document file={'/file/sample.pdf'}>
                                     <Page width={100} pageNumber={1} />
-                                </Document>
+                                </Document> */}
+                            <Image style={{ border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }} src={obj?.url?.length > 0
+                                ? `//image.thum.io/get/pdfSource/page/1/${obj.url}`
+                                : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                {/* <FontAwesomeIcon icon="fa-solid fa-file-pdf" style={{ color: "#d7723c", }} /> */}
+                                <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} style={{ color: antdTheme.token.colorError, }} size="xl" />
+
+                                <Typography.Title onClick={() => {
+                                    navigate(`/document/${obj.document_id}`, {
+                                        state: {
+                                            breadState: [
+                                                { "title": "Search result", "path": `/search` },
+                                                { "title": `${obj.file_name}`, "path": `/document/${obj.document_id}` },
+                                            ]
+                                        }
+                                    })
+                                }} style={{ cursor: "pointer", marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj.file_name}</Typography.Title>
+
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                    {/* <FontAwesomeIcon icon="fa-solid fa-file-pdf" style={{ color: "#d7723c", }} /> */}
-                                    <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} style={{ color: antdTheme.token.colorError, }} size="xl" />
-
-                                    <Typography.Title style={{ marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj.file_name}</Typography.Title>
-
-                                </div>
-                                {/* <Typography.Paragraph ellipsis={{
+                            {/* <Typography.Paragraph ellipsis={{
                                     rows: 4
                                 }}>
                                     {obj.content}
                                 </Typography.Paragraph> */}
-                                <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
-                                    <MetadataList metaArray={displayArray} />
-                                    <Popover placement="bottomLeft" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
-                                        <Button icon={<EllipsisOutlined />} size='small' shape="round" style={{ height: 14, display: 'flex', alignItems: 'center' }} />
-                                    </Popover>
-                                </div>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column', rowGap: 8, width: 'fit-content' }}>
+                                <MetadataList metaArray={displayArray} />
+                                <Popover placement="bottomLeft" content={<MetadataList metaArray={extendArray} />} title="Other metadata">
+                                    <Button icon={<EllipsisOutlined />} size='small' shape="round" style={{ height: 14, display: 'flex', alignItems: 'center' }} />
+                                </Popover>
                             </div>
-                        </div >
-                    </Link>
+                        </div>
+                    </div >
                 )
             }
         },
@@ -793,10 +805,13 @@ const Page_Search = () => {
     // HTMl
     // return null
     return (
-        searchOption && searchResult
-            ?
-            <>
-                {/* <Bread title={
+        <>
+            <Bread breadProp={[{ "title": "Search", "path": "/search" }]} createButtonType={"document"} />
+            {
+                searchOption && searchResult
+                    ?
+                    <>
+                        {/* <Bread title={
                     <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                         <Typography.Title level={2} style={{ margin: 0 }}>
                             Search in
@@ -845,69 +860,63 @@ const Page_Search = () => {
                         />
                     </div>
                 } /> */}
-                <Bread breadProp={[
-                    {
-                        "title": "Search result",
-                        "path": "/search"
-                    }
-                ]}
-                />
-                <Container>
-                    <Row gutter={[16, 16]}>
-                        <Col span={12}>
-                            <Card title={'Keyword suggestion'} style={{ height: '100%' }}
-                                extra={<Select
-                                    value={searchOption?.domain}
-                                    style={{
-                                        width: 200,
-                                    }}
-                                    size={'large'}
-                                    onChange={handleChangeDomain}
-                                    // options={[
-                                    //     {
-                                    //         value: 'legal',
-                                    //         label:
-                                    //             <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                    //                 <FontAwesomeIcon icon={icon({ name: 'scale-balanced', style: 'solid' })} />
-                                    //                 <Typography.Text>Pháp luật</Typography.Text>
-                                    //             </div>
-                                    //     },
-                                    //     {
-                                    //         value: 'khmt',
-                                    //         label:
-                                    //             <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                    //                 <FontAwesomeIcon icon={icon({ name: 'laptop-code', style: 'solid' })} />
-                                    //                 <Typography.Text>Khoa học máy tính</Typography.Text>
-                                    //             </div>,
-                                    //     }
-                                    // ]}
-                                    options={searchOption.domainList.map((item, index) => {
-                                        let iconType = ''
-                                        if (item.url == "phap-luat") {
-                                            iconType = "scale-balanced"
-                                        }
-                                        else if (item.url == "khoa-hoc-may-tinh") {
-                                            iconType = "laptop-code"
-                                        }
-                                        else {
-                                            iconType = "circle-nodes"
-                                        }
-                                        return {
-                                            value: item.ontologyId,
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FontAwesomeIcon icon={icon({ name: "share-nodes", style: 'solid' })} />
-                                                    <Typography.Text>{item.name}</Typography.Text>
-                                                </div>
-                                        }
-                                    })}
-                                />}
-                            // headStyle={{
-                            //     paddingTop: 24,
-                            //     paddingBottom: 24
-                            // }}
-                            >
-                                {/* <Row gutter={[10, 10]}>
+
+                        <Container>
+                            <Row gutter={[16, 16]}>
+                                <Col span={12}>
+                                    <Card title={'Keyword suggestion'} style={{ height: '100%' }}
+                                        extra={<Select
+                                            value={searchOption?.domain}
+                                            style={{
+                                                width: 200,
+                                            }}
+                                            size={'large'}
+                                            onChange={handleChangeDomain}
+                                            // options={[
+                                            //     {
+                                            //         value: 'legal',
+                                            //         label:
+                                            //             <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                            //                 <FontAwesomeIcon icon={icon({ name: 'scale-balanced', style: 'solid' })} />
+                                            //                 <Typography.Text>Pháp luật</Typography.Text>
+                                            //             </div>
+                                            //     },
+                                            //     {
+                                            //         value: 'khmt',
+                                            //         label:
+                                            //             <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                            //                 <FontAwesomeIcon icon={icon({ name: 'laptop-code', style: 'solid' })} />
+                                            //                 <Typography.Text>Khoa học máy tính</Typography.Text>
+                                            //             </div>,
+                                            //     }
+                                            // ]}
+                                            options={searchOption.domainList.map((item, index) => {
+                                                let iconType = ''
+                                                if (item.url == "phap-luat") {
+                                                    iconType = "scale-balanced"
+                                                }
+                                                else if (item.url == "khoa-hoc-may-tinh") {
+                                                    iconType = "laptop-code"
+                                                }
+                                                else {
+                                                    iconType = "circle-nodes"
+                                                }
+                                                return {
+                                                    value: item.ontologyId,
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FontAwesomeIcon icon={icon({ name: "share-nodes", style: 'solid' })} />
+                                                            <Typography.Text>{item.name}</Typography.Text>
+                                                        </div>
+                                                }
+                                            })}
+                                        />}
+                                    // headStyle={{
+                                    //     paddingTop: 24,
+                                    //     paddingBottom: 24
+                                    // }}
+                                    >
+                                        {/* <Row gutter={[10, 10]}>
                                     <Col span={leftTerm}>
                                         <Typography.Text>Broader terms: </Typography.Text>
                                     </Col>
@@ -939,94 +948,94 @@ const Page_Search = () => {
                                         )}
                                     </Col>
                                 </Row> */}
-                                <div style={{ display: 'flex', flexDirection: 'column', rowGap: 24 }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
-                                        <Typography.Text strong>Broader terms: </Typography.Text>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {Object.entries(searchResult?.broader).map(([oriTerm, extendArray], index) =>
-                                                extendArray.map((kw, index) =>
-                                                    <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
-                                                        {kw}
-                                                    </Tag>))}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
-                                        <Typography.Text strong>Related terms: </Typography.Text>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {Object.entries(searchResult?.related).map(([oriTerm, extendArray], index) =>
-                                                extendArray.map((kw, index) =>
-                                                    <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'related')}>
-                                                        {kw}
-                                                    </Tag>))}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
-                                        <Typography.Text strong>Narrower terms: </Typography.Text>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
-                                            {Object.entries(searchResult?.narrower).map(([oriTerm, extendArray], index) =>
-                                                extendArray.map((kw, index) =>
-                                                    <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'narrower')}>
-                                                        {kw}
-                                                    </Tag>))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                        <Col span={12}>
-                            <Card title={'Metadata'} style={{ height: '100%' }}
-                                extra={<Select
-                                    value={searchOption?.method}
-                                    style={{
-                                        width: 200,
-                                    }}
-                                    size={'large'}
-                                    onChange={handleChangeMethod}
-                                    options={[
-                                        {
-                                            value: 'fulltext',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />
-                                                    <Typography.Text>Full-text search</Typography.Text>
+                                        <div style={{ display: 'flex', flexDirection: 'column', rowGap: 24 }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                                <Typography.Text strong>Broader terms: </Typography.Text>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                                    {Object.entries(searchResult?.broader).map(([oriTerm, extendArray], index) =>
+                                                        extendArray.map((kw, index) =>
+                                                            <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
+                                                                {kw}
+                                                            </Tag>))}
                                                 </div>
-                                        },
-                                        {
-                                            value: 'semantic',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FontAwesomeIcon icon={icon({ name: 'brain', style: 'solid' })} />
-                                                    <Typography.Text>Semantic search</Typography.Text>
-                                                </div>,
-                                        },
-                                        {
-                                            value: 'filename',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} />
-                                                    <Typography.Text>Search by file name</Typography.Text>
-                                                </div>,
-                                        }
-                                    ]}
-                                />}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                                    {searchOption.metadata.length == 0 || searchOption.metadata[0].hasOwnProperty('key') || searchOption.metadata[0].hasOwnProperty('$not')
-                                        ?
-                                        <div style={{ marginBottom: 8, width: 456 }}>
-                                            <Button style={{
-                                                color: antdTheme.token.colorSuccess,
-                                                borderColor: antdTheme.token.colorSuccess,
-                                            }}
-                                                size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', searchOption, dispatchSearchOption) }}>metadata</Button>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                                <Typography.Text strong>Related terms: </Typography.Text>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                                    {Object.entries(searchResult?.related).map(([oriTerm, extendArray], index) =>
+                                                        extendArray.map((kw, index) =>
+                                                            <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'related')}>
+                                                                {kw}
+                                                            </Tag>))}
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                                <Typography.Text strong>Narrower terms: </Typography.Text>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
+                                                    {Object.entries(searchResult?.narrower).map(([oriTerm, extendArray], index) =>
+                                                        extendArray.map((kw, index) =>
+                                                            <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'narrower')}>
+                                                                {kw}
+                                                            </Tag>))}
+                                                </div>
+                                            </div>
                                         </div>
-                                        : null
-                                    }
-                                    <MetaForm myObj={searchOption?.metadata} treeHeight={treeHeight} currHeight={1} cardWidth='fit-content' />
-                                </div>
-                            </Card>
-                        </Col>
-                        {/* <Col span={24}>
+                                    </Card>
+                                </Col>
+                                <Col span={12}>
+                                    <Card title={'Metadata'} style={{ height: '100%' }}
+                                        extra={<Select
+                                            value={searchOption?.method}
+                                            style={{
+                                                width: 200,
+                                            }}
+                                            size={'large'}
+                                            onChange={handleChangeMethod}
+                                            options={[
+                                                {
+                                                    value: 'fulltext',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />
+                                                            <Typography.Text>Full-text search</Typography.Text>
+                                                        </div>
+                                                },
+                                                {
+                                                    value: 'semantic',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FontAwesomeIcon icon={icon({ name: 'brain', style: 'solid' })} />
+                                                            <Typography.Text>Semantic search</Typography.Text>
+                                                        </div>,
+                                                },
+                                                {
+                                                    value: 'filename',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} />
+                                                            <Typography.Text>Search by file name</Typography.Text>
+                                                        </div>,
+                                                }
+                                            ]}
+                                        />}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                                            {searchOption.metadata.length == 0 || searchOption.metadata[0].hasOwnProperty('key') || searchOption.metadata[0].hasOwnProperty('$not')
+                                                ?
+                                                <div style={{ marginBottom: 8, width: 456 }}>
+                                                    <Button style={{
+                                                        color: antdTheme.token.colorSuccess,
+                                                        borderColor: antdTheme.token.colorSuccess,
+                                                    }}
+                                                        size='small' icon={<PlusOutlined />} onClick={() => { handleAddMetadata(null, searchOption.metadata.length == 0 ? '1' : '2', searchOption, dispatchSearchOption) }}>metadata</Button>
+                                                </div>
+                                                : null
+                                            }
+                                            <MetaForm myObj={searchOption?.metadata} treeHeight={treeHeight} currHeight={1} cardWidth='fit-content' />
+                                        </div>
+                                    </Card>
+                                </Col>
+                                {/* <Col span={24}>
                             {
                                 searchMutation.isPending
                                     ? <Typography.Text>loading...</Typography.Text>
@@ -1046,85 +1055,87 @@ const Page_Search = () => {
                                     )
                             }
                         </Col> */}
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Col span={24} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
-                            <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                <Typography.Title level={2} style={{ margin: 0 }}>
-                                    Search in
-                                </Typography.Title>
-                                <Select
-                                    value={searchOption?.search_scope}
-                                    style={{
-                                        width: 200,
-                                    }}
-                                    size={'large'}
-                                    onChange={handleChangeSearchScope}
-                                    options={[
-                                        {
-                                            value: 'all',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FileDoneOutlined />
-                                                    <Typography.Text>All</Typography.Text>
-                                                </div>
-                                        },
-                                        {
-                                            value: 'company',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <HddOutlined />
-                                                    <Typography.Text>Company documents</Typography.Text>
-                                                </div>
-                                        },
-                                        {
-                                            value: 'my',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FileDoneOutlined />
-                                                    <Typography.Text>My documents</Typography.Text>
-                                                </div>
-                                        },
-                                        {
-                                            value: 'shared',
-                                            label:
-                                                <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                    <FileDoneOutlined />
-                                                    <Typography.Text>Shared documents</Typography.Text>
-                                                </div>
-                                        },
-                                    ]}
-                                />
-                            </div>
-                            <Pagination
-                                current={searchResult.pagination.current}
-                                pageSize={searchResult.pagination.pageSize}
-                                total={searchResult.pagination.total}
-                                onChange={handlePaginationChange}
-                            // showSizeChanger
-                            // pageSizeOptions={[5, 8]}
-                            />
-                        </Col>
-                        <Col span={24}>
-                            <Table
-                                columns={searchResultsColumn}
-                                rowKey={(record) => record.document_id}
-                                // rowKey={(record) => record.metadata[0].id}
-                                dataSource={searchResult.documents}
-                                pagination={{
-                                    ...searchResult.pagination,
-                                    position: ['bottomCenter']
-                                }}
-                                // pagination={false}
-                                loading={searchResult.loading}
-                                // onChange={handleTableChange}
-                                showHeader={false}
-                                style={{ borderRadius: 8 }}
-                            />
-                        </Col>
-                    </Row>
-                </Container>
-            </>
-            : null
+                                    <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                        <Typography.Title level={2} style={{ margin: 0 }}>
+                                            Search in
+                                        </Typography.Title>
+                                        <Select
+                                            value={searchOption?.search_scope}
+                                            style={{
+                                                width: 200,
+                                            }}
+                                            size={'large'}
+                                            onChange={handleChangeSearchScope}
+                                            options={[
+                                                {
+                                                    value: 'all',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FileDoneOutlined />
+                                                            <Typography.Text>All</Typography.Text>
+                                                        </div>
+                                                },
+                                                {
+                                                    value: 'company',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <HddOutlined />
+                                                            <Typography.Text>Company documents</Typography.Text>
+                                                        </div>
+                                                },
+                                                {
+                                                    value: 'my',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FileDoneOutlined />
+                                                            <Typography.Text>My documents</Typography.Text>
+                                                        </div>
+                                                },
+                                                {
+                                                    value: 'shared',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FileDoneOutlined />
+                                                            <Typography.Text>Shared documents</Typography.Text>
+                                                        </div>
+                                                },
+                                            ]}
+                                        />
+                                    </div>
+                                    <Pagination
+                                        current={searchResult.pagination.current}
+                                        pageSize={searchResult.pagination.pageSize}
+                                        total={searchResult.pagination.total}
+                                        onChange={handlePaginationChange}
+                                    // showSizeChanger
+                                    // pageSizeOptions={[5, 8]}
+                                    />
+                                </Col>
+                                <Col span={24}>
+                                    <Table
+                                        columns={searchResultsColumn}
+                                        rowKey={(record) => record.document_id}
+                                        // rowKey={(record) => record.metadata[0].id}
+                                        dataSource={searchResult.documents}
+                                        pagination={{
+                                            ...searchResult.pagination,
+                                            position: ['bottomCenter']
+                                        }}
+                                        // pagination={false}
+                                        loading={searchResult.loading}
+                                        // onChange={handleTableChange}
+                                        showHeader={false}
+                                        style={{ borderRadius: 8 }}
+                                    />
+                                </Col>
+                            </Row>
+                        </Container>
+                    </>
+                    : null
+            }
+        </>
     )
 }
 

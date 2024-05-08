@@ -239,7 +239,7 @@ const Page_Document_Id = () => {
             {isAllowed
                 ? <Bread breadSelectedDoc={document} breadProp={[
                     {
-                        "title": "Company documents",
+                        "title": "Document",
                         "path": "/company"
                     },
                     {

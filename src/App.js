@@ -27,6 +27,7 @@ import Page_Ontology_Url from './pages/Page_Ontology_Url/Page_Ontology_Url';
 import Page_Login from './pages/Page_Login/Page_Login';
 import Page_Document_Id from './pages/Page_Document_Id/Page_Document_Id';
 import Page_Ontology_Id from './pages/Page_Ontology_Id/Page_Ontology_Id';
+import Page_Ontology_All from './pages/Page_Ontology_All/Page_Ontology_All';
 // import apis
 import { getSearchResult } from './apis/searchApi';
 import { getMe } from './apis/userApi';
@@ -67,14 +68,18 @@ const App = () => {
         },
         {
           path: "ontology",
+          element: <Page_Ontology_All />,
+        },
+        {
+          path: "ontologyold",
           element: <Page_Ontology />,
         },
         {
-          path: "ontology/:ontologyUrl",
+          path: "ontologyold/:ontologyUrl",
           element: <Page_Ontology_Url />,
         },
         {
-          path: "ontologyid/:ontologyId",
+          path: "ontology/:ontologyId",
           element: <Page_Ontology_Id />,
         },
         {

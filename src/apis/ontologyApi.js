@@ -6,6 +6,10 @@ export async function getAllOntologies() {
     let response = await axios.get(`${endpoint}/api/ontology/all`, { headers: { ...originHeader } })
     return response.data.data
 }
+export async function getAllOntologiesNew() {
+    let response = await axios.get(`${endpoint}/api/ontology/ontologyall`, { headers: { ...originHeader } })
+    return response.data.data
+}
 
 export async function getOntology(ontologyUrl) {
     let response = await axios.get(`${endpoint}/api/ontology/one/${ontologyUrl}`, { headers: { ...originHeader } })

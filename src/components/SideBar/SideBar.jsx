@@ -79,6 +79,12 @@ const SideBar = (props) => {
         else if (location.pathname.includes("trash")) {
             setSidebarItem('5')
         }
+        else if (location.pathname.includes("ontologyold")) {
+            setSidebarItem('7')
+        }
+        else if (location.pathname.includes("ontology")) {
+            setSidebarItem('6')
+        }
         // }
     }, [location])
     const items = [
@@ -111,6 +117,11 @@ const SideBar = (props) => {
             key: '6',
             icon: <ShareAltOutlined />,
             label: "Ontology"
+        },
+        {
+            key: '7',
+            icon: <ShareAltOutlined />,
+            label: "Ontology old"
         }
     ]
     // let primaryBgColor = antdTheme.token.colorBgLayout
@@ -192,6 +203,10 @@ const SideBar = (props) => {
                     else if (event.key == '6') {
                         setSidebarItem('6')
                         navigate("/ontology")
+                    }
+                    else if (event.key == '7') {
+                        setSidebarItem('7')
+                        navigate("/ontologyold")
                     }
                 }}
             />

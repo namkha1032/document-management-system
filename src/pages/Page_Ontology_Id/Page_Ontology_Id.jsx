@@ -15,7 +15,8 @@ import {
     Tag,
     Skeleton,
     Empty,
-    Cascader
+    Cascader,
+    Select
 } from "antd"
 import {
     DownloadOutlined,
@@ -27,6 +28,87 @@ import {
 } from '@ant-design/icons';
 import { getOntology, addNewNode, graphToTree, renameOntology, getOntologyId } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
+import CardSelectedNode from "./CardSelectedNode/CardSelectedNode";
+const Search_Node = (props) => {
+    const ontology = props.ontology
+    const graphState = props.graphState
+    const searchNode = props.searchNode
+    const setSearchNode = props.setSearchNode
+    const setSelectedNode = props.setSelectedNode
+    function removeAccents(str) {
+        return str.normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    }
+    async function handleSearchNode(id) {
+        // console.log("search id", id)
+        let ontologyIdSplit = ontology.ontologyId.split(':')
+        let preId = `${ontologyIdSplit[0]}:${ontologyIdSplit[1]}:${id}`
+        if (id) {
+            const findNode = ontology.nodes.find((node) => node.id == preId)
+            await graphState.focus(findNode.id, {
+                scale: 1.0,
+                // offset: {x:Number, y:Number}
+                locked: true,
+                animation: {
+                    duration: 1000,
+                    easingFunction: "easeInOutCubic"
+                }
+            })
+            graphState.selectNodes([findNode.id])
+            setSearchNode(findNode)
+            setSelectedNode(findNode)
+        }
+        else {
+            setSearchNode(null)
+            setSelectedNode(null)
+        }
+    }
+    function filterSearchNode(inputValue, path) {
+        // console.log("inputValue", inputValue)
+        // console.log("path", path)
+        // return path.some((option) => {
+        //     return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+        // });
+        return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+    }
+    return (
+        <>
+            {/* <Cascader
+                style={{ width: "100%" }}
+                options={ontology.nodes}
+                value={searchNode.label}
+                onChange={(id, node) => {
+                    console.log("node", id)
+                    handleSearchNode(id)
+                }}
+                placeholder="Search node..."
+                showSearch={{
+                    filter: filterSearchNode
+                }}
+            /> */}
+            <Select
+                showSearch={true}
+                allowClear
+                value={searchNode?.label}
+                // placeholder={props.placeholder}
+                // style={props.style}
+                style={{ width: "100%" }}
+                defaultActiveFirstOption={false}
+                suffixIcon={null}
+                filterOption={filterSearchNode}
+                // onSearch={handleSearch}
+                onChange={(id, node) => {
+                    // console.log("id in select", id)
+                    // console.log("node in select", node)
+                    handleSearchNode(id)
+                }}
+                notFoundContent={null}
+                options={ontology.nodes}
+            />
+        </>
+    )
+}
 
 const Section_Ontology_Id = () => {
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
@@ -42,6 +124,38 @@ const Section_Ontology_Id = () => {
     console.log("Page_Ontology_Url: ontology", ontology)
     const navigate = useNavigate()
     const ontologyNameRef = useRef(null)
+    const graphEvents = {
+        selectNode: (obj) => {
+            const findNode = ontology.nodes.find((node) => node.id == obj.nodes[0])
+            setSelectedEdge(null)
+            setSelectedNode(findNode)
+        },
+        selectEdge: (obj) => {
+            if (obj.nodes.length == 0) {
+                const findEdge = ontology.edges.find((edge) => edge.id == obj.edges[0])
+                setSelectedEdge(findEdge)
+            }
+        },
+        deselectNode: (obj) => {
+            if (obj.edges.length > 0 && obj.nodes.length == 0) {
+                const findEdge = ontology.edges.find((edge) => edge.id == obj.edges[0])
+                setSelectedEdge(findEdge)
+                setSelectedNode(null)
+            }
+            else {
+                setSelectedNode(null)
+            }
+        },
+        deselectEdge: (obj) => {
+            if (obj.edges.length > 0) {
+                const findEdge = ontology.edges.find((edge) => edge.id == obj.edges[0])
+                setSelectedEdge(findEdge)
+            }
+            else {
+                setSelectedEdge(null)
+            }
+        }
+    };
     useEffect(() => {
         async function fetchData() {
             let response = await getOntologyId(ontologyId)
@@ -51,37 +165,6 @@ const Section_Ontology_Id = () => {
         fetchData()
     }, [])
 
-    function removeAccents(str) {
-        return str.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/đ/g, 'd').replace(/Đ/g, 'D');
-    }
-    async function handleSearchNode(id) {
-        console.log("search id", id)
-        if (id) {
-            const findNode = ontology.nodes.find((node) => node.id == id)
-            await graphState.focus(id, {
-                scale: 1.0,
-                // offset: {x:Number, y:Number}
-                locked: true,
-                animation: {
-                    duration: 1000,
-                    easingFunction: "easeInOutCubic"
-                }
-            })
-            graphState.selectNodes([findNode.id])
-            setSearchNode(findNode.id)
-            setSelectedNode(findNode)
-        }
-        else {
-            setSearchNode(null)
-        }
-    }
-    function filterSearchNode(inputValue, path) {
-        return path.some((option) => {
-            return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
-        });
-    }
     return (
         <>
             <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -112,7 +195,7 @@ const Section_Ontology_Id = () => {
                                         }}>
                                             <Graph
                                                 graph={ontology}
-                                                // events={graphEvents}
+                                                events={graphEvents}
                                                 getNetwork={network => {
                                                     //  if you want access to vis.js network api you can set the state in a parent component using this property
                                                     setGraphState(network)
@@ -218,24 +301,16 @@ const Section_Ontology_Id = () => {
                                                     </>
                                                 </Col>
                                                 <Col md={10}>
-                                                    <Cascader
-                                                        style={{ width: "100%" }}
-                                                        options={ontology.nodes}
-                                                        value={searchNode}
-                                                        onChange={(id, node) => {
-                                                            console.log("id", id)
-                                                            handleSearchNode(id)
-                                                        }}
-                                                        placeholder="Search node..."
-                                                        showSearch={{
-                                                            filter: filterSearchNode
-                                                        }}
-                                                    />
+                                                    <Search_Node ontology={ontology}
+                                                        graphState={graphState}
+                                                        searchNode={searchNode}
+                                                        setSearchNode={setSearchNode}
+                                                        setSelectedNode={setSelectedNode} />
                                                 </Col>
                                                 <Col md={14}>
                                                     <Space>
-                                                        <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"green"}>{ontology.nodes.length} nodes</Tag>
-                                                        <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"cyan"}>{ontology.edges.length} edges</Tag>
+                                                        <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"green"}>{ontology.count_syn} synsets</Tag>
+                                                        <Tag style={{ height: 36, display: "flex", alignItems: "center", fontSize: 16 }} color={"cyan"}>{ontology.count_sense} senses</Tag>
                                                     </Space>
                                                 </Col>
                                                 <Col md={10}>
@@ -254,7 +329,7 @@ const Section_Ontology_Id = () => {
                                         </Card>
                                         {selectedNode
                                             ? <>
-                                                {/* <CardSelectedNode setSearchNode={setSearchNode} graphState={graphState} selectedNode={selectedNode} setSelectedNode={setSelectedNode} /> */}
+                                                <CardSelectedNode setSearchNode={setSearchNode} graphState={graphState} selectedNode={selectedNode} setSelectedNode={setSelectedNode} />
                                             </>
                                             : (selectedEdge
                                                 ? <Card title={"Selected Edge"}>
@@ -278,21 +353,25 @@ const Section_Ontology_Id = () => {
                             <div style={{ flex: "1 1 auto" }}>
                                 <Row style={{ height: "100%" }} gutter={[16, 16]}>
                                     <Col md={16} style={{ height: "100%" }}>
-                                        <Card style={{ height: "100%" }} styles={{
+                                        {/* <Card style={{ height: "100%" }} styles={{
                                             body: {
                                                 height: "100%"
                                             }
                                         }}>
-                                            <Skeleton active />
-                                        </Card>
+                                        </Card> */}
+                                        <Skeleton.Button active block className="mySkele" />
                                     </Col>
                                     <Col md={8} style={{ display: "flex", flexDirection: "column", rowGap: 16, height: "100%" }}>
-                                        <Card style={{ flex: "0 1 auto" }}>
-                                            <Skeleton avatar active />
-                                        </Card>
-                                        <Card style={{ flex: "1 1 auto" }}>
-                                            <Skeleton avatar active />
-                                        </Card>
+                                        {/* <Card style={{ flex: "0 1 auto" }}>
+                                        </Card> */}
+                                        <div style={{ height: "20%", width: "100%" }}>
+                                            <Skeleton.Button active block className="mySkele" />
+                                        </div>
+                                        {/* <Card style={{ flex: "1 1 auto" }}>
+                                        </Card> */}
+                                        <div style={{ height: "80%", width: "100%" }}>
+                                            <Skeleton.Button active block className="mySkele" />
+                                        </div>
                                     </Col>
                                 </Row>
                             </div>

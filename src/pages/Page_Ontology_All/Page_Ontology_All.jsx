@@ -11,7 +11,8 @@ import {
     Tabs,
     Input,
     Card,
-    Skeleton
+    Skeleton,
+    theme
 } from "antd"
 import {
     ShareAltOutlined,
@@ -21,7 +22,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons';
 import Bread from "../../components/Bread/Bread";
-import { getAllOntologies, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
+import { getAllOntologiesNew, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
 
 
 const DeleteOntologyButton = (props) => {
@@ -37,7 +38,7 @@ const DeleteOntologyButton = (props) => {
     return (
         <Popconfirm
             title="Delete ontology"
-            description={`Are you sure to delete this ontology - ${ontology.name}?`}
+            description={`Are you sure to delete this ontology - ${ontology.ontologyName}?`}
             onConfirm={handleDeleteOntology}
             onCancel={() => { }}
             okText="Yes"
@@ -48,12 +49,13 @@ const DeleteOntologyButton = (props) => {
     )
 }
 
-const Page_Ontology = () => {
+const Page_Ontology_All = () => {
     let [ontologies, setOntologies] = useState(null)
+    let antdTheme = theme.useToken()
     const navigate = useNavigate()
     useEffect(() => {
         async function fetchData() {
-            let returnedOntologies = await getAllOntologies()
+            let returnedOntologies = await getAllOntologiesNew()
             setOntologies(returnedOntologies)
         }
         fetchData()
@@ -65,37 +67,37 @@ const Page_Ontology = () => {
                 return (
                     <div style={{ display: "flex", alignItems: "center", columnGap: 8, cursor: "pointer" }}
                         onClick={() => {
-                            navigate(`/ontologyold/${obj.url}`, {
+                            navigate(`/ontology/${obj.ontologyId}`, {
                                 state: {
                                     breadState: [
-                                        { "title": "Ontology old", "path": "/ontologyold" },
-                                        { "title": `${obj.name}`, "path": `/ontologyold/${obj.url}` }
+                                        { "title": "Ontology", "path": "/ontology" },
+                                        { "title": `${obj.ontologyName}`, "path": `/ontology/${obj.ontologyId}` }
                                     ]
 
                                 }
                             })
                         }}>
                         <ShareAltOutlined />
-                        <Typography.Text>{obj.name}</Typography.Text>
+                        <Typography.Text>{obj.ontologyName}</Typography.Text>
                     </div>
                 )
             }
         },
         {
-            title: "Number of nodes",
+            title: "Number of synsets",
             render: (obj) => {
                 return (
-                    <Typography.Text>{obj.count_nodes}</Typography.Text>
+                    <Typography.Text>{obj.count_syn}</Typography.Text>
                 )
             }
         },
         {
-            title: "Number of edges",
+            title: "Number of senses",
             render: (obj) => {
                 return (
                     <>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <Typography.Text>{obj.count_edges}</Typography.Text>
+                            <Typography.Text>{obj.count_sense}</Typography.Text>
                             <DeleteOntologyButton ontology={obj} setOntologies={setOntologies} />
                         </div>
                     </>
@@ -105,7 +107,7 @@ const Page_Ontology = () => {
     ]
     return (
         <>
-            <Bread breadProp={[{ "title": "Ontology old", "path": "/ontologyold" }]} createButtonType={"ontology"} />
+            <Bread breadProp={[{ "title": "Ontology", "path": "/ontology" }]} createButtonType={"ontology"} />
             {
                 ontologies
                     ? <>
@@ -113,7 +115,10 @@ const Page_Ontology = () => {
                             columns={ontologyColumns}
                             rowKey={(record) => record.ontologyId}
                             dataSource={ontologies}
-                            style={{ borderRadius: 8 }}
+                            style={{
+                                borderRadius: 8, cursor: "pointer",
+                                border: `1px solid ${antdTheme.token.colorBorder}`
+                            }}
                         // loading={searchResult.loading}
                         // pagination={{
                         //     ...searchResult.pagination,
@@ -124,13 +129,13 @@ const Page_Ontology = () => {
                         />
                     </>
                     : <>
-                        <Card style={{ height: "100%" }}>
-                            <Skeleton active />
-                        </Card>
+                        <div style={{ height: "100%", width: "100%" }}>
+                            <Skeleton.Button active block className="mySkele" />
+                        </div>
                     </>
             }
         </>
     )
 }
 
-export default Page_Ontology
+export default Page_Ontology_All
