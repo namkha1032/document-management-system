@@ -1,50 +1,41 @@
-import { useState, useEffect } from "react";
 import {
-    Typography,
-    Row,
-    Col,
-    Card,
-    theme,
-    Table,
+    Alert,
     Avatar,
     Button,
-    Statistic,
+    Card,
+    Col,
     Input,
     Modal,
-    Skeleton,
     Popconfirm,
+    Result,
+    Row,
+    Skeleton,
+    Table,
+    Typography,
     message,
-    Alert,
-    Tag,
-    Result
-} from "antd"
+    theme
+} from "antd";
+import { useEffect, useState } from "react";
 // import Skeleton from '@mui/material/Skeleton';
-import Container from '@mui/material/Container';
-import { CiShoppingTag } from "react-icons/ci";
-import { AiFillSignal } from "react-icons/ai";
 import {
-    TagOutlined,
     ClockCircleOutlined,
-    UngroupOutlined,
-    CloseOutlined,
-    PlusOutlined,
+    DeleteOutlined,
     RollbackOutlined,
-    StopOutlined,
-    DeleteOutlined
+    TagOutlined,
+    UngroupOutlined
 } from '@ant-design/icons';
+import { FaGlobeAsia } from "react-icons/fa";
 import { MdVpnKey } from "react-icons/md";
-import { FaLock, FaGlobeAsia } from "react-icons/fa";
 
-import { useParams, useNavigate } from "react-router-dom";
-import { apiGetDocument, apiUpdateMetadata, apiRestoreVersion } from "../../apis/documentApi";
-import Bread from "../../components/Bread/Bread";
-import randomString from "../../functions/randomString";
-import PermissionModal from "../../components/PermissionModal/PermissionModal";
-import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
-import TagButton from "../../components/TagButton/TagButton";
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
-import delay from "../../functions/delay";
+import { useNavigate, useParams } from "react-router-dom";
+import { apiGetDocument, apiRestoreVersion, apiUpdateMetadata } from "../../apis/documentApi";
+import Bread from "../../components/Bread/Bread";
+import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
+import PermissionModal from "../../components/PermissionModal/PermissionModal";
+import TagButton from "../../components/TagButton/TagButton";
+
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -59,9 +50,9 @@ const VjpStatistic = (props) => {
             }
         }}
             style={{
-                transition: direction == "horizontal" ? "width 0.3s" : "height 0.3s",
-                width: direction == "horizontal" ? (value ? "100%" : 0) : "100%",
-                height: direction == "vertical" ? (value ? "100%" : 0) : "100%",
+                transition: direction === "horizontal" ? "width 0.3s" : "height 0.3s",
+                width: direction === "horizontal" ? (value ? "100%" : 0) : "100%",
+                height: direction === "vertical" ? (value ? "100%" : 0) : "100%",
                 overflow: "hidden",
                 borderWidth: value ? "1px" : "0px",
                 borderColor: antdTheme.token.colorBorder
@@ -137,7 +128,7 @@ const ModalUpdateMetadata = (props) => {
 async function getDocumentSize(documentResponse) {
     let documentCopy = JSON.parse(JSON.stringify(documentResponse))
     let documentPromise = documentResponse.versions.map(async (docver, idx) => {
-        let fileResponse = await axios.get(documentResponse.versions[0].url != "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
+        let fileResponse = await axios.get(documentResponse.versions[0].url !== "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
         let size = prettyBytes(parseInt(fileResponse.headers.get('Content-Length')));
         documentCopy.versions[idx]["size"] = size
     })
@@ -208,17 +199,15 @@ const Page_Document_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
-            // let documentCopy = await getDocumentSize(documentResponse)
-            let documentCopy = {...documentResponse}
-            documentCopy.versions[0]["size"] = "1 MB"
-            let findUser = documentCopy.users_with_permission.find((item, idx) => item.email == userStorage.email)
-            if (!findUser && documentCopy.owner.email != userStorage.email) {
+            let documentCopy = {...documentResponse, versions: documentResponse.versions.map(item=>({...item, file_size:Number(item.file_size || 0)}))}
+            let findUser = documentCopy.users_with_permission.find((item, idx) => item.email === userStorage.email)
+            if (!findUser && documentCopy.owner.email !== userStorage.email) {
                 setIsAllowed(false)
             }
             setDocument(documentCopy)
         }
         fetchData()
-    }, [document_id])
+    }, [document_id, userStorage.email])
     async function handleRestoreVersion(versionUid) {
         setRestoreLoading(true)
         let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
@@ -245,7 +234,7 @@ const Page_Document_Id = () => {
                         "path": "/company"
                     },
                     {
-                        "title": document?.versions[0].file_name != "" ? document?.versions[0].file_name : document.uid,
+                        "title": document?.versions[0].file_name !== "" ? document?.versions[0].file_name : document.uid,
                         "path": `/document/${document?.uid}`
                     }
                 ]} />
@@ -307,7 +296,7 @@ const Page_Document_Id = () => {
                                     // valueStyle={{ color: antdTheme.token.colorErrorActive }}
                                     />
                                 </Card> */}
-                                <VjpStatistic direction={"vertical"} title={"File size"} prefix={<UngroupOutlined />} value={document?.versions[0]?.size} />
+                                <VjpStatistic direction={"vertical"} title={"File size"} prefix={<UngroupOutlined />} value={document ? prettyBytes(document.versions[0].file_size) : null} />
 
                             </Col>
                             <Col md={14} style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -336,9 +325,9 @@ const Page_Document_Id = () => {
                                                 <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text>
                                             </Col>
                                             <Col span={14}>
-                                                {Object.entries(item)[0][0] == 'Văn bản liên quan'
+                                                {Object.entries(item)[0][0] === 'Văn bản liên quan'
                                                     ? JSON.parse(Object.entries(item)[0][1].replaceAll("'", '"')).map((ite, index, arr) =>
-                                                        <Input.TextArea style={{ marginBottom: index + 1 == arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
+                                                        <Input.TextArea style={{ marginBottom: index + 1 === arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
                                                     )
                                                     : <Input.TextArea
                                                         // onChange={(e) => handleUpdateMetadata(Object.entries(item)[0][0], e.target.value)} 
@@ -351,7 +340,7 @@ const Page_Document_Id = () => {
                                     )}
                                 </Card>
                             </Col>
-                            {userStorage?.email == document?.owner?.email
+                            {userStorage?.email === document?.owner?.email
                                 ? <Col md={8}>
                                     <PermissionModal document={document} setDocument={setDocument}
                                         modalButton={
@@ -362,7 +351,7 @@ const Page_Document_Id = () => {
                                 </Col>
                                 : null}
 
-                            {userStorage?.email == document?.owner?.email
+                            {userStorage?.email === document?.owner?.email
                                 ? <Col md={8}>
                                     <TagButton icon={<FaGlobeAsia />} color="green" columnGap={8} >
                                         Public file
@@ -370,7 +359,7 @@ const Page_Document_Id = () => {
                                 </Col>
                                 : null}
 
-                            {userStorage?.email == document?.owner?.email
+                            {userStorage?.email === document?.owner?.email
                                 ? <Col md={8}>
                                     <TagButton icon={<DeleteOutlined />} color="red" columnGap={8}>
                                         Delete file
@@ -403,7 +392,7 @@ const Page_Document_Id = () => {
                 />
 
             </div>
-            {isAllowed == false ?
+            {isAllowed === false ?
                 <div style={{ display: "flex", height: "100%", justifyContent: "center", alignItems: "center" }}>
                     <Result
                         status="403"
@@ -413,7 +402,7 @@ const Page_Document_Id = () => {
                     />
                 </div>
                 : null}
-            {document == null
+            {document === null
                 ? <>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
                         <Col md={16}>
