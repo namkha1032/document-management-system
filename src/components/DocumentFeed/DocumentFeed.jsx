@@ -292,15 +292,15 @@ const DocumentFeed = (props) => {
                                                                             }}>
                                                                             <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
                                                                                 <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                                                                                <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0].file_name ? item.versions[0].file_name : item.uid}</Typography.Title>
+                                                                                <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0]?.file_name ? item.versions[0]?.file_name : item.uid}</Typography.Title>
                                                                                 <Checkbox checked={selectedDoc.find((seDoc) => seDoc.uid == item.uid)} onChange={(e) => { setSelectedDocuments(e, item) }} />
                                                                             </div>
                                                                             <div onClick={(e) => ctrlSetSelectedDocuments(e, item)} className="pdfBorder" style={{
                                                                                 transition: "height 0.3s", height: selectedDoc.length == 1 ? 100 : 150, overflow: "hidden", display: "flex", borderRadius: selectedDoc.length == 1 ? 4 : 8,
                                                                                 // border: `1px solid ${antdTheme.token.colorBorder}`
                                                                             }}>
-                                                                                <Image src={item.versions[0].url.length > 0
-                                                                                    ? `//image.thum.io/get/pdfSource/page/1/${item.versions[0].url}`
+                                                                                <Image src={item.versions[0]?.url.length > 0
+                                                                                    ? `//image.thum.io/get/pdfSource/page/1/${item.versions[0]?.url}`
                                                                                     : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} preview={false} />
                                                                             </div>
                                                                         </Card>
@@ -410,8 +410,8 @@ const DocumentFeed = (props) => {
                                             overflowY: "scroll"
                                         }}>
                                         <div style={{ height: 300, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
-                                            <Image src={selectedDoc[0]?.versions[0].url.length > 0
-                                                ? `//image.thum.io/get/pdfSource/page/1/${selectedDoc[0]?.versions[0].url}`
+                                            <Image src={selectedDoc[0]?.versions[0]?.url.length > 0
+                                                ? `//image.thum.io/get/pdfSource/page/1/${selectedDoc[0]?.versions[0]?.url}`
                                                 : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
                                         </div>
                                         <Typography.Title ellipsis level={4}>Who has access</Typography.Title>

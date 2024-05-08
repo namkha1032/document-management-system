@@ -208,7 +208,9 @@ const Page_Document_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
-            let documentCopy = await getDocumentSize(documentResponse)
+            // let documentCopy = await getDocumentSize(documentResponse)
+            let documentCopy = {...documentResponse}
+            documentCopy.versions[0]["size"] = "1 MB"
             let findUser = documentCopy.users_with_permission.find((item, idx) => item.email == userStorage.email)
             if (!findUser && documentCopy.owner.email != userStorage.email) {
                 setIsAllowed(false)
