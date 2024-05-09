@@ -208,7 +208,7 @@ const Page_Document_Id = () => {
             setDocument(documentCopy)
         }
         fetchData()
-    }, [document_id, userStorage.email])
+    }, [document_id])
     async function handleRestoreVersion(versionUid) {
         setRestoreLoading(true)
         let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
