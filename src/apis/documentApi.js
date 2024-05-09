@@ -39,6 +39,18 @@ export async function apiGetMyDocument(token, page, page_size) {
     return response.data.data
 }
 
+export async function apiGetTrashDocument(token, page, page_size) {
+    // await delay(60000)
+    let response = await axios.get(`${endpoint}/api/documents/matrix/me?page=${page}&page_size=${page_size}&is_deleted=${true}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "69420",
+            ...originHeader
+        }
+    })
+    return response.data.data
+}
+
 export async function apiGetSharedDocument(page, page_size) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     let response = await axios.get(`${endpoint}/api/documents/matrix/shared?page=${page}&page_size=${page_size}`, {
