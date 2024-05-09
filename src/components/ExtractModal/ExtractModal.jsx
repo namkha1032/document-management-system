@@ -86,7 +86,8 @@ const ExtractModal = (props) => {
         let newForm = new FormData()
         // newForm.append('files', uploadDocument[index].fileList[0])
         newForm.append("data", JSON.stringify({
-            "metadata": uploadDocument[index].metadata
+            "metadata": uploadDocument[index].metadata,
+            "message": "hehe"
         }))
         // for (let i = 0; i < 100; i++) {
         //     let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)

@@ -36,7 +36,7 @@ import { MdVpnKey } from "react-icons/md";
 import { FaLock, FaGlobeAsia } from "react-icons/fa";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { apiGetDocument, apiUpdateMetadata, apiRestoreVersion } from "../../apis/documentApi";
+import { apiGetDocument, apiUpdateMetadata, apiRestoreVersion, apiGetLog } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
 import randomString from "../../functions/randomString";
 import PermissionModal from "../../components/PermissionModal/PermissionModal";
@@ -149,6 +149,7 @@ const Page_Document_Id = () => {
     let [document, setDocument] = useState(null)
     let [restoreLoading, setRestoreLoading] = useState(false)
     let [isAllowed, setIsAllowed] = useState(true)
+    let [log, setLog] = useState([])
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
     let userStorage = JSON.parse(localStorage.getItem("user"))
@@ -208,6 +209,8 @@ const Page_Document_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
+            let logResponse = await apiGetLog(document_id)
+            console.log("logResponse", logResponse)
             // let documentCopy = await getDocumentSize(documentResponse)
             let documentCopy = {...documentResponse}
             documentCopy.versions[0]["size"] = "1 MB"

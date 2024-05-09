@@ -74,12 +74,14 @@ export async function apiExtractMetadata(newForm) {
 
 export async function apiSaveDocumentToCloud(token, data) {
     // await delay(1000)
+    console.log("data", data)
     let rawResponse = await axios.post(`${endpoint}/api/documents/create`, data, {
         headers: {
             "Authorization": `Bearer ${token}`,
             ...originHeader
         }
     })
+    console.log("rawResponse", rawResponse)
     // return 1
     return rawResponse.data
 }
@@ -140,4 +142,16 @@ export async function apiLiveSearchMetadata(query) {
         }
     })
     return rawResponse.data
+}
+
+export async function apiGetLog(documentId){
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    let rawResponse = await axios.get(`${endpoint}/api/logs/matrix/${documentId}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    console.log("raw log", rawResponse)
+    return rawResponse.data.logs
 }
