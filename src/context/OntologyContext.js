@@ -36,18 +36,15 @@ function ontologyReducer(state, action) {
             return newOntology
             // return action.payload
         }
-        case "addNode": {
+        case "addSynset": {
             let newOntology = {
                 ...state,
                 nodes: [
                     ...state.nodes,
-                    {
-                        "id": action.payload.id,
-                        "label": action.payload.label
-                    }
+                    action.payload
                 ],
-                // parentOptions: [...action.payload.parentOptions],
-                // childrenOptions: [...action.payload.childrenOptions]
+                parentOptions: [],
+                childrenOptions: []
             }
             return newOntology
         }
@@ -101,19 +98,48 @@ function ontologyReducer(state, action) {
             }
             return newOntology
         }
+        case "updateDefinition": {
+            let newOntology = {
+                ...state,
+                nodes: state.nodes.map((node) => {
+                    if (node.id == action.payload.id) {
+                        return {
+                            ...node,
+                            definition: action.payload.definition
+                        }
+                    }
+                    else {
+                        return node
+                    }
+                }),
+                parentOptions: [],
+                childrenOptions: []
+            }
+            return newOntology
+        }
+        case "addSense": {
+            let newOntology = {
+                ...state,
+                nodes: state.nodes.find((node) => node.id == action.payload.newSense.id) ? state.nodes : [
+                    ...state.nodes,
+                    action.payload.newSense
+                ],
+                edges:[
+                    ...state.edges,
+                    action.payload.newEdge
+                ],
+                parentOptions: [],
+                childrenOptions: []
+            }
+            return newOntology
+        }
         case "addEdge": {
             let newOntology = {
                 ...state,
                 nodes: [...state.nodes],
                 edges: [
                     ...state.edges,
-                    {
-                        "id": action.payload.id,
-                        "from": action.payload.from,
-                        "to": action.payload.to,
-                        "from_label": action.payload.from_label,
-                        "to_label": action.payload.to_label,
-                    }
+                    action.payload
                 ],
                 // childrenOptions: [...action.payload.childrenOptions],
                 // parentOptions: [...action.payload.parentOptions]
@@ -171,7 +197,7 @@ function ontologyReducer(state, action) {
             return newOntology
         }
         // /////////////////////////////////////////////////////////////////////////////
-        case "triggerLoadingAddNode": {
+        case "triggerLoadingAddSynset": {
             let newOntology = {
                 ...state,
                 "loadingAddNode": !state.loadingAddNode
@@ -243,6 +269,7 @@ const OntologyProvider = (props) => {
         "parentOptions": [],
         "childrenOptions": [],
         "loadingAddNode": false,
+        "loadingAddSynset": false,
         "loadingAddParentEdge": false,
         "loadingAddChildrenEdge": false,
         "loadingDeleteNode": false,

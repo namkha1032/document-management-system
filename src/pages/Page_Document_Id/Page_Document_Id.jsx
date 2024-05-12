@@ -12,6 +12,7 @@ import {
     Skeleton,
     Table,
     Typography,
+    Space,
     message,
     theme
 } from "antd";
@@ -22,20 +23,20 @@ import {
     DeleteOutlined,
     RollbackOutlined,
     TagOutlined,
-    UngroupOutlined
+    UngroupOutlined,
+    ExclamationCircleFilled
 } from '@ant-design/icons';
 import { FaGlobeAsia } from "react-icons/fa";
 import { MdVpnKey } from "react-icons/md";
 
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
-import { useNavigate, useParams } from "react-router-dom";
-import { apiGetDocument, apiRestoreVersion, apiUpdateMetadata } from "../../apis/documentApi";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { apiGetDocument, apiRestoreVersion, apiUpdateMetadata, apiDeleteDocument } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
 import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
 import PermissionModal from "../../components/PermissionModal/PermissionModal";
 import TagButton from "../../components/TagButton/TagButton";
-
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -140,9 +141,12 @@ const Page_Document_Id = () => {
     let [document, setDocument] = useState(null)
     let [restoreLoading, setRestoreLoading] = useState(false)
     let [isAllowed, setIsAllowed] = useState(true)
+    let [modalDeleteOpen, setModalDeleteOpen] = useState(false)
+    let [loadingDelete, setLoadingDelete] = useState(false)
     let [log, setLog] = useState([])
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
+    const { state } = useLocation();
     let userStorage = JSON.parse(localStorage.getItem("user"))
     console.log("Page_Document_Id: document: ", document)
     const navigate = useNavigate()
@@ -200,7 +204,7 @@ const Page_Document_Id = () => {
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
-            let documentCopy = {...documentResponse, versions: documentResponse.versions.map(item=>({...item, file_size:Number(item.file_size || 0)}))}
+            let documentCopy = { ...documentResponse, versions: documentResponse.versions.map(item => ({ ...item, file_size: Number(item.file_size || 0) })) }
             let findUser = documentCopy.users_with_permission.find((item, idx) => item.email === userStorage.email)
             if (!findUser && documentCopy.owner.email !== userStorage.email) {
                 setIsAllowed(false)
@@ -221,12 +225,37 @@ const Page_Document_Id = () => {
             className: 'namkha-message',
         });
     }
+    async function handleDeleteDocument() {
+        setLoadingDelete(true)
+        await apiDeleteDocument(document_id)
+        let breadState = state?.breadState
+        if (breadState) {
+            navigate(breadState[0]?.path)
+        }
+        else {
+            navigate(-1)
+        }
+        setLoadingDelete(false)
+    }
     // ///////////////////////////////////////////////////////
 
     // console.log(watch("example")) // watch input value by passing the name of it
     // ///////////////////////////////////////////////////////
     return (
         <>
+            <Modal title={
+                <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                    <ExclamationCircleFilled style={{ color: antdTheme.token.colorWarning, fontSize: 22 }} />
+                    <Typography.Title level={4} style={{ margin: 0 }}>Delete document</Typography.Title>
+                </div>} open={modalDeleteOpen} maskClosable={true} onCancel={() => { setModalDeleteOpen(false) }}
+                onOk={() => { handleDeleteDocument() }}
+                cancelText="No"
+                okText="Yes"
+                centered
+                confirmLoading={loadingDelete}
+            >
+                <Typography.Text>Are you sure you want to delete this document?</Typography.Text>
+            </Modal>
             {contextHolder}
             {isAllowed
                 ? <Bread breadSelectedDoc={document} breadProp={[
@@ -362,7 +391,7 @@ const Page_Document_Id = () => {
 
                             {userStorage?.email === document?.owner?.email
                                 ? <Col md={8}>
-                                    <TagButton icon={<DeleteOutlined />} color="red" columnGap={8}>
+                                    <TagButton handleClick={() => { setModalDeleteOpen(true) }} icon={<DeleteOutlined />} color="red" columnGap={8}>
                                         Delete file
                                     </TagButton>
                                 </Col>

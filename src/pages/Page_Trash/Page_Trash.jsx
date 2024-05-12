@@ -10,7 +10,6 @@ const Page_Trash = () => {
     console.log("Page_Documents_Trash: documentTrash", documentTrash)
     useEffect(() => {
         async function fetchData() {
-            console.log("hello")
             let response = await apiGetTrashDocument(userStorage.access_token, documentTrash.current, documentTrash.pageSize);
             console.log("response",response)
             dispatchDocumentTrash({
@@ -29,11 +28,11 @@ const Page_Trash = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: "0 1 auto" }}>
-                <Bread breadProp={[{ "title": "Trash documents", "path": "/Trash-documents" }]} createButtonType={"document"} />
+                <Bread breadProp={[{ "title": "Trash", "path": "/trash" }]} createButtonType={"document"} />
             </div>
             <DocumentFeed
-                originTitle={"Trash documents"}
-                originPath={"Trash-documents"}
+                originTitle={"Trash"}
+                originPath={"trash"}
                 documentResult={documentTrash}
                 dispatchDocumentResult={dispatchDocumentTrash}
                 getDocumentsApi={apiGetTrashDocument}

@@ -23,7 +23,7 @@ import {
 } from '@ant-design/icons';
 import Bread from "../../components/Bread/Bread";
 import { getAllOntologiesNew, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
-
+import SearchOptionContext from "../../context/SearchOptionContext";
 
 const DeleteOntologyButton = (props) => {
     const ontology = props.ontology
@@ -50,16 +50,19 @@ const DeleteOntologyButton = (props) => {
 }
 
 const Page_Ontology_All = () => {
-    let [ontologies, setOntologies] = useState(null)
+
+    let [ontologies, setOntologies] = useState([])
+    let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
     useEffect(() => {
-        async function fetchData() {
-            let returnedOntologies = await getAllOntologiesNew()
-            setOntologies(returnedOntologies)
-        }
-        fetchData()
-    }, [])
+        // async function fetchData() {
+        //     let returnedOntologies = await getAllOntologiesNew()
+        //     setOntologies(returnedOntologies)
+        // }
+        // fetchData()
+        setOntologies(searchOption.allOntologies)
+    }, [searchOption.allOntologies.length])
     let ontologyColumns = [
         {
             title: "Name",
@@ -109,7 +112,7 @@ const Page_Ontology_All = () => {
         <>
             <Bread breadProp={[{ "title": "Ontology", "path": "/ontology" }]} createButtonType={"ontology"} />
             {
-                ontologies
+                ontologies.length > 0
                     ? <>
                         <Table
                             columns={ontologyColumns}

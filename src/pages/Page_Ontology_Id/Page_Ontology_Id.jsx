@@ -26,7 +26,7 @@ import {
     PlusOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { getOntology, addNewNode, graphToTree, renameOntology, getOntologyId } from "../../apis/ontologyApi";
+import { getOntology, apiAddSynset, graphToTree, renameOntology, getOntologyId } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
 import CardSelectedNode from "./CardSelectedNode/CardSelectedNode";
 const Search_Node = (props) => {
@@ -119,6 +119,10 @@ const Section_Ontology_Id = () => {
     let [newOntologyName, setNewOntologyName] = useState("")
     let [graphState, setGraphState] = useState(null)
     let [newNode, setNewNode] = useState("")
+    let [zoomNewNode, setZoomNewNode] = useState({
+        zoom: false,
+        newNode: null
+    })
     let [searchNode, setSearchNode] = useState(null)
     let { ontologyId } = useParams()
     console.log("Page_Ontology_Url: ontology", ontology)
@@ -164,7 +168,53 @@ const Section_Ontology_Id = () => {
         }
         fetchData()
     }, [])
+    useEffect(() => {
+        async function handleZoom() {
+            await graphState.focus(zoomNewNode.newNode.id, {
+                scale: 1.0,
+                // offset: {x:Number, y:Number}
+                locked: true,
+                animation: {
+                    duration: 1000,
+                    easingFunction: "easeInOutCubic"
+                }
+            })
+            graphState.selectNodes([zoomNewNode.newNode.id])
+            setSearchNode(zoomNewNode.newNode)
+            setSelectedNode(zoomNewNode.newNode)
+            setZoomNewNode({
+                zoom: false,
+                newNode: null
+            })
+        }
+        if (zoomNewNode.zoom) {
+            handleZoom()
+        }
+    }, [zoomNewNode])
+    async function handleAddSynset() {
+        dispatchOntology({ type: "triggerLoadingAddSynset" })
+        let addSynsetResponse = await apiAddSynset({ ontologyId: ontology.ontologyId })
+        dispatchOntology({ type: "addSynset", payload: addSynsetResponse.new_node })
+        // setNewNode("")
+        dispatchOntology({ type: "triggerLoadingAddSynset" })
+        setZoomNewNode({
+            zoom: true,
+            newNode: addSynsetResponse.new_node
+        })
+        // await graphState.focus(addSynsetResponse.new_node.id, {
+        //     scale: 1.0,
+        //     // offset: {x:Number, y:Number}
+        //     locked: true,
+        //     animation: {
+        //         duration: 1000,
+        //         easingFunction: "easeInOutCubic"
+        //     }
+        // })
+        // graphState.selectNodes([addSynsetResponse.new_node.id])
+        // setSearchNode(addSynsetResponse.new_node)
+        // setSelectedNode(addSynsetResponse.new_node)
 
+    }
     return (
         <>
             <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -183,7 +233,7 @@ const Section_Ontology_Id = () => {
                     />
                 </div>
                 {
-                    ontology.nodes.length > 0 ?
+                    ontology.ontologyId !== "" ?
                         <>
                             <div style={{ flex: "1 1 auto" }}>
                                 <Row style={{ height: "100%" }} gutter={[16, 16]}>
@@ -223,15 +273,15 @@ const Section_Ontology_Id = () => {
                                                     //     }
                                                     // }
                                                     physics: {
-                                                        enabled: false,
-                                                        // "barnesHut": {
-                                                        //     // gravitationalConstant: -80000,
-                                                        //     // "springConstant": 0,
-                                                        //     "avoidOverlap": 0.2,
-                                                        //     gravitationalConstant: -80000,
-                                                        //     springConstant: 0.001,
-                                                        //     springLength: 200
-                                                        // },
+                                                        enabled: true,
+                                                        barnesHut: {
+                                                            // gravitationalConstant: -80000,
+                                                            // "springConstant": 0,
+                                                            avoidOverlap: 0.2,
+                                                            // gravitationalConstant: -80000,
+                                                            // springConstant: 0.001,
+                                                            // springLength: 200
+                                                        },
                                                         // stabilization: {
                                                         //     enabled: true,
                                                         //     iterations: 80000, // You can adjust this to control the level of stabilization
@@ -314,16 +364,17 @@ const Section_Ontology_Id = () => {
                                                     </Space>
                                                 </Col>
                                                 <Col md={10}>
-                                                    <Space.Compact
+                                                    {/* <Space.Compact
                                                         style={{
                                                             width: '100%',
                                                         }}
                                                     >
                                                         <Input style={{ width: "100%" }} placeholder="Add new node..." value={newNode} onChange={(e) => setNewNode(e.target.value)} />
                                                         <Button icon={<PlusOutlined />} loading={ontology.loadingAddNode} disabled={newNode ? false : true}
-                                                        // onClick={() => handleAddNode()}
                                                         ></Button>
-                                                    </Space.Compact>
+                                                    </Space.Compact> */}
+                                                    <Button onClick={() => handleAddSynset()} loading={ontology.loadingAddNode}>Add new synset</Button>
+
                                                 </Col>
                                             </Row>
                                         </Card>

@@ -18,7 +18,7 @@ import {
     EditOutlined,
     CheckOutlined
 } from '@ant-design/icons';
-import { deleteNode, updateNodeName, addEdge, deleteEdge } from "../../../apis/ontologyApi";
+import { deleteNode, updateNodeName, apiAddEdge, deleteEdge } from "../../../apis/ontologyApi";
 import OntologyContext from "../../../context/OntologyContext";
 
 function removeAccents(str) {
@@ -104,7 +104,7 @@ const CardSelectedNode = (props) => {
             "from_id": newParent[0],
             "to_id": selectedNode.id
         }
-        let newParentEdge = await addEdge(request)
+        let newParentEdge = await apiAddEdge(request)
         dispatchOntology({ type: "addEdge", payload: newParentEdge })
         setParent({
             "id": newParentEdge.id,
@@ -122,7 +122,7 @@ const CardSelectedNode = (props) => {
             "from_id": selectedNode.id,
             "to_id": newChildren[0]
         }
-        let newChildrenEdge = await addEdge(request)
+        let newChildrenEdge = await apiAddEdge(request)
         dispatchOntology({ type: "addEdge", payload: newChildrenEdge })
         setChildren([
             ...children,

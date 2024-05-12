@@ -33,6 +33,7 @@ const Page_Login = () => {
                 ...userInfo,
                 ...response
             }
+            console.log("finalInfo", finalInfo)
             dispatchUser({ type: "login", payload: finalInfo })
             navigate(`/my-documents`)
 

@@ -13,6 +13,7 @@ import { DocumentMyProvider } from './context/DocumentMyContext';
 import { DocumentCompanyProvider } from './context/DocumentCompanyContext';
 import { DocumentSharedProvider } from './context/DocumentSharedContext';
 import { DocumentTrashProvider } from './context/DocumentTrashContext';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(

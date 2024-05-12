@@ -156,7 +156,7 @@ const CreateOntology = () => {
     async function handleCreateOntology() {
         setLoadingCreateOntology(true)
         let newOntology = await createNewOntology({ name: newOntologyName })
-        navigate(`/ontology/${newOntology.url}`)
+        navigate(`/ontology/${newOntology.ontologyId}`)
         setLoadingCreateOntology(false)
     }
     return (

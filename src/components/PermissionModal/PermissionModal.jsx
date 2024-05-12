@@ -138,7 +138,6 @@ const PermissionModal = (props) => {
                     </div>
                 }
             })
-            console.log("newUserList", newUserList)
             setUserList(newUserList)
         }
         fetchData()
@@ -163,7 +162,7 @@ const PermissionModal = (props) => {
     }
     return (
         <>
-            <Modal footer={null} style={{ top: 100 }}
+            <Modal footer={null} centered
                 title={<>
                     <Typography.Title style={{ margin: 0 }} level={4}>Share document</Typography.Title>
                     <Typography.Text type="secondary">Share your document to collaborate with your team</Typography.Text>

@@ -25,7 +25,7 @@ import {
     PlusOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { getOntology, addNewNode, graphToTree, renameOntology } from "../../apis/ontologyApi";
+import { getOntology, apiAddSynset, graphToTree, renameOntology } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
 import CardSelectedNode from "./CardSelectedNode/CardSelectedNode";
 
@@ -135,11 +135,11 @@ const Section_Ontology_Url = () => {
         });
     }
     async function handleAddNode() {
-        dispatchOntology({ type: "triggerLoadingAddNode" })
-        let newlyAddedNode = await addNewNode({ name: newNode, ontologyId: ontology.ontologyId })
+        dispatchOntology({ type: "triggerLoadingAddSynset" })
+        let newlyAddedNode = await apiAddSynset({ name: newNode, ontologyId: ontology.ontologyId })
         dispatchOntology({ type: "addNode", payload: newlyAddedNode })
         setNewNode("")
-        dispatchOntology({ type: "triggerLoadingAddNode" })
+        dispatchOntology({ type: "triggerLoadingAddSynset" })
     }
     async function handleDownloadOntology() {
         dispatchOntology({ type: "triggerLoadingDownload" })

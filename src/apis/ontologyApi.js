@@ -22,8 +22,18 @@ export async function deleteOntology(ontologyId) {
     return response.data.data
 }
 
-export async function addNewNode(newNode) {
-    let response = await axios.post(`${endpoint}/api/ontology/node`, newNode, { headers: { ...originHeader } })
+export async function apiAddSynset(data) {
+    let response = await axios.post(`${endpoint}/api/ontology/addsynset`, data, { headers: { ...originHeader } })
+    return response.data.data
+}
+
+export async function apiUpdateDefinition(synsetId, data) {
+    let response = await axios.patch(`${endpoint}/api/ontology/synsetdefinition/${synsetId}`, data, { headers: { ...originHeader } })
+    return response.data.data
+}
+
+export async function apiAddSense(data) {
+    let response = await axios.post(`${endpoint}/api/ontology/addsense`, data, { headers: { ...originHeader } })
     return response.data.data
 }
 
@@ -37,8 +47,8 @@ export async function updateNodeName(nodeId, nodeName) {
     return response.data.data
 }
 
-export async function addEdge(request) {
-    let response = await axios.post(`${endpoint}/api/ontology/edge`, request, { headers: { ...originHeader } })
+export async function apiAddEdge(data) {
+    let response = await axios.post(`${endpoint}/api/ontology/addedge`, data, { headers: { ...originHeader } })
     return response.data.data
 }
 
@@ -52,8 +62,8 @@ export async function uploadOntologyFile(formData) {
     return response.data.data
 }
 
-export async function createNewOntology(name) {
-    let response = await axios.post(`${endpoint}/api/ontology/create/scratch`, name, { headers: { ...originHeader } })
+export async function createNewOntology(body) {
+    let response = await axios.post(`${endpoint}/api/ontology/create/new`, body, { headers: { ...originHeader } })
     return response.data.data
 }
 

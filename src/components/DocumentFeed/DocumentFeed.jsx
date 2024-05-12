@@ -13,7 +13,9 @@ import {
     Pagination,
     Image,
     Checkbox,
-    Empty
+    Empty,
+    Tooltip,
+    Modal
 } from "antd"
 import {
     DownloadOutlined,
@@ -23,9 +25,10 @@ import {
     PlusOutlined,
     CloseOutlined,
     LinkOutlined,
-    EyeOutlined
+    EyeOutlined,
+    ExclamationCircleFilled
 } from '@ant-design/icons';
-import { MdVpnKey } from "react-icons/md";
+import { MdVpnKey, MdOutlineDeleteForever, MdOutlineSettingsBackupRestore } from "react-icons/md";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -47,6 +50,8 @@ const DocumentFeed = (props) => {
     let [gridList, dispatchGridList] = useContext(GridListContext)
     let [selectedDoc, setSelectedDoc] = useState([])
     let [selectedKey, setSelectedKey] = useState([])
+    let [modalRestore, setModalRestore] = useState(false)
+    let [loadingRestore, setLoadingRestore] = useState(false)
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
     // fetch("http://localhost:3000/file/sample.pdf")
@@ -190,251 +195,291 @@ const DocumentFeed = (props) => {
             setSelectedKey(selectedKey.filter((seKey) => seKey !== item.uid))
         }
     }
+    async function handleRestoreDocument() {
+        console.log("restore", selectedDoc)
+    }
     return (
         documentResult.documents !== null
             ?
             (documentResult?.documents?.length > 0
-                ? <div style={{ overflowX: "hidden", flex: "1 1 auto", display: "flex", flexDirection: "column" }}>
-                    <div style={{ height: "40px", display: "flex", justifyContent: "space-between", marginBottom: 16, marginTop: 1, flex: "0 1 auto", alignItems: "center" }}>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <Checkbox checked={selectedDoc.length == documentResult.documents.length}
-                                indeterminate={selectedDoc.length > 0 && selectedDoc.length < documentResult.documents.length}
-                                style={{ fontWeight: 500, fontSize: 16 }}
-                                onChange={(e) => {
-                                    if (e.target.checked) {
-                                        setSelectedKey(documentResult.documents.map((item, index) => item.uid))
-                                        setSelectedDoc(documentResult.documents)
-                                    }
-                                    else {
-                                        setSelectedKey([])
-                                        setSelectedDoc([])
-                                    }
-                                }}>Select all</Checkbox>
-                            <div style={{
-                                border: selectedDoc.length > 0 ? `1px solid ${antdTheme.token.colorBorder}` : `0px solid white`,
-                                overflow: "hidden", transition: "width 0.3s",
-                                width: selectedDoc.length > 0 ? 300 : 0,
-                                backgroundColor: antdTheme.token.colorBgContainer, borderRadius: 100, display: "flex", justifyContent: "space-between", alignItems: "center"
-                            }}>
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                    <Button size="large" shape="circle" type="text" icon={<CloseOutlined />} onClick={() => {
-                                        setSelectedDoc([])
-                                        setSelectedKey([])
-                                    }} />
-                                    <Typography.Text ellipsis style={{ fontSize: 16, fontWeight: 500 }}>{selectedDoc.length} selected</Typography.Text>
-                                </div>
-                                <div style={{ display: 'flex', columnGap: 8, alignItems: 'center' }}>
-                                    <Button size="large" shape="circle" type="text" icon={<DownloadOutlined />} />
-                                    <Button size="large" shape="circle" type="text" icon={<DeleteOutlined />} />
-                                    <Button size="large" shape="circle" type="text" icon={<LinkOutlined rotate={45} />} />
-                                </div>
-                            </div>
-                        </div>
-                        <Pagination
-                            pageSizeOptions={[12, 24, 36, 48]}
-                            showQuickJumper showSizeChanger
-                            onChange={(newPage, newPageSize) => changePagination(newPage, newPageSize)} current={documentResult.current} total={documentResult.total} pageSize={documentResult.pageSize} />
-                    </div>
-                    <>
-                        <div style={{ flex: "1 1 auto", width: "100%", height: "100%", display: "flex", columnGap: selectedDoc.length == 1 ? 16 : 0, justifyContent: "space-between" }}>
-                            <div style={{ display: "flex", flexDirection: "column", width: selectedDoc.length == 1 ? "70%" : "100%", transition: "width 0.3s" }}>
-                                <div className="sumGrid" style={{ display: "flex", width: "100%", height: "100%" }}>
-                                    <div style={{
-                                        display: "flex", width: gridList == "grid" ? "100%" : 0, transition: "width 0.3s",
-                                        overflowX: gridList == "grid" ? "visible" : "hidden"
-                                    }}>
-                                        <div style={{ flex: 1, position: "relative" }}>
-                                            <div style={{
-                                                position: "absolute",
-                                                top: 0,
-                                                left: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                overflowY: "scroll",
-                                                overflowX: "hidden",
-                                                marginRight: -8,
-                                                paddingRight: 8
-                                            }}>
-                                                {gridList == "grid" ?
-                                                    <Row gutter={selectedDoc.length == 1 ? [8, 8] : [16, 16]} style={{ transition: "row-gap 0.3s" }}>
-                                                        {
-                                                            documentResult.loading == false
-                                                                ? documentResult.documents.map((item, index) =>
-                                                                    <Col
-                                                                        // md={selectedDoc.length == 1 ? 6 : 4}
-                                                                        md={4}
-                                                                        key={index} style={{ transition: "width 0.3s, padding 0.3s" }}>
-                                                                        <Card
-                                                                            onDoubleClick={() => {
-                                                                                navigate(`/document/${item.uid}`, {
-                                                                                    state: {
-                                                                                        breadState: [
-                                                                                            { "title": originTitle, "path": `/${originPath}` },
-                                                                                            { "title": `${item.versions[0].file_name ? item.versions[0].file_name : item.uid}`, "path": `/document/${item.uid}` }
-                                                                                        ]
-
-                                                                                    }
-                                                                                })
-                                                                            }}
-                                                                            style={{
-                                                                                transition: "width 0.3s, height 0.3s",
-                                                                                // borderColor: antdTheme.token.colorBorder,
-                                                                                backgroundColor: selectedDoc.find((seDoc) => seDoc.uid == item?.uid) ? antdTheme.token.controlItemBgActiveHover : antdTheme.token.colorBgLayout
-                                                                            }}
-
-                                                                            hoverable styles={{
-                                                                                body: {
-                                                                                    paddingTop: 16,
-                                                                                    paddingLeft: 16,
-                                                                                    paddingBottom: 16,
-                                                                                    paddingRight: 16
-                                                                                }
-                                                                            }}>
-                                                                            <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
-                                                                                <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                                                                                <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0]?.file_name ? item.versions[0]?.file_name : item.uid}</Typography.Title>
-                                                                                <Checkbox checked={selectedDoc.find((seDoc) => seDoc.uid == item.uid)} onChange={(e) => { setSelectedDocuments(e, item) }} />
-                                                                            </div>
-                                                                            <div onClick={(e) => ctrlSetSelectedDocuments(e, item)} className="pdfBorder" style={{
-                                                                                transition: "height 0.3s", height: selectedDoc.length == 1 ? 100 : 150, overflow: "hidden", display: "flex", borderRadius: selectedDoc.length == 1 ? 4 : 8,
-                                                                                // border: `1px solid ${antdTheme.token.colorBorder}`
-                                                                            }}>
-                                                                                <Image src={item.versions[0]?.url.length > 0
-                                                                                    ? `//image.thum.io/get/pdfSource/page/1/${item.versions[0]?.url}`
-                                                                                    : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} preview={false} />
-                                                                            </div>
-                                                                        </Card>
-                                                                    </Col>
-                                                                )
-                                                                : Array.from('X'.repeat(24)).map((item, index) =>
-                                                                    <Col md={4} key={index} style={{ height: 216 }}>
-                                                                        <Skeleton.Button active block className="mySkele" />
-                                                                    </Col>)
-                                                        }
-                                                    </Row>
-                                                    : null}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style={{
-                                        display: "flex", width: gridList == "list" ? "100%" : 0, transition: "width 0.3s",
-                                        overflowX: gridList == "list" ? "visible" : "hidden"
-                                    }}>
-                                        <div style={{ flex: 1, position: "relative" }}>
-                                            <div style={{
-                                                position: "absolute",
-                                                top: 0,
-                                                left: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                overflowY: "scroll",
-                                                marginRight: -8,
-                                                paddingRight: 8
-                                            }}>
-                                                {gridList == "list" ? <Table
-                                                    columns={documentColumns}
-                                                    rowKey={(record) => record.uid}
-                                                    dataSource={documentResult.documents}
-                                                    style={{
-                                                        borderRadius: 8, cursor: "pointer",
-                                                        border: `1px solid ${antdTheme.token.colorBorder}`
-                                                    }}
-                                                    pagination={false}
-                                                    loading={documentResult.loading}
-                                                    rowSelection={{
-                                                        hideSelectAll: true,
-                                                        type: "checkbox",
-                                                        onChange: (selectedRowKeys, selectedRows) => {
-                                                            setSelectedDoc(selectedRows)
-                                                            setSelectedKey(selectedRowKeys)
-                                                        },
-                                                        selectedRowKeys: selectedKey
-                                                    }}
-                                                /> : null}
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                            <Card
-                                title={selectedDoc[0]?.uid}
-                                className="selectCard"
-                                extra={
-                                    <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
-                                        <Button type={"primary"} onClick={() => {
-                                            navigate(`/document/${selectedDoc[0]?.uid}`, {
-                                                state: {
-                                                    breadState: [
-                                                        { "title": originTitle, "path": `/${originPath}` },
-                                                        { "title": `${selectedDoc[0]?.versions[0].file_name ? selectedDoc[0]?.versions[0].file_name : selectedDoc[0]?.uid}`, "path": `/document/${selectedDoc[0]?.uid}` }
-                                                    ]
-
-                                                }
-                                            })
-                                        }} icon={<EyeOutlined />}>View</Button>
-                                        <Button type={"text"} icon={<CloseOutlined />} onClick={() => {
+                ? <>
+                    <Modal title={
+                        <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                            <ExclamationCircleFilled style={{ color: antdTheme.token.colorWarning, fontSize: 22 }} />
+                            <Typography.Title level={4} style={{ margin: 0 }}>Restore document</Typography.Title>
+                        </div>} open={modalRestore} maskClosable={true} onCancel={() => { setModalRestore(false) }}
+                        onOk={() => { handleRestoreDocument() }}
+                        cancelText="No"
+                        okText="Yes"
+                        centered
+                        confirmLoading={loadingRestore}
+                    >
+                        <Typography.Text>Are you sure you want to restore this document?</Typography.Text>
+                    </Modal>
+                    <div style={{ overflowX: "hidden", flex: "1 1 auto", display: "flex", flexDirection: "column" }}>
+                        <div style={{ height: "40px", display: "flex", justifyContent: "space-between", marginBottom: 16, marginTop: 1, flex: "0 1 auto", alignItems: "center" }}>
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <Checkbox checked={selectedDoc.length == documentResult.documents.length}
+                                    indeterminate={selectedDoc.length > 0 && selectedDoc.length < documentResult.documents.length}
+                                    style={{ fontWeight: 500, fontSize: 16 }}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSelectedKey(documentResult.documents.map((item, index) => item.uid))
+                                            setSelectedDoc(documentResult.documents)
+                                        }
+                                        else {
+                                            setSelectedKey([])
+                                            setSelectedDoc([])
+                                        }
+                                    }}>Select all</Checkbox>
+                                <div style={{
+                                    border: selectedDoc.length > 0 ? `1px solid ${antdTheme.token.colorBorder}` : `0px solid white`,
+                                    overflow: "hidden", transition: "width 0.3s",
+                                    width: selectedDoc.length > 0 ? (originPath === "trash" ? 250 : 300) : 0,
+                                    backgroundColor: antdTheme.token.colorBgContainer, borderRadius: 100, display: "flex", justifyContent: "space-between", alignItems: "center"
+                                }}>
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                        <Button size="large" shape="circle" type="text" icon={<CloseOutlined />} onClick={() => {
                                             setSelectedDoc([])
                                             setSelectedKey([])
                                         }} />
+                                        <Typography.Text ellipsis style={{ fontSize: 16, fontWeight: 500 }}>{selectedDoc.length} selected</Typography.Text>
+                                    </div>
+                                    <div style={{ display: 'flex', columnGap: 8, alignItems: 'center' }}>
+                                        {originPath !== "trash" ?
+                                            <>
+                                                <Button size="large" shape="circle" type="text" icon={<DownloadOutlined />} />
+                                                <Button size="large" shape="circle" type="text" icon={<DeleteOutlined />} />
+                                                <Button size="large" shape="circle" type="text" icon={<LinkOutlined rotate={45} />} />
+                                            </>
+                                            : null
+                                        }
+                                        {
+                                            originPath === "trash" ?
+                                                <>
+                                                    <Tooltip title={"Delete forever"}>
+                                                        <Button size="large" shape="circle" type="text" icon={<MdOutlineDeleteForever style={{ fontSize: 24 }} />} />
+                                                    </Tooltip>
+                                                    <Tooltip title={"Restore document"}>
+                                                        <Button onClick={() => { setModalRestore(true) }} size="large" shape="circle" type="text" icon={<MdOutlineSettingsBackupRestore style={{ fontSize: 24 }} />} />
+                                                    </Tooltip>
+                                                </>
+                                                : null
+                                        }
 
                                     </div>
-                                }
-                                style={{
-                                    display: "flex", flexDirection: "column", height: "100%",
-                                    width: selectedDoc.length == 1 ? "30%" : 0, transition: "width 0.3s, border-width 0.3s",
-                                    borderWidth: selectedDoc.length == 1 ? "1px" : "0px",
-                                    borderColor: antdTheme.token.colorBorder
-                                }}
-                                styles={{
-                                    header: {
-                                        flex: "0 1 auto"
-                                    },
-                                    body: {
-                                        flex: "1 1 auto",
-                                        display: 'flex',
-                                        flexDirection: "column"
-                                    }
-                                }}
-                            >
-                                <div style={{ flex: 1, position: "relative" }}>
-                                    <div
-                                        id={"cardSelectedDoc"}
-                                        style={{
-                                            position: "absolute",
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            overflowY: "scroll"
+                                </div>
+                            </div>
+                            <Pagination
+                                pageSizeOptions={[12, 24, 36, 48]}
+                                showQuickJumper showSizeChanger
+                                onChange={(newPage, newPageSize) => changePagination(newPage, newPageSize)} current={documentResult.current} total={documentResult.total} pageSize={documentResult.pageSize} />
+                        </div>
+                        <>
+                            <div style={{ flex: "1 1 auto", width: "100%", height: "100%", display: "flex", columnGap: selectedDoc.length == 1 ? 16 : 0, justifyContent: "space-between" }}>
+                                <div style={{ display: "flex", flexDirection: "column", width: selectedDoc.length == 1 && originPath !== "trash" ? "70%" : "100%", transition: "width 0.3s" }}>
+                                    <div className="sumGrid" style={{ display: "flex", width: "100%", height: "100%" }}>
+                                        <div style={{
+                                            display: "flex", width: gridList == "grid" ? "100%" : 0, transition: "width 0.3s",
+                                            overflowX: gridList == "grid" ? "visible" : "hidden"
                                         }}>
-                                        <div style={{ height: 300, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
-                                            <Image src={selectedDoc[0]?.versions[0]?.url.length > 0
-                                                ? `//image.thum.io/get/pdfSource/page/1/${selectedDoc[0]?.versions[0]?.url}`
-                                                : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
+                                            <div style={{ flex: 1, position: "relative" }}>
+                                                <div style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    overflowY: "scroll",
+                                                    overflowX: "hidden",
+                                                    marginRight: -8,
+                                                    paddingRight: 8
+                                                }}>
+                                                    {gridList == "grid" ?
+                                                        <Row gutter={selectedDoc.length == 1 && originPath !== "trash" ? [8, 8] : [16, 16]} style={{ transition: "row-gap 0.3s" }}>
+                                                            {
+                                                                documentResult.loading == false
+                                                                    ? documentResult.documents.map((item, index) =>
+                                                                        <Col
+                                                                            // md={selectedDoc.length == 1 ? 6 : 4}
+                                                                            md={4}
+                                                                            key={index} style={{ transition: "width 0.3s, padding 0.3s" }}>
+                                                                            <Card
+                                                                                onDoubleClick={() => {
+                                                                                    navigate(`/document/${item.uid}`, {
+                                                                                        state: {
+                                                                                            breadState: [
+                                                                                                { "title": originTitle, "path": `/${originPath}` },
+                                                                                                { "title": `${item.versions[0].file_name ? item.versions[0].file_name : item.uid}`, "path": `/document/${item.uid}` }
+                                                                                            ]
+
+                                                                                        }
+                                                                                    })
+                                                                                }}
+                                                                                style={{
+                                                                                    transition: "width 0.3s, height 0.3s",
+                                                                                    // borderColor: antdTheme.token.colorBorder,
+                                                                                    backgroundColor: selectedDoc.find((seDoc) => seDoc.uid == item?.uid) ? antdTheme.token.controlItemBgActiveHover : antdTheme.token.colorBgLayout
+                                                                                }}
+
+                                                                                hoverable styles={{
+                                                                                    body: {
+                                                                                        paddingTop: 16,
+                                                                                        paddingLeft: 16,
+                                                                                        paddingBottom: 16,
+                                                                                        paddingRight: 16
+                                                                                    }
+                                                                                }}>
+                                                                                <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
+                                                                                    <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
+                                                                                    <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0]?.file_name ? item.versions[0]?.file_name : item.uid}</Typography.Title>
+                                                                                    <Checkbox checked={selectedDoc.find((seDoc) => seDoc.uid == item.uid)} onChange={(e) => { setSelectedDocuments(e, item) }} />
+                                                                                </div>
+                                                                                <div onClick={(e) => ctrlSetSelectedDocuments(e, item)} className="pdfBorder" style={{
+                                                                                    transition: "height 0.3s", height: selectedDoc.length == 1 && originPath !== "trash" ? 100 : 150, overflow: "hidden", display: "flex", borderRadius: selectedDoc.length == 1 && originPath !== "trash" ? 4 : 8,
+                                                                                    // border: `1px solid ${antdTheme.token.colorBorder}`
+                                                                                }}>
+                                                                                    <Image src={item.versions[0]?.url.length > 0
+                                                                                        ? `//image.thum.io/get/pdfSource/page/1/${item.versions[0]?.url}`
+                                                                                        : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} preview={false} />
+                                                                                </div>
+                                                                            </Card>
+                                                                        </Col>
+                                                                    )
+                                                                    : Array.from('X'.repeat(24)).map((item, index) =>
+                                                                        <Col md={4} key={index} style={{ height: 216 }}>
+                                                                            <Skeleton.Button active block className="mySkele" />
+                                                                        </Col>)
+                                                            }
+                                                        </Row>
+                                                        : null}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <Typography.Title ellipsis level={4}>Who has access</Typography.Title>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <Avatar.Group size={48}>
-                                                <Avatar src={`/file/giga1.png`} />
-                                                <Avatar src={`/file/giga2.png`} />
-                                                <Avatar src={`/file/giga3.png`} />
-                                                <Avatar src={`/file/giga4.png`} />
-                                            </Avatar.Group>
-                                            <Button icon={<MdVpnKey />} style={{ display: "flex", alignItems: "center", height: 48, fontSize: 16, borderColor: antdTheme.token.colorText, color: antdTheme.token.colorText }}>Manage access</Button>
+                                        <div style={{
+                                            display: "flex", width: gridList == "list" ? "100%" : 0, transition: "width 0.3s",
+                                            overflowX: gridList == "list" ? "visible" : "hidden"
+                                        }}>
+                                            <div style={{ flex: 1, position: "relative" }}>
+                                                <div style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    overflowY: "scroll",
+                                                    marginRight: -8,
+                                                    paddingRight: 8
+                                                }}>
+                                                    {gridList == "list" ? <Table
+                                                        columns={documentColumns}
+                                                        rowKey={(record) => record.uid}
+                                                        dataSource={documentResult.documents}
+                                                        style={{
+                                                            borderRadius: 8, cursor: "pointer",
+                                                            border: `1px solid ${antdTheme.token.colorBorder}`
+                                                        }}
+                                                        pagination={false}
+                                                        loading={documentResult.loading}
+                                                        rowSelection={{
+                                                            hideSelectAll: true,
+                                                            type: "checkbox",
+                                                            onChange: (selectedRowKeys, selectedRows) => {
+                                                                setSelectedDoc(selectedRows)
+                                                                setSelectedKey(selectedRowKeys)
+                                                            },
+                                                            selectedRowKeys: selectedKey
+                                                        }}
+                                                    /> : null}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <Typography.Title ellipsis level={4}>Owner</Typography.Title>
-                                        <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", columnGap: 8 }}>
-                                            <Avatar size={48} src={`/file/giga1.png`} />
-                                            <Typography.Text style={{ fontSize: 24 }} ellipsis>{`${selectedDoc[0]?.owner.first_name} ${selectedDoc[0]?.owner.last_name}`}</Typography.Text>
-                                        </div>
+
+
                                     </div>
                                 </div>
-                            </Card>
-                        </div>
-                    </>
-                </div >
+                                {originPath !== "trash"
+                                    ? <Card
+                                        title={selectedDoc[0]?.uid}
+                                        className="selectCard"
+                                        extra={
+                                            <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
+                                                <Button type={"primary"} onClick={() => {
+                                                    navigate(`/document/${selectedDoc[0]?.uid}`, {
+                                                        state: {
+                                                            breadState: [
+                                                                { "title": originTitle, "path": `/${originPath}` },
+                                                                { "title": `${selectedDoc[0]?.versions[0].file_name ? selectedDoc[0]?.versions[0].file_name : selectedDoc[0]?.uid}`, "path": `/document/${selectedDoc[0]?.uid}` }
+                                                            ]
+
+                                                        }
+                                                    })
+                                                }} icon={<EyeOutlined />}>View</Button>
+                                                <Button type={"text"} icon={<CloseOutlined />} onClick={() => {
+                                                    setSelectedDoc([])
+                                                    setSelectedKey([])
+                                                }} />
+
+                                            </div>
+                                        }
+                                        style={{
+                                            display: "flex", flexDirection: "column", height: "100%",
+                                            width: selectedDoc.length == 1 ? "30%" : 0, transition: "width 0.3s, border-width 0.3s",
+                                            borderWidth: selectedDoc.length == 1 ? "1px" : "0px",
+                                            borderColor: antdTheme.token.colorBorder
+                                        }}
+                                        styles={{
+                                            header: {
+                                                flex: "0 1 auto"
+                                            },
+                                            body: {
+                                                flex: "1 1 auto",
+                                                display: 'flex',
+                                                flexDirection: "column"
+                                            }
+                                        }}
+                                    >
+                                        <div style={{ flex: 1, position: "relative" }}>
+                                            <div
+                                                id={"cardSelectedDoc"}
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    overflowY: "scroll"
+                                                }}>
+                                                <div style={{ height: 300, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
+                                                    <Image src={selectedDoc[0]?.versions[0]?.url.length > 0
+                                                        ? `//image.thum.io/get/pdfSource/page/1/${selectedDoc[0]?.versions[0]?.url}`
+                                                        : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
+                                                </div>
+                                                <Typography.Title ellipsis level={4}>Who has access</Typography.Title>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                    <Avatar.Group size={48}>
+                                                        <Avatar src={`/file/giga1.png`} />
+                                                        <Avatar src={`/file/giga2.png`} />
+                                                        <Avatar src={`/file/giga3.png`} />
+                                                        <Avatar src={`/file/giga4.png`} />
+                                                    </Avatar.Group>
+                                                    <Button icon={<MdVpnKey />} style={{ display: "flex", alignItems: "center", height: 48, fontSize: 16, borderColor: antdTheme.token.colorText, color: antdTheme.token.colorText }}>Manage access</Button>
+                                                </div>
+                                                <Typography.Title ellipsis level={4}>Owner</Typography.Title>
+                                                <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", columnGap: 8 }}>
+                                                    <Avatar size={48} src={`/file/giga1.png`} />
+                                                    <Typography.Text style={{ fontSize: 24 }} ellipsis>{`${selectedDoc[0]?.owner.first_name} ${selectedDoc[0]?.owner.last_name}`}</Typography.Text>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                    : null
+                                }
+
+                            </div>
+                        </>
+                    </div >
+                </>
                 : <div style={{ flex: "1 1 auto", display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Empty image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
                         description={<Typography.Text>No documents</Typography.Text>} />

@@ -20,6 +20,7 @@ const SearchOptionProvider = (props) => {
             method: 'fulltext',
             domain: '',
             domainList: [],
+            allOntologies: [],
             pagination: {
                 current: 1,
                 pageSize: 10,
@@ -39,6 +40,7 @@ const SearchOptionProvider = (props) => {
                 payload: {
                     ...oldSearchOption,
                     domainList: response,
+                    allOntologies: response2,
                     domain: response[0]?.ontologyId
                 }
             })

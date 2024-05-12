@@ -86,14 +86,12 @@ export async function apiExtractMetadata(newForm) {
 
 export async function apiSaveDocumentToCloud(token, data) {
     // await delay(1000)
-    console.log("data", data)
     let rawResponse = await axios.post(`${endpoint}/api/documents/create`, data, {
         headers: {
             "Authorization": `Bearer ${token}`,
             ...originHeader
         }
     })
-    console.log("rawResponse", rawResponse)
     // return 1
     return rawResponse.data
 }
@@ -156,7 +154,7 @@ export async function apiLiveSearchMetadata(query) {
     return rawResponse.data
 }
 
-export async function apiGetLog(documentId){
+export async function apiGetLog(documentId) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     let rawResponse = await axios.get(`${endpoint}/api/logs/matrix/${documentId}`, {
         headers: {
@@ -164,6 +162,33 @@ export async function apiGetLog(documentId){
             ...originHeader
         }
     })
-    console.log("raw log", rawResponse)
     return rawResponse.data.logs
+}
+
+
+export async function apiDeleteDocument(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/delete/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}
+
+
+
+
+export async function apiRestoreDocument(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/delete/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
 }

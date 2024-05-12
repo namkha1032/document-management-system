@@ -890,23 +890,23 @@ const Page_Search = () => {
                                             //             </div>,
                                             //     }
                                             // ]}
-                                            options={searchOption.domainList.map((item, index) => {
-                                                let iconType = ''
-                                                if (item.url == "phap-luat") {
-                                                    iconType = "scale-balanced"
-                                                }
-                                                else if (item.url == "khoa-hoc-may-tinh") {
-                                                    iconType = "laptop-code"
-                                                }
-                                                else {
-                                                    iconType = "circle-nodes"
-                                                }
+                                            options={searchOption.allOntologies.map((item, index) => {
+                                                // let iconType = ''
+                                                // if (item.url == "phap-luat") {
+                                                //     iconType = "scale-balanced"
+                                                // }
+                                                // else if (item.url == "khoa-hoc-may-tinh") {
+                                                //     iconType = "laptop-code"
+                                                // }
+                                                // else {
+                                                //     iconType = "circle-nodes"
+                                                // }
                                                 return {
                                                     value: item.ontologyId,
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                            <FontAwesomeIcon icon={icon({ name: "share-nodes", style: 'solid' })} />
-                                                            <Typography.Text>{item.name}</Typography.Text>
+                                                            {/* <FontAwesomeIcon icon={icon({ name: "share-nodes", style: 'solid' })} /> */}
+                                                            <Typography.Text>{item.ontologyName}</Typography.Text>
                                                         </div>
                                                 }
                                             })}
