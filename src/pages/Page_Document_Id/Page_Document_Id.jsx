@@ -24,14 +24,16 @@ import {
     RollbackOutlined,
     TagOutlined,
     UngroupOutlined,
+    DownloadOutlined,
     ExclamationCircleFilled
 } from '@ant-design/icons';
 import { FaGlobeAsia } from "react-icons/fa";
 import { MdVpnKey } from "react-icons/md";
+import { saveAs } from 'file-saver';
 
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import { apiGetDocument, apiRestoreVersion, apiUpdateMetadata, apiDeleteDocument } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
 import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
@@ -51,9 +53,9 @@ const VjpStatistic = (props) => {
             }
         }}
             style={{
-                transition: direction === "horizontal" ? "width 0.3s" : "height 0.3s",
-                width: direction === "horizontal" ? (value ? "100%" : 0) : "100%",
-                height: direction === "vertical" ? (value ? "100%" : 0) : "100%",
+                transition: direction == "horizontal" ? "width 0.3s" : "height 0.3s",
+                width: direction == "horizontal" ? (value ? "100%" : 0) : "100%",
+                height: direction == "vertical" ? (value ? "100%" : 0) : "100%",
                 overflow: "hidden",
                 borderWidth: value ? "1px" : "0px",
                 borderColor: antdTheme.token.colorBorder
@@ -95,10 +97,11 @@ const ModalUpdateMetadata = (props) => {
             "metadata": newMetadata
         }))
         let response = await apiUpdateMetadata(userStorage.access_token, document_id, newForm)
-        let documentResponse = await apiGetDocument(document_id)
-        let documentCopy = await getDocumentSize(documentResponse)
-        setDocument(documentCopy)
-        setNewMetadata(documentCopy.versions[0].metadata)
+        let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+        // let documentCopy = await getDocumentSize(documentResponse)
+        console.log("documentResponse", documentResponse)
+        setDocument(documentResponse)
+        setNewMetadata(documentResponse.versions[0].metadata)
         setComment("")
         setLoadingUpdateMetadata(false)
         setModalOpen(false)
@@ -136,6 +139,58 @@ async function getDocumentSize(documentResponse) {
     await Promise.all(documentPromise)
     return documentCopy
 }
+const DownloadButton = (props) => {
+    let documentUrl = props.documentUrl
+    let documentFileName = props.documentFileName
+    async function handleDownloadDocument() {
+        // const a = document.createElement("a");
+        // a.href = documentUrl;
+        // const clickEvnt = new MouseEvent("click", {
+        //     view: window,
+        //     bubbles: true,
+        //     cancelable: true,
+        // });
+
+        // a.dispatchEvent(clickEvnt);
+        // a.remove();
+        // saveAs(documentUrl, documentFileName)
+        // const response = await fetch(documentUrl)
+        // let fileBlob = await response.blob()
+        // console.log("download", fileBlob)
+        // const blob = new Blob([documentUrl], { type: 'application/pdf' });
+        // const tempLink = document.createElement('a');
+        // tempLink.href = window.URL.createObjectURL(blob);
+        // tempLink.setAttribute('download', documentFileName);
+        // tempLink.click();
+        // const anchor = document.createElement('a');
+        // anchor.href = documentUrl;
+        // anchor.download = documentFileName;
+        // // document.body.appendChild(anchor);
+        // // anchor.click();
+        // // Cleanup
+        // // document.body.removeChild(anchor);
+        // // URL.revokeObjectURL(documentUrl);
+
+
+        // // Simulate a click event
+        // anchor.dispatchEvent(new MouseEvent('click', {
+        //     bubbles: true,
+        //     cancelable: true,
+        //     view: window
+        // }));
+
+        // // Remove the anchor element from the DOM
+        // document.body.removeChild(anchor);
+    }
+    return (
+        <>
+            <Button icon={<DownloadOutlined />} onClick={() => { handleDownloadDocument() }}>Download</Button>
+            {/* <Link to={documentUrl} target="_blank" download>Download</Link> */}
+            {/* <a href={documentUrl} download>Click to download</a> */}
+
+        </>
+    )
+}
 const Page_Document_Id = () => {
     const [messageApi, contextHolder] = message.useMessage();
     let [document, setDocument] = useState(null)
@@ -143,6 +198,7 @@ const Page_Document_Id = () => {
     let [isAllowed, setIsAllowed] = useState(true)
     let [modalDeleteOpen, setModalDeleteOpen] = useState(false)
     let [loadingDelete, setLoadingDelete] = useState(false)
+    let [loadingLog, setLoadingLog] = useState(false)
     let [log, setLog] = useState([])
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
@@ -201,6 +257,32 @@ const Page_Document_Id = () => {
             </>)
         }
     ]
+    let logColumns = [
+        {
+            "title": "Time",
+            "render": ((obj) => <>
+                <Typography.Text>{new Date(new Date(obj.time + "Z").toJSON()).toLocaleString()}</Typography.Text>
+            </>)
+        },
+        {
+            "title": "User",
+            "render": ((obj) => <>
+                <Typography.Text>{`${obj.modified_by.first_name} ${obj.modified_by.last_name}`}</Typography.Text>
+            </>)
+        },
+        {
+            "title": "Action",
+            "render": ((obj) => <>
+                <Typography.Text>{`${obj.action}`}</Typography.Text>
+            </>)
+        },
+        {
+            "title": "Description",
+            "render": ((obj) => <>
+                <Typography.Text ellipsis>{`${obj.description}`}</Typography.Text>
+            </>)
+        },
+    ]
     useEffect(() => {
         async function fetchData() {
             let documentResponse = await apiGetDocument(document_id)
@@ -216,9 +298,9 @@ const Page_Document_Id = () => {
     async function handleRestoreVersion(versionUid) {
         setRestoreLoading(true)
         let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
-        let documentResponse = await apiGetDocument(document_id)
-        let documentCopy = await getDocumentSize(documentResponse)
-        setDocument(documentCopy)
+        let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+        // let documentCopy = await getDocumentSize(documentResponse)
+        setDocument(documentResponse)
         setRestoreLoading(false)
         messageApi.open({
             content: <Alert style={{ fontSize: 24 }} showIcon type="success" message="Version has been reverted successfully" closable />,
@@ -237,12 +319,26 @@ const Page_Document_Id = () => {
         }
         setLoadingDelete(false)
     }
+    async function handleLogPaginationChange(page, pageSize) {
+        // await searchMutation.mutateAsync(newSearchOption)
+        setLoadingLog(true)
+        let documentResponse = await apiGetDocument(document.uid, page, pageSize)
+        let newResponse = {
+            ...document,
+            logs: documentResponse.logs,
+            logCurrent: page,
+            logPageSize: pageSize,
+            logTotal: documentResponse.logTotal
+        }
+        setDocument(newResponse)
+        setLoadingLog(false)
+    }
     // ///////////////////////////////////////////////////////
 
     // console.log(watch("example")) // watch input value by passing the name of it
     // ///////////////////////////////////////////////////////
     return (
-        <>
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Modal title={
                 <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
                     <ExclamationCircleFilled style={{ color: antdTheme.token.colorWarning, fontSize: 22 }} />
@@ -258,25 +354,40 @@ const Page_Document_Id = () => {
             </Modal>
             {contextHolder}
             {isAllowed
-                ? <Bread breadSelectedDoc={document} breadProp={[
-                    {
-                        "title": "Document",
-                        "path": "/company"
-                    },
-                    {
-                        "title": document?.versions[0].file_name !== "" ? document?.versions[0].file_name : document.uid,
-                        "path": `/document/${document?.uid}`
-                    }
-                ]} />
+                ?
+                <div style={{ flex: "0 1 auto" }}>
+                    <Bread breadSelectedDoc={document} breadProp={[
+                        {
+                            "title": "Document",
+                            "path": "/company"
+                        },
+                        {
+                            "title": document?.versions[0].file_name !== "" ? document?.versions[0].file_name : document.uid,
+                            "path": `/document/${document?.uid}`
+                        }
+                    ]}
+                    // extraComponent={<DownloadButton documentUrl={document?.versions[0].url.length > 0 ?
+                    //     document?.versions[0].url
+                    //     : "https://pdfobject.com/pdf/sample.pdf"}
+                    //     documentFileName={
+                    //         document?.versions[0].file_name.length > 0 ?
+                    //             document?.versions[0].file_name.slice(0, -16)
+                    //             : "sample.pdf"
+                    //     } />}
+                    />
+                </div>
                 : null}
             <div
+                id={"documentFeed"}
                 style={{
                     width: document && isAllowed ? "100%" : 0,
                     height: document && isAllowed ? 'fit-content' : 0,
-                    overflow: "hidden"
+                    overflowY: "scroll",
+                    overflowX: "hidden",
+                    flex: "1 1 auto"
                 }}
             >
-                <Row gutter={[16, 16]} style={{ height: "100%" }}>
+                <Row gutter={[16, 16]}>
                     <Col md={16}>
                         <div style={{ borderRadius: 8, width: document ? "100%" : 0, height: document ? "100%" : 0, transition: " height 0.3s" }}>
                             <iframe src={document?.versions[0].url.length > 0 ? document?.versions[0].url : "https://pdfobject.com/pdf/sample.pdf"}
@@ -326,8 +437,7 @@ const Page_Document_Id = () => {
                                     // valueStyle={{ color: antdTheme.token.colorErrorActive }}
                                     />
                                 </Card> */}
-                                <VjpStatistic direction={"vertical"} title={"File size"} prefix={<UngroupOutlined />} value={document ? prettyBytes(document.versions[0].file_size) : null} />
-
+                                <VjpStatistic direction={"vertical"} title={"File size"} prefix={<UngroupOutlined />} value={document ? prettyBytes(parseInt(document.versions[0].file_size)) : null} />
                             </Col>
                             <Col md={14} style={{ display: "flex", justifyContent: "flex-end" }}>
                                 {/* <Card styles={{
@@ -408,6 +518,11 @@ const Page_Document_Id = () => {
                         borderRadius: 8, cursor: "pointer",
                         border: `1px solid ${antdTheme.token.colorBorder}`
                     }}
+                    pagination={{
+                        showQuickJumper: true,
+                        showSizeChanger: true,
+                        position: ['bottomCenter']
+                    }}
                 // pagination={false}
                 // loading={documentResult.loading}
                 // rowSelection={{
@@ -420,7 +535,26 @@ const Page_Document_Id = () => {
                 //     selectedRowKeys: selectedKey
                 // }}
                 />
-
+                <Typography.Title level={2}>Audit log</Typography.Title>
+                <Table
+                    columns={logColumns}
+                    rowKey={(record) => record?.uid}
+                    dataSource={document?.logs}
+                    style={{
+                        borderRadius: 8, cursor: "pointer",
+                        border: `1px solid ${antdTheme.token.colorBorder}`
+                    }}
+                    pagination={{
+                        showQuickJumper: true,
+                        showSizeChanger: true,
+                        current: document?.logCurrent,
+                        pageSize: document?.logPageSize,
+                        total: document?.logTotal,
+                        position: ['bottomCenter']
+                    }}
+                    loading={loadingLog}
+                    onChange={(pag) => { handleLogPaginationChange(pag.current, pag.pageSize) }}
+                />
             </div>
             {isAllowed === false ?
                 <div style={{ display: "flex", height: "100%", justifyContent: "center", alignItems: "center" }}>
@@ -464,7 +598,7 @@ const Page_Document_Id = () => {
 
                 </>
                 : null}
-        </>
+        </div>
     )
 }
 

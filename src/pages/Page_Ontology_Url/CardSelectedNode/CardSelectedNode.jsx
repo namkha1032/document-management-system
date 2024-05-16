@@ -18,7 +18,7 @@ import {
     EditOutlined,
     CheckOutlined
 } from '@ant-design/icons';
-import { deleteNode, updateNodeName, apiAddEdge, deleteEdge } from "../../../apis/ontologyApi";
+import { deleteNode, apiUpdateSenseLabel, apiAddEdge, apiDeleteEdge } from "../../../apis/ontologyApi";
 import OntologyContext from "../../../context/OntologyContext";
 
 function removeAccents(str) {
@@ -35,8 +35,8 @@ const ChildrenRow = (props) => {
     let [ontology, dispatchOntology] = useContext(OntologyContext)
     async function handleDeleteChildrenEdge() {
         setLoadingDeleteChildrenEdge(true)
-        let deletedEdge = await deleteEdge(child.id)
-        dispatchOntology({ type: "deleteEdge", payload: deletedEdge })
+        let deletedEdge = await apiDeleteEdge(child.id)
+        dispatchOntology({ type: "apiDeleteEdge", payload: deletedEdge })
         // let newChildren = children.filter((c) => c.id != deletedEdge.id)
         setChildren((oldChildren) => oldChildren.filter((c) => c.id != deletedEdge.id))
         setLoadingDeleteChildrenEdge(false)
@@ -139,15 +139,15 @@ const CardSelectedNode = (props) => {
     }
     async function handleDeleteParentEdge() {
         dispatchOntology({ type: "triggerLoadingDeleteParentEdge" })
-        let deletedEdge = await deleteEdge(parent.id)
-        dispatchOntology({ type: "deleteEdge", payload: deletedEdge })
+        let deletedEdge = await apiDeleteEdge(parent.id)
+        dispatchOntology({ type: "apiDeleteEdge", payload: deletedEdge })
         setParent(null)
         dispatchOntology({ type: "triggerLoadingDeleteParentEdge" })
     }
     async function handleUpdateNodeName() {
         dispatchOntology({ type: "triggerLoadingUpdateNodeName" })
-        let newNode = await updateNodeName(selectedNode.id, { name: nodeName })
-        dispatchOntology({ type: "updateNodeName", payload: newNode })
+        let newNode = await apiUpdateSenseLabel(selectedNode.id, { name: nodeName })
+        dispatchOntology({ type: "apiUpdateSenseLabel", payload: newNode })
         setIsRename(false)
         // setNodeName("")
         setSelectedNode({ "id": newNode.id, "label": newNode.label })

@@ -13,6 +13,7 @@ import {
     Segmented,
     Button,
     Space,
+    Divider
 } from 'antd';
 import GridListContext from '../../context/GridListContext';
 import CreateOntology from '../CreateOntology/CreateOntology';
@@ -70,12 +71,20 @@ const Bread = (props) => {
                                         }
                                     })
                                 }}>
-                                    <Typography.Title level={2} style={{ margin: 0, fontWeight: index == bread.length - 1 ? 500 : "normal" }}>
+                                    <Typography.Title level={2} style={{
+                                        margin: 0,
+                                        // fontWeight: index == bread.length - 1 ? 500 : "normal"
+                                        fontWeight: 500
+                                    }}>
                                         {item.title}
                                     </Typography.Title>
                                 </Button>
                                 {index < bread.length - 1
-                                    ? <Typography.Title level={2} style={{ margin: 0, fontWeight: "normal" }}>
+                                    ? <Typography.Title level={2} style={{
+                                        margin: 0,
+                                        // fontWeight: "normal"
+                                        fontWeight: 500
+                                    }}>
                                         {">"}
                                     </Typography.Title>
                                     : null
@@ -120,6 +129,7 @@ const Bread = (props) => {
 
                 </Space>
             </div >
+            {/* <Divider style={{ margin: 0 }} /> */}
         </>
     )
 }

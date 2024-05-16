@@ -83,10 +83,8 @@ const NavBar = () => {
         let newSearchOption = {
             ...searchOption,
             original_query: value,
-            pagination: {
-                current: 1,
-                pageSize: searchOption.pagination.pageSize
-            }
+            current: 1,
+            pageSize: searchOption.pageSize
         }
         await dispatchSearchResult({ type: 'loading', payload: true })
         let newSearchResult = await getSearchResult(newSearchOption)

@@ -26,7 +26,7 @@ import {
     PlusOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { getOntology, apiAddSynset, graphToTree, renameOntology, getOntologyId } from "../../apis/ontologyApi";
+import { getOntology, apiAddSynset, graphToTree, apiRenameOntology, getOntologyId } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
 import CardSelectedNode from "./CardSelectedNode/CardSelectedNode";
 const Search_Node = (props) => {
@@ -119,6 +119,7 @@ const Section_Ontology_Id = () => {
     let [newOntologyName, setNewOntologyName] = useState("")
     let [graphState, setGraphState] = useState(null)
     let [newNode, setNewNode] = useState("")
+    let [loadingUpdateOntologyName, setLoadingUpdateOntologyName] = useState(false)
     let [zoomNewNode, setZoomNewNode] = useState({
         zoom: false,
         newNode: null
@@ -215,6 +216,16 @@ const Section_Ontology_Id = () => {
         // setSelectedNode(addSynsetResponse.new_node)
 
     }
+    async function handleUpdateOntologyName() {
+        setLoadingUpdateOntologyName(true)
+        let response = await apiRenameOntology(ontology.ontologyId, { ontologyName: newOntologyName })
+        console.log("response rename", response)
+        dispatchOntology({ type: "renameOntology", payload: response })
+        setIsRenameOntology(false)
+        // navigate(`/ontology/${response.url}`)
+        // setSelectedNode((oldNode) => JSON.parse(JSON.stringify(oldNode)))
+        setLoadingUpdateOntologyName(false)
+    }
     return (
         <>
             <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -229,7 +240,6 @@ const Section_Ontology_Id = () => {
                             "path": `/ontology/${ontology?.ontologyId}`
                         }
                     ]}
-                    // extraComponent={<Button loading={ontology.loadingDownload} icon={<DownloadOutlined />} onClick={() => { handleDownloadOntology() }}>Export JSON</Button>}
                     />
                 </div>
                 {
@@ -329,10 +339,10 @@ const Section_Ontology_Id = () => {
                                                                     setIsRenameOntology(false)
                                                                     setNewOntologyName(ontology.ontologyName)
                                                                 }}>
-                                                                    <Input size="large" value={newOntologyName} ref={ontologyNameRef} onChange={(e) => { setNewOntologyName(e.target.value) }} />
+                                                                    <Input autoFocus size="large" value={newOntologyName} ref={ontologyNameRef} onChange={(e) => { setNewOntologyName(e.target.value) }} />
                                                                     <Button
                                                                         size="large"
-                                                                        // onClick={() => { handleUpdateOntologyName() }}
+                                                                        onClick={() => { handleUpdateOntologyName() }}
                                                                         loading={ontology.loadingRenameOntology}
                                                                         disabled={newOntologyName == ontology.ontologyName}
                                                                         icon={<CheckOutlined />} />

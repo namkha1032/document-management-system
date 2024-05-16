@@ -10,7 +10,8 @@ import {
     Input,
     Divider,
     Cascader,
-    Select
+    Select,
+    AutoComplete
 } from "antd"
 import {
     DeleteOutlined,
@@ -20,7 +21,7 @@ import {
     CheckOutlined,
     EyeOutlined
 } from '@ant-design/icons';
-import { deleteNode, updateNodeName, apiAddEdge, deleteEdge, apiUpdateDefinition, apiAddSense } from "../../../apis/ontologyApi";
+import { deleteNode, apiUpdateSenseLabel, apiAddEdge, apiDeleteEdge, apiUpdateDefinition, apiAddSense, apiAddSynEdge } from "../../../apis/ontologyApi";
 import OntologyContext from "../../../context/OntologyContext";
 
 function removeAccents(str) {
@@ -64,30 +65,36 @@ const SynsetList = (props) => {
         setNewEdge(null)
         setLoadingEdge(false)
     }
+    async function handleAddSynEdge() {
+        setLoadingEdge(true)
+        let request = {
+            "from_id": selectedNode.id,
+            "to_id": newEdge.id,
+            "ontologyId": ontology.ontologyId
+        }
+        let edgeResponse = await apiAddSynEdge(request)
+        dispatchOntology({ type: "addEdge", payload: edgeResponse.new_edge })
+        setSynsetList([
+            ...synsetList,
+            edgeResponse.new_edge
+        ])
+        setNewEdge(null)
+        setLoadingEdge(false)
+    }
     return (
         <>
-            <Typography.Title style={{ marginTop: 0 }} level={5}>{type === "children" ? "Children: " : "Parent: "}</Typography.Title>
+            <Typography.Title style={{ marginTop: 0 }} level={5}>{type === "children" ? "Children: " : type === "synset" ? "Synset: " : "Parent: "}</Typography.Title>
             {synsetList.map((syn, index) =>
                 <div style={{ display: "flex", columnGap: 8, marginBottom: 8 }} key={index}>
-                    <SynsetRow syn={syn} type={type} graphState={graphState} setSearchNode={setSearchNode} setSelectedNode={setSelectedNode} />
+                    <SynsetRow synsetList={synsetList} setSynsetList={setSynsetList} syn={syn} type={type} graphState={graphState} setSearchNode={setSearchNode} setSelectedNode={setSelectedNode} />
                 </div>
             )}
-            <div style={{ display: "flex", columnGap: 8, marginBottom: 8, width: "100%" }}>
-                {/* <Cascader
-                            style={{ width: "100%" }}
-                            options={ontology.childrenOptions.filter((opt) => opt.label != selectedNode.label)}
-                            value={newChildren}
-                            onChange={(id, node) => { setNewChildren(id) }}
-                            placeholder="Enter children name..."
-                            showSearch={{
-                                filter: filterSearch
-                            }}
-                        /> */}
+            <Space.Compact style={{ width: "100%" }}>
                 <Select
                     showSearch={true}
                     allowClear
                     value={newEdge?.label}
-                    placeholder={`Search for ${type}`}
+                    placeholder={`Add new ${type}...`}
                     // style={props.style}
                     style={{ width: "100%" }}
                     defaultActiveFirstOption={false}
@@ -97,37 +104,69 @@ const SynsetList = (props) => {
                     onChange={(id, node) => {
                         // console.log("id in select", id)
                         // console.log("node in select", node)
-                        let ontologyIdSplit = ontology.ontologyId.split(':')
-                        let preId = `${ontologyIdSplit[0]}:${ontologyIdSplit[1]}:${id}`
-                        const findNode = ontology.nodes.find((node) => node.id == preId)
-                        setNewEdge(findNode)
+                        // let ontologyIdSplit = ontology.ontologyId.split(':')
+                        // let preId = `${ontologyIdSplit[0]}:${ontologyIdSplit[1]}:${id}`
+                        // const findNode = ontology.nodes.find((node) => node.id == preId)
+                        setNewEdge(node)
                     }}
                     notFoundContent={null}
                     options={ontology.nodes.filter((node) => node.type == "Synset" && node?.id !== selectedNode?.id)}
                 />
-                <Button loading={loadingEdge} disabled={!newEdge} type={"primary"} icon={<PlusOutlined />} onClick={() => { handleAddEdge() }} />
+                <Button loading={loadingEdge} disabled={!newEdge} type={"primary"} icon={<PlusOutlined />} onClick={() => {
+                    if (type === "synset") {
+                        handleAddSynEdge()
+                    }
+                    else {
+                        handleAddEdge()
+                    }
+                }} />
 
-            </div>
+
+            </Space.Compact>
         </>
     )
 }
-const ChildrenRow = (props) => {
-    const child = props.child
-    const setChildren = props.setChildren
-    let [loadingDeleteChildrenEdge, setLoadingDeleteChildrenEdge] = useState(false)
+const SynsetRow = (props) => {
+    let type = props.type
+    let syn = props.syn
+    let setSearchNode = props.setSearchNode
+    let setSelectedNode = props.setSelectedNode
+    let graphState = props.graphState
+    let synsetList = props.synsetList
+    let setSynsetList = props.setSynsetList
+    let inputValue = type == "parent" ? syn.from_label : syn.to_label
+    let [loadingDeleteEdge, setLoadingDeleteEdge] = useState(false)
     let [ontology, dispatchOntology] = useContext(OntologyContext)
-    async function handleDeleteChildrenEdge() {
-        setLoadingDeleteChildrenEdge(true)
-        let deletedEdge = await deleteEdge(child.id)
-        dispatchOntology({ type: "deleteEdge", payload: deletedEdge })
-        // let newChildren = children.filter((c) => c.id != deletedEdge.id)
-        setChildren((oldChildren) => oldChildren.filter((c) => c.id != deletedEdge.id))
-        setLoadingDeleteChildrenEdge(false)
+    console.log("syn", syn)
+    async function handleDeleteEdge() {
+        setLoadingDeleteEdge(true)
+        await apiDeleteEdge(syn.id, ontology.ontologyId)
+        setSynsetList(synsetList.filter((ed, idx) => ed.id !== syn.id))
+        dispatchOntology({ type: "deleteEdge", payload: { id: syn.id } })
+        setLoadingDeleteEdge(false)
+    }
+    async function handleChangeNode() {
+        const findNode = ontology.nodes.find((node) => node.id == (type == "parent" ? syn.from : syn.to))
+        await graphState.focus(findNode.id, {
+            scale: 1.0,
+            // offset: {x:Number, y:Number}
+            locked: true,
+            animation: {
+                duration: 1000,
+                easingFunction: "easeInOutCubic"
+            }
+        })
+        graphState.selectNodes([findNode.id])
+        setSearchNode(findNode)
+        setSelectedNode(findNode)
     }
     return (
         <>
-            <Input value={child.to_label} readOnly />
-            <Button loading={loadingDeleteChildrenEdge} onClick={() => { handleDeleteChildrenEdge() }} danger icon={<DeleteOutlined />} />
+            {/* <Space.Compact style={{ width: "100%" }}> */}
+            <Input value={inputValue} readOnly variant="filled" />
+            <Button icon={<EyeOutlined />} onClick={() => { handleChangeNode() }} />
+            <Button loading={loadingDeleteEdge} danger icon={<DeleteOutlined />} onClick={() => { handleDeleteEdge() }} />
+            {/* </Space.Compact> */}
         </>
     )
 }
@@ -137,6 +176,8 @@ const SenseList = (props) => {
     let setSense = props.setSense
     let selectedNode = props.selectNode
     let setSelectedNode = props.setSelectedNode
+    let setSearchNode = props.setSearchNode
+    let graphState = props.graphState
     let [ontology, dispatchOntology] = useContext(OntologyContext)
     let [newSense, setNewSense] = useState("")
     let [loadingNewSense, setLoadingNewSense] = useState(false)
@@ -161,18 +202,39 @@ const SenseList = (props) => {
         setLoadingNewSense(false)
     }
     return (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 16 }}>
             <Typography.Title style={{ marginTop: 0 }} level={5}>Senses: </Typography.Title>
             {sense.map((se, idx) =>
                 <div style={{ display: "flex", columnGap: 8, marginBottom: 8 }} key={idx}>
-                    <SenseRow se={se} />
+                    <SenseRow graphState={graphState} se={se} sense={sense} setSense={setSense} setSearchNode={setSearchNode} setSelectedNode={setSelectedNode} />
                 </div>)}
             <Space.Compact
                 style={{
                     width: '100%',
                 }}
             >
-                <Input style={{ width: "100%" }} placeholder="Add new sense..." value={newSense} onChange={(e) => setNewSense(e.target.value)} />
+                <AutoComplete
+                    options={ontology.nodes.filter((node, idx) => node.type == "Sense")}
+                    style={{
+                        width: "100%",
+                    }}
+                    // onSelect={onSelect}
+                    filterOption={filterSearchNode}
+                    value={newSense}
+                    onChange={(e, node) => {
+                        if (node.label) {
+                            setNewSense(node.label)
+                        }
+                        else {
+                            setNewSense(e)
+                        }
+
+                    }
+                    }
+                    // onSearch={(text) => setOptions(getPanelValue(text))}
+                    placeholder="input here"
+                />
+                {/* <Input style={{ width: "100%" }} placeholder="Add new sense..." value={newSense} onChange={(e) => setNewSense(e.target.value)} /> */}
                 <Button onClick={() => { handleAddNewSense() }} icon={<PlusOutlined />} loading={loadingNewSense} disabled={newSense ? false : true} />
             </Space.Compact>
             {/* <div style={{ display: 'flex', flexDirection: "column", rowGap: 8 }}>
@@ -191,31 +253,22 @@ const SenseList = (props) => {
 }
 const SenseRow = (props) => {
     let se = props.se
-    let [loadingDeleteChildrenEdge, setLoadingDeleteChildrenEdge] = useState(false)
-    async function handleDeleteSense() {
-    }
-    return (
-        <>
-            <Input value={se["from_label"]} readOnly />
-            <Button icon={<EyeOutlined />} />
-            <Button loading={loadingDeleteChildrenEdge} onClick={() => { handleDeleteSense() }} danger icon={<DeleteOutlined />} />
-        </>
-    )
-}
-const SynsetRow = (props) => {
-    let type = props.type
-    let syn = props.syn
-    let setSearchNode = props.setSearchNode
+    let sense = props.sense
+    let setSense = props.setSense
     let setSelectedNode = props.setSelectedNode
+    let setSearchNode = props.setSearchNode
     let graphState = props.graphState
-    let inputValue = type == "parent" ? syn.from_label : syn.to_label
-    let [loadingDeleteParentEdge, setLoadingDeleteParentEdge] = useState(false)
+    let [loadingDeleteEdge, setLoadingDeleteEdge] = useState(false)
     let [ontology, dispatchOntology] = useContext(OntologyContext)
-    console.log("syn", syn)
-    async function handleDeleteParentEdge() {
+    async function handleDeleteEdge() {
+        setLoadingDeleteEdge(true)
+        await apiDeleteEdge(se.id, ontology.ontologyId)
+        setSense(sense.filter((ed, idx) => ed.id !== se.id))
+        dispatchOntology({ type: "deleteEdge", payload: { id: se.id } })
+        setLoadingDeleteEdge(false)
     }
     async function handleChangeNode() {
-        const findNode = ontology.nodes.find((node) => node.id == (type == "parent" ? syn.from : syn.to))
+        const findNode = ontology.nodes.find((node) => node.id == se.from)
         await graphState.focus(findNode.id, {
             scale: 1.0,
             // offset: {x:Number, y:Number}
@@ -231,9 +284,9 @@ const SynsetRow = (props) => {
     }
     return (
         <>
-            <Input value={inputValue} readOnly />
+            <Input variant="filled" value={se["from_label"]} readOnly />
             <Button icon={<EyeOutlined />} onClick={() => { handleChangeNode() }} />
-            <Button loading={loadingDeleteParentEdge} danger icon={<DeleteOutlined />} onClick={() => { handleDeleteParentEdge() }} />
+            <Button loading={loadingDeleteEdge} onClick={() => { handleDeleteEdge() }} danger icon={<DeleteOutlined />} />
         </>
     )
 }
@@ -260,7 +313,7 @@ const DefinitionRow = (props) => {
         setLoadingDefinition(false)
     }
     return (
-        <div style={{ display: 'flex', flexDirection: "column", rowGap: 8, marginTop: 16 }}>
+        <div style={{ display: 'flex', flexDirection: "column", rowGap: 8 }}>
             <Space>
                 <Typography.Title style={{ margin: 0 }} level={5}>Definition: </Typography.Title>
                 <Button onClick={() => { handleUpdateDefinition() }} type={"primary"} size="small" loading={loadingDefinition} disabled={selectedNode["definition"] === definition ? true : false}
@@ -282,10 +335,12 @@ const CardSelectedNode = (props) => {
     let [parent, setParent] = useState([])
     let [children, setChildren] = useState([])
     let [sense, setSense] = useState([])
+    let [synset, setSynset] = useState([])
     let [nodeName, setNodeName] = useState(selectedNode.label)
     let [isRename, setIsRename] = useState(false)
     let [newParent, setNewParent] = useState(null)
     let [newChildren, setNewChildren] = useState(null)
+    let [loadingUpdateSenseLabel, setLoadingUpdateSenseLabel] = useState(false)
     useEffect(() => {
         setNodeName(selectedNode.label)
         setIsRename(false)
@@ -301,12 +356,17 @@ const CardSelectedNode = (props) => {
         let findSense = ontology.edges.filter((edge) => {
             return edge.to == selectedNode.id && (edge.type == "BELONG_TO")
         })
-        console.log("findParent", findParent)
-        console.log("findChildren", findChildren)
-        console.log("findSense", findSense)
+        let findSynset = ontology.edges.filter((edge) => {
+            return edge.from == selectedNode.id && (edge.type == "BELONG_TO")
+        })
+        // console.log("findParent", findParent)
+        // console.log("findChildren", findChildren)
+        // console.log("findSense", findSense)
         setParent(findParent ? findParent : [])
         setChildren(findChildren ? findChildren : [])
         setSense(findSense ? findSense : [])
+        setSynset(findSynset ? findSynset : [])
+        console.log("findSense", findSense)
     }, [selectedNode])
     useEffect(() => {
         if (isRename) {
@@ -316,14 +376,6 @@ const CardSelectedNode = (props) => {
         }
     }, [isRename])
 
-    function filterSearch(inputValue, path) {
-        // return path.some((option) => {
-        //     return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1 && option.label != selectedNode.label
-        // });
-        // return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1 && path.label != selectedNode.label
-        return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
-
-    }
     async function handleDeleteNode() {
         dispatchOntology({ type: "triggerLoadingDeleteNode" })
         graphState.releaseNode()
@@ -333,39 +385,14 @@ const CardSelectedNode = (props) => {
         setSearchNode(null)
         dispatchOntology({ type: "triggerLoadingDeleteNode" })
     }
-    async function handleAddParentEdge() {
-        dispatchOntology({ type: "triggerLoadingAddParentEdge" })
-        let request = {
-            "from_id": newParent[0],
-            "to_id": selectedNode.id
-        }
-        let newParentEdge = await apiAddEdge(request)
-        dispatchOntology({ type: "apiAddEdge", payload: newParentEdge })
-        setParent({
-            "id": newParentEdge.id,
-            "from": newParentEdge.from,
-            "to": newParentEdge.to,
-            "from_label": newParentEdge.from_label,
-            "to_label": newParentEdge.to_label,
-        })
-        setNewParent(null)
-        dispatchOntology({ type: "triggerLoadingAddParentEdge" })
-    }
-    async function handleDeleteParentEdge() {
-        dispatchOntology({ type: "triggerLoadingDeleteParentEdge" })
-        let deletedEdge = await deleteEdge(parent.id)
-        dispatchOntology({ type: "deleteEdge", payload: deletedEdge })
-        setParent(null)
-        dispatchOntology({ type: "triggerLoadingDeleteParentEdge" })
-    }
     async function handleUpdateNodeName() {
-        dispatchOntology({ type: "triggerLoadingUpdateNodeName" })
-        let newNode = await updateNodeName(selectedNode.id, { name: nodeName })
-        dispatchOntology({ type: "updateNodeName", payload: newNode })
+        setLoadingUpdateSenseLabel(true)
+        let responseUpdatedLabel = await apiUpdateSenseLabel(selectedNode.id, { label: nodeName, ontologyId: ontology.ontologyId })
+        dispatchOntology({ type: "updateSenseLabel", payload: responseUpdatedLabel.updated_sense })
         setIsRename(false)
         // setNodeName("")
-        setSelectedNode({ "id": newNode.id, "label": newNode.label })
-        dispatchOntology({ type: "triggerLoadingUpdateNodeName" })
+        setSelectedNode(responseUpdatedLabel.updated_sense)
+        setLoadingUpdateSenseLabel(false)
     }
     return (
         <Card style={{ flex: "1 1 auto", display: "flex", flexDirection: "column" }} title={
@@ -382,19 +409,19 @@ const CardSelectedNode = (props) => {
                             <Input value={nodeName} ref={nodeNameRef} onChange={(e) => { setNodeName(e.target.value) }} />
                             <Button
                                 onClick={() => { handleUpdateNodeName() }}
-                                loading={ontology.loadingUpdateNodeName}
+                                loading={loadingUpdateSenseLabel}
                                 disabled={nodeName == selectedNode.label}
                                 icon={<CheckOutlined />} />
                         </Space.Compact>
                         : <Space onClick={() => {
-                            if (!selectedNode.hasOwnProperty("color")) {
+                            if (selectedNode.type === "Sense") {
                                 setIsRename(true)
                             }
                         }}>
                             <Typography.Title level={5} style={{ margin: 0 }}>
                                 {selectedNode.label}
                             </Typography.Title>
-                            {!selectedNode.hasOwnProperty("color")
+                            {selectedNode.type === "Sense"
                                 ? <EditOutlined />
                                 : null}
                         </Space>
@@ -414,18 +441,18 @@ const CardSelectedNode = (props) => {
                 flexDirection: "column"
             }
         }}>
-            {selectedNode?.type == "Synset"
-                ? <div style={{ flex: 1, position: "relative" }}>
-                    <div style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        overflowY: "scroll"
-                    }}>
-                        <SenseList sense={sense} setSense={setSense} selectNode={selectedNode} setSelectedNode={setSelectedNode} />
+            <div style={{ flex: 1, position: "relative" }}>
+                <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    overflowY: "scroll"
+                }}>{selectedNode?.type == "Synset"
+                    ? <>
                         <DefinitionRow selectNode={selectedNode} setSelectedNode={setSelectedNode} />
+                        <SenseList graphState={graphState} sense={sense} setSense={setSense} selectNode={selectedNode} setSelectedNode={setSelectedNode} setSearchNode={setSearchNode} />
                         <Divider />
                         <SynsetList
                             type={"parent"}
@@ -446,10 +473,19 @@ const CardSelectedNode = (props) => {
                             setSearchNode={setSearchNode}
                             setSelectedNode={setSelectedNode}
                         />
-                    </div>
+                    </> : <>
+                        <SynsetList
+                            type={"synset"}
+                            synsetList={synset}
+                            setSynsetList={setSynset}
+                            graphState={graphState}
+                            selectedNode={selectedNode}
+                            setSearchNode={setSearchNode}
+                            setSelectedNode={setSelectedNode}
+                        />
+                    </>}
                 </div>
-                : null
-            }
+            </div>
 
         </Card >
     )

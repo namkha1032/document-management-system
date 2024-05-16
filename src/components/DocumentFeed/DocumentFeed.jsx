@@ -32,12 +32,8 @@ import { MdVpnKey, MdOutlineDeleteForever, MdOutlineSettingsBackupRestore } from
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { Document, Page, pdfjs } from "react-pdf"
 import GridListContext from "../../context/GridListContext"
-import CardSelectedNode from "../../pages/Page_Ontology_Url/CardSelectedNode/CardSelectedNode";
-import axios from "axios";
-import { convertToPng } from "../../apis/documentApi";
-
+import CardSelectedDoc from "./CardSelectedDoc/CardSelectedDoc";
 const DocumentFeed = (props) => {
     const { state } = useLocation();
     let breadSelectedDoc = state?.breadSelectedDoc
@@ -273,7 +269,11 @@ const DocumentFeed = (props) => {
                             <Pagination
                                 pageSizeOptions={[12, 24, 36, 48]}
                                 showQuickJumper showSizeChanger
-                                onChange={(newPage, newPageSize) => changePagination(newPage, newPageSize)} current={documentResult.current} total={documentResult.total} pageSize={documentResult.pageSize} />
+                                onChange={(newPage, newPageSize) => changePagination(newPage, newPageSize)}
+                                current={documentResult.current}
+                                total={documentResult.total}
+                                pageSize={documentResult.pageSize}
+                            />
                         </div>
                         <>
                             <div style={{ flex: "1 1 auto", width: "100%", height: "100%", display: "flex", columnGap: selectedDoc.length == 1 ? 16 : 0, justifyContent: "space-between" }}>
@@ -310,7 +310,7 @@ const DocumentFeed = (props) => {
                                                                                         state: {
                                                                                             breadState: [
                                                                                                 { "title": originTitle, "path": `/${originPath}` },
-                                                                                                { "title": `${item.versions[0].file_name ? item.versions[0].file_name : item.uid}`, "path": `/document/${item.uid}` }
+                                                                                                { "title": `${item.versions[0].file_name ? item.versions[0].file_name.slice(0, -16) : item.uid}`, "path": `/document/${item.uid}` }
                                                                                             ]
 
                                                                                         }
@@ -399,82 +399,21 @@ const DocumentFeed = (props) => {
                                     </div>
                                 </div>
                                 {originPath !== "trash"
-                                    ? <Card
-                                        title={selectedDoc[0]?.uid}
-                                        className="selectCard"
-                                        extra={
-                                            <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
-                                                <Button type={"primary"} onClick={() => {
-                                                    navigate(`/document/${selectedDoc[0]?.uid}`, {
-                                                        state: {
-                                                            breadState: [
-                                                                { "title": originTitle, "path": `/${originPath}` },
-                                                                { "title": `${selectedDoc[0]?.versions[0].file_name ? selectedDoc[0]?.versions[0].file_name : selectedDoc[0]?.uid}`, "path": `/document/${selectedDoc[0]?.uid}` }
-                                                            ]
-
-                                                        }
-                                                    })
-                                                }} icon={<EyeOutlined />}>View</Button>
-                                                <Button type={"text"} icon={<CloseOutlined />} onClick={() => {
-                                                    setSelectedDoc([])
-                                                    setSelectedKey([])
-                                                }} />
-
-                                            </div>
-                                        }
-                                        style={{
-                                            display: "flex", flexDirection: "column", height: "100%",
-                                            width: selectedDoc.length == 1 ? "30%" : 0, transition: "width 0.3s, border-width 0.3s",
-                                            borderWidth: selectedDoc.length == 1 ? "1px" : "0px",
-                                            borderColor: antdTheme.token.colorBorder
-                                        }}
-                                        styles={{
-                                            header: {
-                                                flex: "0 1 auto"
-                                            },
-                                            body: {
-                                                flex: "1 1 auto",
-                                                display: 'flex',
-                                                flexDirection: "column"
-                                            }
-                                        }}
-                                    >
-                                        <div style={{ flex: 1, position: "relative" }}>
-                                            <div
-                                                id={"cardSelectedDoc"}
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 0,
-                                                    left: 0,
-                                                    right: 0,
-                                                    bottom: 0,
-                                                    overflowY: "scroll"
-                                                }}>
-                                                <div style={{ height: 300, overflow: "hidden", display: "flex", border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }}>
-                                                    <Image src={selectedDoc[0]?.versions[0]?.url.length > 0
-                                                        ? `//image.thum.io/get/pdfSource/page/1/${selectedDoc[0]?.versions[0]?.url}`
-                                                        : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
-                                                </div>
-                                                <Typography.Title ellipsis level={4}>Who has access</Typography.Title>
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                    <Avatar.Group size={48}>
-                                                        <Avatar src={`/file/giga1.png`} />
-                                                        <Avatar src={`/file/giga2.png`} />
-                                                        <Avatar src={`/file/giga3.png`} />
-                                                        <Avatar src={`/file/giga4.png`} />
-                                                    </Avatar.Group>
-                                                    <Button icon={<MdVpnKey />} style={{ display: "flex", alignItems: "center", height: 48, fontSize: 16, borderColor: antdTheme.token.colorText, color: antdTheme.token.colorText }}>Manage access</Button>
-                                                </div>
-                                                <Typography.Title ellipsis level={4}>Owner</Typography.Title>
-                                                <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", columnGap: 8 }}>
-                                                    <Avatar size={48} src={`/file/giga1.png`} />
-                                                    <Typography.Text style={{ fontSize: 24 }} ellipsis>{`${selectedDoc[0]?.owner.first_name} ${selectedDoc[0]?.owner.last_name}`}</Typography.Text>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Card>
+                                    ? <CardSelectedDoc
+                                        selectedDoc={selectedDoc}
+                                        setSelectedDoc={setSelectedDoc}
+                                        setSelectedKey={setSelectedKey}
+                                        originTitle={originTitle}
+                                        originPath={originPath} />
                                     : null
                                 }
+                                {/* <CardSelectedDoc
+                                    selectedDoc={selectedDoc}
+                                    setSelectedDoc={setSelectedDoc}
+                                    selectedKey={selectedKey}
+                                    setSelectedKey={setSelectedKey}
+                                    originTitle={originTitle}
+                                    originPath={originPath} /> */}
 
                             </div>
                         </>

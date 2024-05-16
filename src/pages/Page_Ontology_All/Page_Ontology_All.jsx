@@ -24,15 +24,16 @@ import {
 import Bread from "../../components/Bread/Bread";
 import { getAllOntologiesNew, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
 import SearchOptionContext from "../../context/SearchOptionContext";
-
+import OntologyAllContext from "../../context/OntologyAllContext";
 const DeleteOntologyButton = (props) => {
     const ontology = props.ontology
-    const setOntologies = props.setOntologies
+    let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
     let [loadingDeleteOntology, setLoadingDeleteOntology] = useState(false)
     async function handleDeleteOntology() {
         setLoadingDeleteOntology(true)
         let deletedOntology = await deleteOntology(ontology.ontologyId)
-        setOntologies((oldOntologies) => oldOntologies.filter((onto) => onto.ontologyId != deletedOntology.ontologyId))
+        let newOntologies = ontologyAll.filter((onto) => onto.ontologyId != deletedOntology.ontologyId)
+        dispatchOntologyAll({ type: "update", payload: newOntologies })
         setLoadingDeleteOntology(false)
     }
     return (
@@ -50,19 +51,11 @@ const DeleteOntologyButton = (props) => {
 }
 
 const Page_Ontology_All = () => {
-
-    let [ontologies, setOntologies] = useState([])
+    let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
-    useEffect(() => {
-        // async function fetchData() {
-        //     let returnedOntologies = await getAllOntologiesNew()
-        //     setOntologies(returnedOntologies)
-        // }
-        // fetchData()
-        setOntologies(searchOption.allOntologies)
-    }, [searchOption.allOntologies.length])
+
     let ontologyColumns = [
         {
             title: "Name",
@@ -101,7 +94,7 @@ const Page_Ontology_All = () => {
                     <>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <Typography.Text>{obj.count_sense}</Typography.Text>
-                            <DeleteOntologyButton ontology={obj} setOntologies={setOntologies} />
+                            <DeleteOntologyButton ontology={obj} />
                         </div>
                     </>
                 )
@@ -112,12 +105,12 @@ const Page_Ontology_All = () => {
         <>
             <Bread breadProp={[{ "title": "Ontology", "path": "/ontology" }]} createButtonType={"ontology"} />
             {
-                ontologies.length > 0
+                ontologyAll
                     ? <>
                         <Table
                             columns={ontologyColumns}
                             rowKey={(record) => record.ontologyId}
-                            dataSource={ontologies}
+                            dataSource={ontologyAll}
                             style={{
                                 borderRadius: 8, cursor: "pointer",
                                 border: `1px solid ${antdTheme.token.colorBorder}`

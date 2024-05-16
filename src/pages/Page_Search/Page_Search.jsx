@@ -51,6 +51,7 @@ import { hover } from "@testing-library/user-event/dist/hover"
 // import context
 import SearchOptionContext from "../../context/SearchOptionContext";
 import SearchResultContext from "../../context/SearchResultContext";
+import OntologyAllContext from "../../context/OntologyAllContext";
 import randomString from "../../functions/randomString";
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -580,6 +581,7 @@ const Page_Search = () => {
     let antdTheme = theme.useToken()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+    let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
     console.log("Page_Search: searchResult", searchResult)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
@@ -689,12 +691,12 @@ const Page_Search = () => {
                 let displayArray = []
                 let extendArray = []
                 let limit = 2
-                if (obj.metadata.length > limit) {
-                    displayArray = obj.metadata.slice(0, limit)
-                    extendArray = obj.metadata.slice(limit)
+                if (obj.versions[0].metadata.length > limit) {
+                    displayArray = obj.versions[0].metadata.slice(0, limit)
+                    extendArray = obj.versions[0].metadata.slice(limit)
                 }
                 else {
-                    displayArray = [...obj.metadata]
+                    displayArray = [...obj.versions[0].metadata]
                 }
                 return (
                     <div style={{ display: 'flex', columnGap: 16 }}>
@@ -702,8 +704,8 @@ const Page_Search = () => {
                             {/* <Document file={'/file/sample.pdf'}>
                                     <Page width={100} pageNumber={1} />
                                 </Document> */}
-                            <Image style={{ border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }} src={obj?.url?.length > 0
-                                ? `//image.thum.io/get/pdfSource/page/1/${obj.url}`
+                            <Image style={{ border: `1px solid ${antdTheme.token.colorBorder}`, borderRadius: 8 }} src={obj?.versions[0]?.url?.length > 0
+                                ? `//image.thum.io/get/pdfSource/page/1/${obj?.versions[0]?.url}`
                                 : "//image.thum.io/get/pdfSource/page/1/https://pdfobject.com/pdf/sample.pdf"} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
@@ -712,15 +714,15 @@ const Page_Search = () => {
                                 <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} style={{ color: antdTheme.token.colorError, }} size="xl" />
 
                                 <Typography.Title onClick={() => {
-                                    navigate(`/document/${obj.document_id}`, {
+                                    navigate(`/document/${obj.uid}`, {
                                         state: {
                                             breadState: [
-                                                { "title": "Search result", "path": `/search` },
-                                                { "title": `${obj.file_name}`, "path": `/document/${obj.document_id}` },
+                                                { "title": "Search", "path": `/search` },
+                                                { "title": `${obj?.versions[0]?.file_name?.length > 0 ? obj?.versions[0]?.file_name : obj?.uid}`, "path": `/document/${obj.uid}` },
                                             ]
                                         }
                                     })
-                                }} style={{ cursor: "pointer", marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj.file_name}</Typography.Title>
+                                }} style={{ cursor: "pointer", marginTop: 0, marginBottom: 0, color: antdTheme.token.colorLink }} level={4}>{obj?.versions[0]?.file_name?.length > 0 ? obj?.versions[0]?.file_name : obj?.uid}</Typography.Title>
 
                             </div>
                             {/* <Typography.Paragraph ellipsis={{
@@ -751,26 +753,26 @@ const Page_Search = () => {
                                 <Typography.Title level={5} style={{ marginTop: 0 }}>Owner</Typography.Title>
                                 <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                                     <Avatar src={'/file/avatar.png'} />
-                                    <Typography.Text>{'Nguyen Nam Kha'}</Typography.Text>
+                                    <Typography.Text>{`${obj.owner.first_name} ${obj.owner.last_name}`}</Typography.Text>
                                 </div>
                             </div>
                         </Col>
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>File size</Typography.Title>
-                                <Typography.Text>{'5 MB'}</Typography.Text>
+                                <Typography.Text>{obj?.versions[0]?.file_size}</Typography.Text>
                             </div>
                         </Col>
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>Created date</Typography.Title>
-                                <Typography.Text>01-01-2024</Typography.Text>
+                                <Typography.Text>{new Date(obj.created_date).toLocaleDateString()}</Typography.Text>
                             </div>
                         </Col>
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>Updated date</Typography.Title>
-                                <Typography.Text>01-01-2024</Typography.Text>
+                                <Typography.Text>{new Date(obj.updated_date).toLocaleDateString()}</Typography.Text>
                             </div>
                         </Col>
                     </Row>
@@ -781,11 +783,9 @@ const Page_Search = () => {
     async function handlePaginationChange(page, pageSize) {
         let newSearchOption = {
             ...searchOption,
-            pagination: {
-                ...searchOption.pagination,
-                current: page,
-                pageSize: pageSize
-            }
+            current: page,
+            pageSize: pageSize,
+            total: searchOption.total
         }
         // await searchMutation.mutateAsync(newSearchOption)
         await dispatchSearchResult({ type: 'loading', payload: true })
@@ -805,12 +805,21 @@ const Page_Search = () => {
     // HTMl
     // return null
     return (
-        <>
-            <Bread breadProp={[{ "title": "Search", "path": "/search" }]} createButtonType={"document"} />
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <div style={{ flex: "0 1 auto" }}>
+                <Bread breadProp={[{ "title": "Search", "path": "/search" }]} createButtonType={"document"} />
+            </div>
             {
                 searchOption && searchResult
                     ?
-                    <>
+                    <div
+                        style={{
+                            // width: document && isAllowed ? "100%" : 0,
+                            // height: document && isAllowed ? 'fit-content' : 0,
+                            overflowY: "scroll",
+                            // overflowX: "hidden",
+                            flex: "1 1 auto"
+                        }}>
                         {/* <Bread title={
                     <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                         <Typography.Title level={2} style={{ margin: 0 }}>
@@ -890,7 +899,7 @@ const Page_Search = () => {
                                             //             </div>,
                                             //     }
                                             // ]}
-                                            options={searchOption.allOntologies.map((item, index) => {
+                                            options={ontologyAll?.map((item, index) => {
                                                 // let iconType = ''
                                                 // if (item.url == "phap-luat") {
                                                 //     iconType = "scale-balanced"
@@ -1105,10 +1114,11 @@ const Page_Search = () => {
                                         />
                                     </div>
                                     <Pagination
-                                        current={searchResult.pagination.current}
-                                        pageSize={searchResult.pagination.pageSize}
-                                        total={searchResult.pagination.total}
+                                        current={searchResult.current}
+                                        pageSize={searchResult.pageSize}
+                                        total={searchResult.total}
                                         onChange={handlePaginationChange}
+                                        showQuickJumper showSizeChanger
                                     // showSizeChanger
                                     // pageSizeOptions={[5, 8]}
                                     />
@@ -1116,26 +1126,33 @@ const Page_Search = () => {
                                 <Col span={24}>
                                     <Table
                                         columns={searchResultsColumn}
-                                        rowKey={(record) => record.document_id}
+                                        rowKey={(record) => record.uid}
                                         // rowKey={(record) => record.metadata[0].id}
                                         dataSource={searchResult.documents}
                                         pagination={{
-                                            ...searchResult.pagination,
+                                            showQuickJumper: true,
+                                            showSizeChanger: true,
+                                            current: searchResult.current,
+                                            pageSize: searchResult.pageSize,
+                                            total: searchResult.total,
                                             position: ['bottomCenter']
                                         }}
                                         // pagination={false}
                                         loading={searchResult.loading}
-                                        // onChange={handleTableChange}
+                                        onChange={(pag) => { handlePaginationChange(pag.current, pag.pageSize) }}
                                         showHeader={false}
-                                        style={{ borderRadius: 8 }}
+                                        style={{
+                                            borderRadius: 8,
+                                            // border: `1px solid ${antdTheme.token.colorBorder}`
+                                        }}
                                     />
                                 </Col>
                             </Row>
                         </Container>
-                    </>
+                    </div>
                     : null
             }
-        </>
+        </div>
     )
 }
 

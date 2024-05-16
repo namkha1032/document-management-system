@@ -62,15 +62,12 @@ function ontologyReducer(state, action) {
             }
             return newOntology
         }
-        case "updateNodeName": {
+        case "updateSenseLabel": {
             let newOntology = {
                 ...state,
                 nodes: state.nodes.map((node) => {
                     if (node.id == action.payload.id) {
-                        return {
-                            ...node,
-                            label: action.payload.label
-                        }
+                        return action.payload
                     }
                     else {
                         return node
@@ -161,36 +158,7 @@ function ontologyReducer(state, action) {
         case "renameOntology": {
             let newOntology = {
                 ...state,
-                ontologyName: action.payload.ontologyName,
-                url: action.payload.url,
-                nodes: state.nodes.map((node) => {
-                    if (node.id == action.payload.id) {
-                        return {
-                            ...node,
-                            label: action.payload.name
-                        }
-                    }
-                    else {
-                        return node
-                    }
-                }),
-                edges: state.edges.map((edge) => {
-                    if (edge.from == action.payload.id) {
-                        return {
-                            ...edge,
-                            from_label: action.payload.name
-                        }
-                    }
-                    else if (edge.to == action.payload.id) {
-                        return {
-                            ...edge,
-                            to_label: action.payload.name
-                        }
-                    }
-                    else {
-                        return edge
-                    }
-                }),
+                ontologyName: action.payload.ontologyName
                 // parentOptions: [...action.payload.parentOptions],
                 // childrenOptions: [...action.payload.childrenOptions]
             }

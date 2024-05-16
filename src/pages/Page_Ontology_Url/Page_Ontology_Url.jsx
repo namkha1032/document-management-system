@@ -25,7 +25,7 @@ import {
     PlusOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { getOntology, apiAddSynset, graphToTree, renameOntology } from "../../apis/ontologyApi";
+import { getOntology, apiAddSynset, graphToTree, apiRenameOntology } from "../../apis/ontologyApi";
 import Bread from "../../components/Bread/Bread";
 import CardSelectedNode from "./CardSelectedNode/CardSelectedNode";
 
@@ -162,8 +162,8 @@ const Section_Ontology_Url = () => {
     }
     async function handleUpdateOntologyName() {
         dispatchOntology({ type: "triggerLoadingRenameOntology" })
-        let response = await renameOntology(ontology.ontologyId, { name: newOntologyName })
-        dispatchOntology({ type: "renameOntology", payload: response })
+        let response = await apiRenameOntology(ontology.ontologyId, { name: newOntologyName })
+        dispatchOntology({ type: "apiRenameOntology", payload: response })
         setIsRenameOntology(false)
         navigate(`/ontology/${response.url}`)
         setSelectedNode((oldNode) => JSON.parse(JSON.stringify(oldNode)))

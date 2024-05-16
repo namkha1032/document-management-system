@@ -19,6 +19,11 @@
     display: none;
 }
 
+
+#documentFeed::-webkit-scrollbar {
+    display: none;
+}
+
 .mySkele {
     height: 100% !important;
 }
@@ -43,4 +48,7 @@ body,
     height: 100%
 }
 
+/* .selectCard .ant-card-head-title{
+    width: 300px
+} */
 

@@ -4,23 +4,44 @@ import { AiFillDatabase } from "react-icons/ai";
 import endpoint from "./_domain";
 import { originHeader } from "./_domain";
 
-export async function apiGetDocument(documentId) {
+export async function apiGetDocument(documentId, page = 1, page_size = 10) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     let response = await axios.get(`${endpoint}/api/documents/detail/${documentId}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })
-    return response.data.data
+    // let logResponse = await axios.get(`${endpoint}/api/logs/matrix/${documentId}?page=${page}&page_size=${page_size}`, {
+    //     headers: {
+    //         "Authorization": `Bearer ${token}`,
+    //         ...originHeader
+    //     }
+    // })
+    let logResponse = await axios.get(`${endpoint}/api/logs/matrix/${documentId}?page=${page}&page_size=${page_size}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    console.log("responseDoc", response)
+    console.log("logResponse", logResponse)
+    let newResponse = {
+        ...response.data.data,
+        versions: response.data.data.versions.map((ver, idx) => ({ ...ver, file_size: ver.file_size.length > 0 ? parseInt(ver.file_size) : 0 })),
+        logs: logResponse.data.logs,
+        logCurrent: page,
+        logPageSize: page_size,
+        logTotal: logResponse.data.total_logs
+    }
+    console.log("newResponse", newResponse)
+    return newResponse
 }
 
 export async function apiGetCompanyDocument(token, page, page_size) {
     let response = await axios.get(`${endpoint}/api/documents/matrix?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })
@@ -32,7 +53,6 @@ export async function apiGetMyDocument(token, page, page_size) {
     let response = await axios.get(`${endpoint}/api/documents/matrix/me?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })
@@ -44,7 +64,6 @@ export async function apiGetTrashDocument(token, page, page_size) {
     let response = await axios.get(`${endpoint}/api/documents/matrix/me?page=${page}&page_size=${page_size}&is_deleted=${true}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })
@@ -56,7 +75,6 @@ export async function apiGetSharedDocument(page, page_size) {
     let response = await axios.get(`${endpoint}/api/documents/matrix/shared?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })

@@ -42,8 +42,8 @@ export async function deleteNode(nodeId) {
     return response.data.data
 }
 
-export async function updateNodeName(nodeId, nodeName) {
-    let response = await axios.patch(`${endpoint}/api/ontology/node/${nodeId}`, nodeName, { headers: { ...originHeader } })
+export async function apiUpdateSenseLabel(senseId, data) {
+    let response = await axios.patch(`${endpoint}/api/ontology/sense/${senseId}`, data, { headers: { ...originHeader } })
     return response.data.data
 }
 
@@ -52,8 +52,13 @@ export async function apiAddEdge(data) {
     return response.data.data
 }
 
-export async function deleteEdge(edge_id) {
-    let response = await axios.delete(`${endpoint}/api/ontology/edge/${edge_id}`, { headers: { ...originHeader } })
+export async function apiAddSynEdge(data) {
+    let response = await axios.post(`${endpoint}/api/ontology/addsynedge`, data, { headers: { ...originHeader } })
+    return response.data.data
+}
+
+export async function apiDeleteEdge(edge_id, ontology_id) {
+    let response = await axios.delete(`${endpoint}/api/ontology/deledge/${edge_id}/${ontology_id}`, { headers: { ...originHeader } })
     return response.data.data
 }
 
@@ -72,8 +77,8 @@ export async function graphToTree(ontology_graph) {
     return response.data.data
 }
 
-export async function renameOntology(ontologyId, ontologyName) {
-    let response = await axios.patch(`${endpoint}/api/ontology/renameonto/${ontologyId}`, ontologyName, { headers: { ...originHeader } })
+export async function apiRenameOntology(ontologyId, data) {
+    let response = await axios.patch(`${endpoint}/api/ontology/ontorename/${ontologyId}`, data, { headers: { ...originHeader } })
     return response.data.data
 }
 

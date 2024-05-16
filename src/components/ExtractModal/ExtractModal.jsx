@@ -84,7 +84,7 @@ const ExtractModal = (props) => {
     async function handleSave() {
         setLoadingUpload(true)
         let newForm = new FormData()
-        // newForm.append('files', uploadDocument[index].fileList[0])
+        newForm.append('files', uploadDocument[index].fileList[0])
         newForm.append("data", JSON.stringify({
             "metadata": uploadDocument[index].metadata,
             "message": "hehe"

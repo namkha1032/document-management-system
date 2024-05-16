@@ -13,32 +13,39 @@ import { DocumentMyProvider } from './context/DocumentMyContext';
 import { DocumentCompanyProvider } from './context/DocumentCompanyContext';
 import { DocumentSharedProvider } from './context/DocumentSharedContext';
 import { DocumentTrashProvider } from './context/DocumentTrashContext';
+import { OntologyAllProvider } from './context/OntologyAllContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
+const queryClient = new QueryClient()
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  // <React.StrictMode>
-  <UserProvider>
-    <ModeThemeProvider>
-      <UploadDocumentProvider>
-        <SearchOptionProvider>
-          <SearchResultProvider>
-            <GridListProvider>
-              <DocumentMyProvider>
-                <DocumentCompanyProvider>
-                  <DocumentSharedProvider>
-                    <DocumentTrashProvider>
-                      <App />
-                    </DocumentTrashProvider>
-                  </DocumentSharedProvider>
-                </DocumentCompanyProvider>
-              </DocumentMyProvider>
-            </GridListProvider>
-          </SearchResultProvider>
-        </SearchOptionProvider>
-      </UploadDocumentProvider>
-    </ModeThemeProvider>
-  </UserProvider>
-  // </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <UserProvider>
+      <OntologyAllProvider>
+        <ModeThemeProvider>
+          <UploadDocumentProvider>
+            <SearchOptionProvider>
+              <SearchResultProvider>
+                <GridListProvider>
+                  <DocumentMyProvider>
+                    <DocumentCompanyProvider>
+                      <DocumentSharedProvider>
+                        <DocumentTrashProvider>
+                          <App />
+                        </DocumentTrashProvider>
+                      </DocumentSharedProvider>
+                    </DocumentCompanyProvider>
+                  </DocumentMyProvider>
+                </GridListProvider>
+              </SearchResultProvider>
+            </SearchOptionProvider>
+          </UploadDocumentProvider>
+        </ModeThemeProvider>
+      </OntologyAllProvider>
+    </UserProvider>
+    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+  </QueryClientProvider>
 );
 

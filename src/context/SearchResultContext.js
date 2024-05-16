@@ -68,9 +68,10 @@ const SearchResultProvider = (props) => {
             broader: {},
             related: {},
             narrower: {},
-            pagination: {
-                total: null
-            }
+            // pagination: {
+            //     total: null
+            // },
+            total: null
         }
     )
 

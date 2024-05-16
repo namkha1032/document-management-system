@@ -14,36 +14,37 @@ export async function getSearchResult(searchData) {
     // ---------------------------------fake-------------------------------------------
     console.log("searchData", searchData)
     const response1 = await axios.get('http://localhost:3000/data/searchresult.json')
-    let responseFake = await axios.get(`${endpoint}/api/documents/matrix/me?page=${searchData.pagination.current}&page_size=${searchData.pagination.pageSize}`, {
+    let responseFake = await axios.get(`${endpoint}/api/documents/matrix/me?page=${searchData.current}&page_size=${searchData.pageSize}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
             "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })
-    console.log("responseFake",responseFake)
+    console.log("responseFake", responseFake)
     let newResponseFake = {
-        ...response1.data.data,
-        documents: responseFake.data.data.documents.map((doc, idx) => {
-            return {
-                document_id: doc.uid,
-                file_name: doc.versions[0].file_name.length > 0 ? doc.versions[0].file_name.length : `document ${doc.uid}`,
-                content: "",
-                metadata: doc.versions[0].metadata,
-                owner: {
-                    full_name: `${doc.owner.first_name} ${doc.owner.last_name}`,
-                    avatar: "/file/avatar.png"
-                },
-                file_size: "5 MB",
-                created_date: doc.created_date,
-                updated_date: doc.updated_date
-            }
-        }),
-        pagination: {
-            current: searchData.pagination.current,
-            pageSize: responseFake.data.data.page_size,
-            total: responseFake.data.data.total_items,
-        }
+        broader: response1.data.data.broader,
+        related: response1.data.data.related,
+        narrower: response1.data.data.narrower,
+        // documents: responseFake.data.data.documents.map((doc, idx) => {
+        //     return {
+        //         document_id: doc.uid,
+        //         file_name: doc.versions[0].file_name.length > 0 ? doc.versions[0].file_name.length : `document ${doc.uid}`,
+        //         content: "",
+        //         metadata: doc.versions[0].metadata,
+        //         owner: {
+        //             full_name: `${doc.owner.first_name} ${doc.owner.last_name}`,
+        //             avatar: "/file/avatar.png"
+        //         },
+        //         file_size: "5 MB",
+        //         created_date: doc.created_date,
+        //         updated_date: doc.updated_date
+        //     }
+        // }),
+        documents: responseFake.data.data.documents,
+        current: searchData.current,
+        pageSize: responseFake.data.data.page_size,
+        total: responseFake.data.data.total_items,
     }
     return newResponseFake
     // ---------------------------------real-------------------------------------------
@@ -52,27 +53,23 @@ export async function getSearchResult(searchData) {
     // })
     // console.log("responsesearch", response)
     const response = await axios.get('http://localhost:3000/data/searchresult.json')
-    if (searchData.pagination.current == 1) {
+    if (searchData.current == 1) {
         let newResponse = {
             ...response.data.data,
             documents: response.data.data.documents.slice(0, 10),
-            pagination: {
-                current: 1,
-                pageSize: 10,
-                total: 15
-            }
+            current: 1,
+            pageSize: 10,
+            total: 15
         }
         return newResponse
     }
-    else if (searchData.pagination.current == 2) {
+    else if (searchData.current == 2) {
         let newResponse = {
             ...response.data.data,
             documents: response.data.data.documents.slice(10),
-            pagination: {
-                current: 2,
-                pageSize: 10,
-                total: 15
-            }
+            current: 2,
+            pageSize: 10,
+            total: 15
         }
         return newResponse
     }

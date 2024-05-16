@@ -34,7 +34,7 @@ import {
     EditOutlined
 } from '@ant-design/icons';
 import { useParams, useNavigate } from "react-router-dom";
-import { apiGrantPermission, apiDeletePermission } from "../../apis/documentApi";
+import { apiGrantPermission, apiDeletePermission, apiGetDocument } from "../../apis/documentApi";
 import randomString from "../../functions/randomString";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -50,9 +50,14 @@ const PermissionUserList = (props) => {
             email: email,
             document_uid: document_uid
         })
+        let documentResponse = await apiGetDocument(document_uid, document.logCurrent, document.logPageSize)
         setDocument({
             ...document,
-            users_with_permission: document.users_with_permission.filter((user, index) => user.email != email)
+            users_with_permission: document.users_with_permission.filter((user, index) => user.email != email),
+            logs: documentResponse.logs,
+            logCurrent: document.logCurrent,
+            logPageSize: document.logPageSize,
+            logTotal: documentResponse.logTotal
         })
         // console.log("response: ", response)
     }
@@ -63,6 +68,7 @@ const PermissionUserList = (props) => {
             document_uid: document.uid,
             permission: permission
         })
+        let documentResponse = await apiGetDocument(document.uid, document.logCurrent, document.logPageSize)
         setDocument({
             ...document,
             users_with_permission: document.users_with_permission.map((user, index) => {
@@ -75,8 +81,13 @@ const PermissionUserList = (props) => {
                 else {
                     return user
                 }
-            })
+            }),
+            logs: documentResponse.logs,
+            logCurrent: document.logCurrent,
+            logPageSize: document.logPageSize,
+            logTotal: documentResponse.logTotal
         })
+        // setDocument(documentResponse)
     }
     return (
         <>
@@ -148,6 +159,7 @@ const PermissionModal = (props) => {
             document_uid: document.uid,
             permission: permissionType
         })
+        let documentResponse = await apiGetDocument(document.uid, document.logCurrent, document.logPageSize)
         setDocument({
             ...document,
             users_with_permission: [
@@ -156,7 +168,11 @@ const PermissionModal = (props) => {
                     email: selectedUser,
                     permission: permissionType
                 }
-            ]
+            ],
+            logs: documentResponse.logs,
+            logCurrent: document.logCurrent,
+            logPageSize: document.logPageSize,
+            logTotal: documentResponse.logTotal
         })
         setSelectedUser(null)
     }
@@ -171,7 +187,7 @@ const PermissionModal = (props) => {
                         <Space style={{ width: "80%" }}>
                             <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c", fontSize: 36 }} />
                             <Typography.Text ellipsis={{ tooltip: document?.versions[0].file_name.length > 0 ? document?.versions[0].file_name : document?.uid }}
-                                style={{ fontSize: 18, width: "80%", fontWeight: 600 }}>
+                                style={{ fontSize: 18, width: "60%", fontWeight: 600 }}>
                                 {document?.versions[0].file_name.length > 0 ? document?.versions[0].file_name : document?.uid}
                             </Typography.Text>
                         </Space>

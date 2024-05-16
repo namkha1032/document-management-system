@@ -21,27 +21,25 @@ const SearchOptionProvider = (props) => {
             domain: '',
             domainList: [],
             allOntologies: [],
-            pagination: {
-                current: 1,
-                pageSize: 10,
-            },
+            current: 1,
+            pageSize: 10,
             search_scope: 'all'
         }
     )
     useEffect(() => {
         async function fetchData() {
-            let response = await getAllOntologies()
-            let response2 = await getAllOntologiesNew()
-            console.log("allonto", response2)
-            console.log("oldonto", response)
+            let response = await getAllOntologiesNew()
             let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
             dispatchSearchOption({
                 type: "update",
                 payload: {
                     ...oldSearchOption,
                     domainList: response,
-                    allOntologies: response2,
-                    domain: response[0]?.ontologyId
+                    allOntologies: response,
+                    // domain: response[0]?.ontologyId,
+                    // domainList: [],
+                    // allOntologies: [],
+                    domain: "1234"
                 }
             })
         }
