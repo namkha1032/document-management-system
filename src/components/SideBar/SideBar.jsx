@@ -61,7 +61,7 @@ const SideBar = (props) => {
     const location = useLocation()
     const navigate = useNavigate()
     let [sidebarItem, setSidebarItem] = useState("0")
-
+    let userStorage = JSON.parse(localStorage.getItem("user"))
     useEffect(() => {
         // if (location) {
         if (location.pathname.includes("company")) {
@@ -117,11 +117,6 @@ const SideBar = (props) => {
             key: '6',
             icon: <ShareAltOutlined />,
             label: "Ontology"
-        },
-        {
-            key: '7',
-            icon: <ShareAltOutlined />,
-            label: "Ontology old"
         }
     ]
     // let primaryBgColor = antdTheme.token.colorBgLayout
@@ -178,7 +173,18 @@ const SideBar = (props) => {
                     padding: "0 8px"
                 }}
                 selectedKeys={[sidebarItem]}
-                mode="inline" items={items}
+                mode="inline"
+                items={items.filter((ite, idx) => {
+                    if (userStorage?.is_expertuser && ite.key == '6') {
+                        return true
+                    }
+                    else if (!userStorage?.is_expertuser && ite.key !== '6') {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                })}
                 onSelect={(event) => {
                     if (event.key == '1') {
                         setSidebarItem('1')

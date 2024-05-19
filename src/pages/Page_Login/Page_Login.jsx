@@ -27,7 +27,7 @@ const Page_Login = () => {
         setLoadingLogin(true)
         try {
             let response = await userLogin(values)
-            
+
             let userInfo = await getMe(response.access_token)
             let finalInfo = {
                 ...userInfo,
@@ -35,7 +35,12 @@ const Page_Login = () => {
             }
             console.log("finalInfo", finalInfo)
             dispatchUser({ type: "login", payload: finalInfo })
-            navigate(`/my-documents`)
+            if (finalInfo.is_expertuser) {
+                navigate('/ontology')
+            }
+            else {
+                navigate(`/my-documents`)
+            }
 
         }
         catch (e) {

@@ -45,7 +45,21 @@ export async function apiGetCompanyDocument(token, page, page_size) {
             ...originHeader
         }
     })
-    return response.data.data
+    let newResponse = {
+        ...response.data.data,
+        documents: response.data.data.documents.map((doc, docid) => {
+            return {
+                ...doc,
+                versions: doc.versions.map((ver, verid) => {
+                    return {
+                        ...ver,
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                    }
+                })
+            }
+        })
+    }
+    return newResponse
 }
 
 export async function apiGetMyDocument(token, page, page_size) {
@@ -56,7 +70,21 @@ export async function apiGetMyDocument(token, page, page_size) {
             ...originHeader
         }
     })
-    return response.data.data
+    let newResponse = {
+        ...response.data.data,
+        documents: response.data.data.documents.map((doc, docid) => {
+            return {
+                ...doc,
+                versions: doc.versions.map((ver, verid) => {
+                    return {
+                        ...ver,
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                    }
+                })
+            }
+        })
+    }
+    return newResponse
 }
 
 export async function apiGetTrashDocument(token, page, page_size) {
@@ -67,7 +95,22 @@ export async function apiGetTrashDocument(token, page, page_size) {
             ...originHeader
         }
     })
-    return response.data.data
+    console.log("trash", response)
+    let newResponse = {
+        ...response.data.data,
+        documents: response.data.data.documents.map((doc, docid) => {
+            return {
+                ...doc,
+                versions: doc.versions.map((ver, verid) => {
+                    return {
+                        ...ver,
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                    }
+                })
+            }
+        })
+    }
+    return newResponse
 }
 
 export async function apiGetSharedDocument(page, page_size) {
@@ -79,11 +122,25 @@ export async function apiGetSharedDocument(page, page_size) {
         }
     })
 
-    return response.data.data
+    let newResponse = {
+        ...response.data.data,
+        documents: response.data.data.documents.map((doc, docid) => {
+            return {
+                ...doc,
+                versions: doc.versions.map((ver, verid) => {
+                    return {
+                        ...ver,
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                    }
+                })
+            }
+        })
+    }
+    return newResponse
 }
 
 export async function apiExtractMetadata(newForm) {
-    await delay(1000)
+    // await delay(60000)
     let rawResponse = null
     let i = 0
     while (rawResponse?.data?.data == null) {

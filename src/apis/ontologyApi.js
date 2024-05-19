@@ -8,6 +8,7 @@ export async function getAllOntologies() {
 }
 export async function getAllOntologiesNew() {
     let response = await axios.get(`${endpoint}/api/ontology/ontologyall`, { headers: { ...originHeader } })
+    console.log("All ontologies", response)
     return response.data.data
 }
 
@@ -87,5 +88,6 @@ export async function apiRenameOntology(ontologyId, data) {
 
 export async function getOntologyId(ontologyId) {
     let response = await axios.get(`${endpoint}/api/ontology/ontologyid/${ontologyId}`, { headers: { ...originHeader } })
+    console.log("ontologyResponse", response)
     return response.data.data
 }

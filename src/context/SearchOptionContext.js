@@ -17,13 +17,13 @@ const SearchOptionProvider = (props) => {
             related: {},
             narrower: {},
             metadata: [],
-            method: 'fulltext',
-            domain: '',
+            method: 'full-text',
+            domain: 'abc',
             domainList: [],
             allOntologies: [],
             current: 1,
             pageSize: 10,
-            search_scope: 'all'
+            search_scope: 'my'
         }
     )
     useEffect(() => {
@@ -36,10 +36,10 @@ const SearchOptionProvider = (props) => {
                     ...oldSearchOption,
                     domainList: response,
                     allOntologies: response,
-                    // domain: response[0]?.ontologyId,
+                    domain: response[0]?.ontologyId,
                     // domainList: [],
                     // allOntologies: [],
-                    domain: "1234"
+                    // domain: "abc"
                 }
             })
         }

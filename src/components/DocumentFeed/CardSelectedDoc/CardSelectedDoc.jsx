@@ -28,6 +28,7 @@ import {
     EyeOutlined,
     ExclamationCircleFilled
 } from '@ant-design/icons';
+import prettyBytes from 'pretty-bytes';
 import { MdVpnKey, MdOutlineDeleteForever, MdOutlineSettingsBackupRestore } from "react-icons/md";
 import PermissionModal from "../../PermissionModal/PermissionModal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -149,6 +150,13 @@ const CardSelectedDoc = (props) => {
                             <Avatar size={48} src={`/file/avatar.png`} />
                             <Typography.Text style={{ fontSize: 24 }} ellipsis>{`${selectedDocState?.owner.first_name} ${selectedDocState?.owner.last_name}`}</Typography.Text>
                         </div>
+                        <Typography.Title ellipsis level={4}>Last updated</Typography.Title>
+                        <Typography.Text>{new Date(selectedDocState?.updated_date).toLocaleString()}</Typography.Text>
+                        <Typography.Title ellipsis level={4}>Created date</Typography.Title>
+                        <Typography.Text>{new Date(selectedDocState?.created_date).toLocaleString()}</Typography.Text>
+                        <Typography.Title ellipsis level={4}>File size</Typography.Title>
+                        <Typography.Text>{selectedDocState ? prettyBytes(selectedDocState?.versions[0].file_size) : null}</Typography.Text>
+
                     </div>
                 </div>
             </Card>

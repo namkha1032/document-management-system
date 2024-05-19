@@ -172,7 +172,9 @@ const CreateOntology = () => {
                 onOk={createTab == "1" ? handleCreateOntology : handleUploadOntology}
                 onCancel={() => { setModalOpen(false) }}>
 
-                <Tabs animated={{ inkBar: true, tabPane: false }} activeKey={createTab} items={createModalTab} onChange={(key) => { setCreateTab(key) }} />
+                {/* <Tabs animated={{ inkBar: true, tabPane: false }} activeKey={createTab} items={createModalTab} onChange={(key) => { setCreateTab(key) }} /> */}
+                <Input placeholder="Enter ontology name" value={newOntologyName} onChange={(e) => { setNewOntologyName(e.target.value) }} />
+
             </Modal >
             <Button onClick={() => { setModalOpen(true) }} type="primary" icon={<PlusOutlined />} size={"large"}>
                 New ontology

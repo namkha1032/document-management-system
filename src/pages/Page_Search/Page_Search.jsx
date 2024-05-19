@@ -968,7 +968,7 @@ const Page_Search = () => {
                                                             </Tag>))}
                                                 </div>
                                             </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                            {/* <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                                 <Typography.Text strong>Related terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.related).map(([oriTerm, extendArray], index) =>
@@ -977,7 +977,7 @@ const Page_Search = () => {
                                                                 {kw}
                                                             </Tag>))}
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                                 <Typography.Text strong>Narrower terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
@@ -1002,7 +1002,7 @@ const Page_Search = () => {
                                             onChange={handleChangeMethod}
                                             options={[
                                                 {
-                                                    value: 'fulltext',
+                                                    value: 'full-text',
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                                                             <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />

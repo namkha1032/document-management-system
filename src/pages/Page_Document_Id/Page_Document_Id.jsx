@@ -30,6 +30,8 @@ import {
 import { FaGlobeAsia } from "react-icons/fa";
 import { MdVpnKey } from "react-icons/md";
 import { saveAs } from 'file-saver';
+import { GoVersions } from "react-icons/go";
+import { AiOutlineAudit } from "react-icons/ai";
 
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
@@ -509,7 +511,11 @@ const Page_Document_Id = () => {
                         </Row>
                     </Col>
                 </Row>
-                <Typography.Title level={2}>Version control</Typography.Title>
+                <div style={{ display: "flex", alignItems: "center", columnGap: 16, marginTop: 24, marginBottom: 16 }}>
+                    <GoVersions style={{ fontSize: 24 }} />
+                    <Typography.Title level={2} style={{ margin: 0 }}>Version control</Typography.Title>
+                </div>
+
                 <Table
                     columns={versionColumns}
                     rowKey={(record) => record?.id}
@@ -535,7 +541,10 @@ const Page_Document_Id = () => {
                 //     selectedRowKeys: selectedKey
                 // }}
                 />
-                <Typography.Title level={2}>Audit log</Typography.Title>
+                <div style={{ display: "flex", alignItems: "center", columnGap: 16, marginTop: 24, marginBottom: 16 }}>
+                    <AiOutlineAudit style={{ fontSize: 24 }} />
+                    <Typography.Title level={2} style={{ margin: 0 }}>Audit log</Typography.Title>
+                </div>
                 <Table
                     columns={logColumns}
                     rowKey={(record) => record?.uid}

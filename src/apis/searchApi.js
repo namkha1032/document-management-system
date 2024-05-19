@@ -2,75 +2,85 @@ import axios from "axios";
 import delay from "../functions/delay";
 import endpoint from "./_domain";
 import { originHeader } from "./_domain";
-const domain = 'http://localhost:3000'
 export async function getSearchResult(searchData) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
-    let newSearchData = {
-        ...searchData,
-        metadata: JSON.stringify(searchData.metadata)
-    }
-    await delay(1000)
+    // let newSearchData = {
+    //     ...searchData,
+    //     metadata: JSON.stringify(searchData.metadata)
+    // }
+    // await delay(1000)
 
-    // ---------------------------------fake-------------------------------------------
+    // // ---------------------------------fake-------------------------------------------
+    // console.log("searchData", searchData)
+    // const response1 = await axios.get('http://localhost:3000/data/searchresult.json')
+    // let responseFake = await axios.get(`${endpoint}/api/documents/matrix/me?page=${searchData.current}&page_size=${searchData.pageSize}`, {
+    //     headers: {
+    //         "Authorization": `Bearer ${token}`,
+    //         "ngrok-skip-browser-warning": "69420",
+    //         ...originHeader
+    //     }
+    // })
+    // console.log("responseFake", responseFake)
+    // let newResponseFake = {
+    //     broader: response1.data.data.broader,
+    //     related: response1.data.data.related,
+    //     narrower: response1.data.data.narrower,
+    //     // documents: responseFake.data.data.documents.map((doc, idx) => {
+    //     //     return {
+    //     //         document_id: doc.uid,
+    //     //         file_name: doc.versions[0].file_name.length > 0 ? doc.versions[0].file_name.length : `document ${doc.uid}`,
+    //     //         content: "",
+    //     //         metadata: doc.versions[0].metadata,
+    //     //         owner: {
+    //     //             full_name: `${doc.owner.first_name} ${doc.owner.last_name}`,
+    //     //             avatar: "/file/avatar.png"
+    //     //         },
+    //     //         file_size: "5 MB",
+    //     //         created_date: doc.created_date,
+    //     //         updated_date: doc.updated_date
+    //     //     }
+    //     // }),
+    //     documents: responseFake.data.data.documents,
+    //     current: searchData.current,
+    //     pageSize: responseFake.data.data.page_size,
+    //     total: responseFake.data.data.total_items,
+    // }
+    // return newResponseFake
+    // ---------------------------------real-------------------------------------------
+    console.log("token", token)
     console.log("searchData", searchData)
-    const response1 = await axios.get('http://localhost:3000/data/searchresult.json')
-    let responseFake = await axios.get(`${endpoint}/api/documents/matrix/me?page=${searchData.current}&page_size=${searchData.pageSize}`, {
+    const response = await axios.post(`${endpoint}/api/search?page=1&page_size=10`, searchData, {
         headers: {
             "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "69420",
             ...originHeader
         }
     })
-    console.log("responseFake", responseFake)
-    let newResponseFake = {
-        broader: response1.data.data.broader,
-        related: response1.data.data.related,
-        narrower: response1.data.data.narrower,
-        // documents: responseFake.data.data.documents.map((doc, idx) => {
-        //     return {
-        //         document_id: doc.uid,
-        //         file_name: doc.versions[0].file_name.length > 0 ? doc.versions[0].file_name.length : `document ${doc.uid}`,
-        //         content: "",
-        //         metadata: doc.versions[0].metadata,
-        //         owner: {
-        //             full_name: `${doc.owner.first_name} ${doc.owner.last_name}`,
-        //             avatar: "/file/avatar.png"
-        //         },
-        //         file_size: "5 MB",
-        //         created_date: doc.created_date,
-        //         updated_date: doc.updated_date
-        //     }
-        // }),
-        documents: responseFake.data.data.documents,
-        current: searchData.current,
-        pageSize: responseFake.data.data.page_size,
-        total: responseFake.data.data.total_items,
+    console.log("search result", response)
+    let newResponse = {
+        ...response.data.data,
+        documents: response.data.data.search_result.documents,
     }
-    return newResponseFake
-    // ---------------------------------real-------------------------------------------
-    // const response = await axios.post(`${endpoint}/api/search`, newSearchData, {
-    //     headers: { ...originHeader }
-    // })
+    return newResponse
     // console.log("responsesearch", response)
-    const response = await axios.get('http://localhost:3000/data/searchresult.json')
-    if (searchData.current == 1) {
-        let newResponse = {
-            ...response.data.data,
-            documents: response.data.data.documents.slice(0, 10),
-            current: 1,
-            pageSize: 10,
-            total: 15
-        }
-        return newResponse
-    }
-    else if (searchData.current == 2) {
-        let newResponse = {
-            ...response.data.data,
-            documents: response.data.data.documents.slice(10),
-            current: 2,
-            pageSize: 10,
-            total: 15
-        }
-        return newResponse
-    }
+    // const response = await axios.post(`${endpoint}/api/search`)
+    // if (searchData.current == 1) {
+    //     let newResponse = {
+    //         ...response.data.data,
+    //         documents: response.data.data.documents.slice(0, 10),
+    //         current: 1,
+    //         pageSize: 10,
+    //         total: 15
+    //     }
+    //     return newResponse
+    // }
+    // else if (searchData.current == 2) {
+    //     let newResponse = {
+    //         ...response.data.data,
+    //         documents: response.data.data.documents.slice(10),
+    //         current: 2,
+    //         pageSize: 10,
+    //         total: 15
+    //     }
+    //     return newResponse
+    // }
 }
