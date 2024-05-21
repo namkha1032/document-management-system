@@ -57,6 +57,19 @@ function SearchResultReducer(state, action) {
                 loading: action.payload
             }
         }
+        case "reset": {
+            return {
+                loading: false,
+                documents: [],
+                broader: {},
+                related: {},
+                narrower: {},
+                // pagination: {
+                //     total: null
+                // },
+                total: null
+            }
+        }
     }
 }
 

@@ -39,10 +39,10 @@ const MainLayout = () => {
         fetchData()
     }, [])
     const antdTheme = theme.useToken()
-    // let primaryBgColor = antdTheme.token.colorBgLayout
-    // let secondaryBgColor = antdTheme.token.colorBgElevated
-    let primaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgElevated : antdTheme.token.colorBgLayout
-    let secondaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgLayout : antdTheme.token.colorBgElevated
+    let primaryBgColor = antdTheme.token.colorBgElevated
+    let secondaryBgColor = antdTheme.token.colorBgLayout
+    // let primaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgElevated : antdTheme.token.colorBgLayout
+    // let secondaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgLayout : antdTheme.token.colorBgElevated
     return (
         user
             ? <Layout style={{

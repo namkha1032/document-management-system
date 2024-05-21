@@ -113,8 +113,8 @@ export async function apiGetTrashDocument(token, page, page_size) {
     return newResponse
 }
 
-export async function apiGetSharedDocument(page, page_size) {
-    let token = JSON.parse(localStorage.getItem("user")).access_token
+export async function apiGetSharedDocument(token, page, page_size) {
+    // let token = JSON.parse(localStorage.getItem("user")).access_token
     let response = await axios.get(`${endpoint}/api/documents/matrix/shared?page=${page}&page_size=${page_size}`, {
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -254,6 +254,17 @@ export async function apiDeleteDocument(documentId) {
 }
 
 
+export async function apiDeleteForever(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/delete/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}
 
 
 export async function apiRestoreDocument(documentId) {
@@ -267,3 +278,39 @@ export async function apiRestoreDocument(documentId) {
     })
     return rawResponse.data.data
 }
+
+export async function apiPublicDocument(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/public/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}
+
+export async function apiPrivateDocument(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/private/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}
+export async function apiLockDocument(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/lock/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}
+

@@ -75,10 +75,20 @@ const DocumentFeed = (props) => {
         // }
         // setDocumentResult(response)
         if (breadSelectedDoc) {
-            setSelectedDoc([breadSelectedDoc])
-            setSelectedKey([breadSelectedDoc.uid])
+            let findDoc = documentResult?.documents?.find((doc, idx) => doc.uid == breadSelectedDoc.uid)
+            console.log("findDoc", findDoc)
+            if (findDoc) {
+                if (selectedDoc.length == 0) {
+                    setSelectedDoc([breadSelectedDoc])
+                    setSelectedKey([breadSelectedDoc.uid])
+                }
+            }
+            else {
+                setSelectedDoc([])
+                setSelectedKey([])
+            }
         }
-    }, [])
+    }, [documentResult])
     function ctrlSetSelectedDocuments(e, item) {
         e.stopPropagation()
         let findDoc = selectedKey.find((key) => key == item.uid)
@@ -305,17 +315,18 @@ const DocumentFeed = (props) => {
                                                                             md={4}
                                                                             key={index} style={{ transition: "width 0.3s, padding 0.3s" }}>
                                                                             <Card
-                                                                                onDoubleClick={() => {
-                                                                                    navigate(`/document/${item.uid}`, {
-                                                                                        state: {
-                                                                                            breadState: [
-                                                                                                { "title": originTitle, "path": `/${originPath}` },
-                                                                                                { "title": `${item.versions[0].file_name ? item.versions[0].file_name.slice(0, -16) : item.uid}`, "path": `/document/${item.uid}` }
-                                                                                            ]
+                                                                                // onDoubleClick={() => {
+                                                                                //     navigate(`/document/${item.uid}`, {
+                                                                                //         // item.versions[0].file_name.slice(0, -16)
+                                                                                //         state: {
+                                                                                //             breadState: [
+                                                                                //                 { "title": originTitle, "path": `/${originPath}` },
+                                                                                //                 { "title": `${item.versions[0].file_name ? item.versions[0].file_name : item.uid}`, "path": `/document/${item.uid}` }
+                                                                                //             ]
 
-                                                                                        }
-                                                                                    })
-                                                                                }}
+                                                                                //         }
+                                                                                //     })
+                                                                                // }}
                                                                                 style={{
                                                                                     transition: "width 0.3s, height 0.3s",
                                                                                     // borderColor: antdTheme.token.colorBorder,
@@ -330,11 +341,14 @@ const DocumentFeed = (props) => {
                                                                                         paddingRight: 16
                                                                                     }
                                                                                 }}>
-                                                                                <div style={{ display: "flex", alignItems: "center", columnGap: 8, marginBottom: 8 }}>
-                                                                                    <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
-                                                                                    <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0 }}>{item.versions[0]?.file_name ? item.versions[0]?.file_name : item.uid}</Typography.Title>
+                                                                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                                                                    <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
+                                                                                        <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c" }} />
+                                                                                        <Typography.Title onClick={(e) => ctrlSetSelectedDocuments(e, item)} ellipsis={{ rows: 1 }} level={5} style={{ margin: 0, width: selectedDoc.length == 1 && originPath !== "trash" ? 100 : 150 }}>{item.versions[0]?.file_name ? item.versions[0]?.file_name : item.uid}</Typography.Title>
+                                                                                    </div>
                                                                                     <Checkbox checked={selectedDoc.find((seDoc) => seDoc.uid == item.uid)} onChange={(e) => { setSelectedDocuments(e, item) }} />
                                                                                 </div>
+
                                                                                 <div onClick={(e) => ctrlSetSelectedDocuments(e, item)} className="pdfBorder" style={{
                                                                                     transition: "height 0.3s", height: selectedDoc.length == 1 && originPath !== "trash" ? 100 : 150, overflow: "hidden", display: "flex", borderRadius: selectedDoc.length == 1 && originPath !== "trash" ? 4 : 8,
                                                                                     // border: `1px solid ${antdTheme.token.colorBorder}`

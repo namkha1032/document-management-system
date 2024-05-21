@@ -12,7 +12,7 @@ const Page_Documents_Shared = () => {
     console.log("Page_Documents_My: documentShared", documentShared)
     useEffect(() => {
         async function fetchData() {
-            let response = await apiGetSharedDocument(documentShared.current, documentShared.pageSize);
+            let response = await apiGetSharedDocument(userStorage.access_token, documentShared.current, documentShared.pageSize);
             dispatchDocumentShared({
                 type: "set", payload: {
                     ...documentShared,

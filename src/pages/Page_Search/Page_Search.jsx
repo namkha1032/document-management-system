@@ -582,7 +582,9 @@ const Page_Search = () => {
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
     let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
+    console.log("Page_Search: searchOption", searchOption)
     console.log("Page_Search: searchResult", searchResult)
+    console.log("Page_Search: ontologyAll", ontologyAll)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
         let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
         const newBroaderResult = type == 'broader'

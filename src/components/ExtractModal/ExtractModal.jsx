@@ -29,9 +29,11 @@ import {
     LikeOutlined
 } from '@ant-design/icons';
 import UploadDocumentContext from "../../context/UploadDocumentContext";
-import { apiExtractMetadata, apiSaveDocumentToCloud } from "../../apis/documentApi";
+import { apiExtractMetadata, apiSaveDocumentToCloud, apiUpdateMetadata } from "../../apis/documentApi";
 import TagButton from "../TagButton/TagButton";
 import FormEditMetadata from "../FormEditMetadata/FormEditMetadata";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const ExtractModal = (props) => {
     let index = props.index
     let [modalOpen, setModalOpen] = useState(false)
@@ -106,6 +108,24 @@ const ExtractModal = (props) => {
         dispatchUploadDocument({ type: "removeItem", payload: { index: index } })
         setLoadingUpload(false)
     }
+    async function handleSaveUpdate() {
+        setLoadingUpload(true)
+        let newForm = new FormData()
+        newForm.append('files', uploadDocument[index].fileList[0])
+        newForm.append("data", JSON.stringify({
+            "metadata": uploadDocument[index].metadata,
+            "message": "Update new file"
+        }))
+        // for (let i = 0; i < 100; i++) {
+        //     let response = await apiSaveDocumentToCloud(userStorage.access_token, newForm)
+        // }
+        let response = await apiUpdateMetadata(userStorage.access_token, uploadDocument[index].uploadType, newForm)
+        console.log("responsesavedoc", response)
+        navigate(`/document/${uploadDocument[index].uploadType}`)
+        dispatchUploadDocument({ type: "removeItem", payload: { index: index } })
+        setLoadingUpload(false)
+        window.location.reload()
+    }
     async function handleOCR() {
         dispatchUploadDocument({ type: "setStep", payload: { index: index, current: 1 } })
         let newForm = new FormData()
@@ -115,6 +135,7 @@ const ExtractModal = (props) => {
     }
     return (
         <>
+            <ToastContainer />
             <Modal width={1200} footer={null} style={{ top: 100 }} title="Create new document" open={uploadDocument[index].modalOpen} maskClosable={true}
                 onCancel={() => {
                     if (uploadDocument[index].fileList.length == 0) {
@@ -179,20 +200,27 @@ const ExtractModal = (props) => {
                         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginBottom: 16 }}>
                             <Upload fileList={uploadDocument[index].fileList} name={"file"} multiple={false}
                                 beforeUpload={(file) => {
-                                    const reader = new FileReader();
-                                    reader.onloadend = () => {
-                                        // setPdfFile(reader.result);
-                                        dispatchUploadDocument({
-                                            type: "setFile", payload: {
-                                                index: index,
-                                                fileUrl: [reader.result],
-                                                fileList: [file]
-                                            }
+                                    if (file.type == "application/pdf") {
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => {
+                                            // setPdfFile(reader.result);
+                                            dispatchUploadDocument({
+                                                type: "setFile", payload: {
+                                                    index: index,
+                                                    fileUrl: [reader.result],
+                                                    fileList: [file]
+                                                }
+                                            })
+                                        };
+                                        reader.readAsDataURL(file);
+                                        // dispatchUploadDocument({ type: "addFile", payload: file })
+                                        return false
+                                    }
+                                    else {
+                                        toast.error('Please upload a PDF file', {
+                                            theme: "colored"
                                         })
-                                    };
-                                    reader.readAsDataURL(file);
-                                    // dispatchUploadDocument({ type: "addFile", payload: file })
-                                    return false
+                                    }
                                 }}
                                 onRemove={(file) => {
                                     // const index = uploadDocument[index].fileList.indexOf(file);
@@ -247,7 +275,15 @@ const ExtractModal = (props) => {
                         }}>Discard</Button>
                         : null}
                     {uploadDocument[index].current == 2 ?
-                        <Button loading={loadingUpload} type="primary" icon={<CheckOutlined />} onClick={() => handleSave()}>
+                        <Button loading={loadingUpload} type="primary" icon={<CheckOutlined />} onClick={() => {
+                            if (uploadDocument[index].uploadType == "create") {
+                                handleSave()
+                            }
+                            else {
+                                // console.log("hahahaha", uploadDocument[index].uploadType)
+                                handleSaveUpdate()
+                            }
+                        }}>
                             Save document
                         </Button>
                         : null}

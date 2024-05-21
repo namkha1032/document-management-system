@@ -19,6 +19,16 @@ function documentSharedReduer(state, action) {
                 loading: action.payload
             }
         }
+        case "reset": {
+            return {
+                documents: null,
+                current: 1,
+                pageSize: 36,
+                total: null,
+                totalPage: null,
+                loading: false
+            }
+        }
         default: {
             return null
         }
@@ -29,7 +39,7 @@ const DocumentSharedProvider = (props) => {
     const [documentShared, dispatchDocumentShared] = useReducer(documentSharedReduer, {
         documents: null,
         current: 1,
-        pageSize: 24,
+        pageSize: 36,
         total: null,
         totalPage: null,
         loading: false

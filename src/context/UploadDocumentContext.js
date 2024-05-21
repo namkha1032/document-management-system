@@ -73,12 +73,7 @@ function UploadDocumentReducer(state, action) {
             return newState
         }
         case "reset": {
-            return {
-                fileList: [],
-                fileUrl: [],
-                current: 0,
-                metadata: null
-            }
+            return []
         }
         default: {
             return []

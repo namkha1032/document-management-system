@@ -45,7 +45,7 @@ const DeleteOntologyButton = (props) => {
             okText="Yes"
             cancelText="No"
         >
-            <Button loading={loadingDeleteOntology} danger type="text" icon={<DeleteOutlined />} />
+            <Button disabled={ontology.ontologyId = "4:6189104e-54a2-4243-81ac-77508424ea24:0"} loading={loadingDeleteOntology} danger type="text" icon={<DeleteOutlined />} />
         </Popconfirm>
     )
 }

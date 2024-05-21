@@ -19,6 +19,16 @@ function documentMyReducer(state, action) {
                 loading: action.payload
             }
         }
+        case "reset": {
+            return {
+                documents: null,
+                current: 1,
+                pageSize: 36,
+                total: null,
+                totalPage: null,
+                loading: false
+            }
+        }
         default: {
             return null
         }
@@ -29,7 +39,7 @@ const DocumentMyProvider = (props) => {
     const [documentMy, dispatchDocumentMy] = useReducer(documentMyReducer, {
         documents: null,
         current: 1,
-        pageSize: 24,
+        pageSize: 36,
         total: null,
         totalPage: null,
         loading: false

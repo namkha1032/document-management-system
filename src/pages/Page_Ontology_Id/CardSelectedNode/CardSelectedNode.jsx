@@ -112,7 +112,7 @@ const SynsetList = (props) => {
                     notFoundContent={null}
                     options={ontology.nodes.filter((node) => node.type == "Synset" && node?.id !== selectedNode?.id)}
                 />
-                <Button loading={loadingEdge} disabled={!newEdge} type={"primary"} icon={<PlusOutlined />} onClick={() => {
+                <Button loading={loadingEdge} disabled={!newEdge || ontology.ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0"} type={"primary"} icon={<PlusOutlined />} onClick={() => {
                     if (type === "synset") {
                         handleAddSynEdge()
                     }
@@ -165,7 +165,7 @@ const SynsetRow = (props) => {
             {/* <Space.Compact style={{ width: "100%" }}> */}
             <Input value={inputValue} readOnly variant="filled" />
             <Button icon={<EyeOutlined />} onClick={() => { handleChangeNode() }} />
-            <Button loading={loadingDeleteEdge} danger icon={<DeleteOutlined />} onClick={() => { handleDeleteEdge() }} />
+            <Button disabled={ontology.ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0"} loading={loadingDeleteEdge} danger icon={<DeleteOutlined />} onClick={() => { handleDeleteEdge() }} />
             {/* </Space.Compact> */}
         </>
     )
@@ -235,7 +235,7 @@ const SenseList = (props) => {
                     placeholder="input here"
                 />
                 {/* <Input style={{ width: "100%" }} placeholder="Add new sense..." value={newSense} onChange={(e) => setNewSense(e.target.value)} /> */}
-                <Button onClick={() => { handleAddNewSense() }} icon={<PlusOutlined />} loading={loadingNewSense} disabled={newSense ? false : true} />
+                <Button onClick={() => { handleAddNewSense() }} icon={<PlusOutlined />} loading={loadingNewSense} disabled={newSense && ontology.ontologyId !== "4:6189104e-54a2-4243-81ac-77508424ea24:0" ? false : true} />
             </Space.Compact>
             {/* <div style={{ display: 'flex', flexDirection: "column", rowGap: 8 }}>
                 <Space>
@@ -286,7 +286,7 @@ const SenseRow = (props) => {
         <>
             <Input variant="filled" value={se["from_label"]} readOnly />
             <Button icon={<EyeOutlined />} onClick={() => { handleChangeNode() }} />
-            <Button loading={loadingDeleteEdge} onClick={() => { handleDeleteEdge() }} danger icon={<DeleteOutlined />} />
+            <Button disabled={ontology.ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0"} loading={loadingDeleteEdge} onClick={() => { handleDeleteEdge() }} danger icon={<DeleteOutlined />} />
         </>
     )
 }
@@ -320,7 +320,7 @@ const DefinitionRow = (props) => {
                 >Save</Button>
             </Space>
 
-            <Input.TextArea value={definition} onChange={(e) => { setDefinition(e.target.value) }} autoSize={{ minRows: 1, maxRows: 4 }} />
+            <Input.TextArea readOnly={ontology.ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0"} value={definition} onChange={(e) => { setDefinition(e.target.value) }} autoSize={{ minRows: 1, maxRows: 4 }} />
 
         </div>
     )
@@ -429,7 +429,7 @@ const CardSelectedNode = (props) => {
             </>
         } extra={
             // <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button loading={ontology.loadingDeleteNode} icon={<DeleteOutlined />} type="primary" danger onClick={() => { handleDeleteNode() }}>Delete</Button>
+            <Button disabled={ontology.ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0"} loading={ontology.loadingDeleteNode} icon={<DeleteOutlined />} type="primary" danger onClick={() => { handleDeleteNode() }}>Delete</Button>
             // </div>
         } styles={{
             header: {

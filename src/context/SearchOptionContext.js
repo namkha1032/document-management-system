@@ -6,6 +6,21 @@ function SearchOptionReducer(state, action) {
         case "update": {
             return action.payload
         }
+        case "reset": {
+            return {
+                original_query: '',
+                broader: {},
+                related: {},
+                narrower: {},
+                metadata: [],
+                method: 'full-text',
+                domain: '4:6189104e-54a2-4243-81ac-77508424ea24:0',
+                // allOntologies: [],
+                current: 1,
+                pageSize: 10,
+                search_scope: 'my'
+            }
+        }
     }
 }
 
@@ -18,33 +33,30 @@ const SearchOptionProvider = (props) => {
             narrower: {},
             metadata: [],
             method: 'full-text',
-            domain: 'abc',
-            domainList: [],
-            allOntologies: [],
+            domain: '4:6189104e-54a2-4243-81ac-77508424ea24:0',
+            // allOntologies: [],
             current: 1,
             pageSize: 10,
             search_scope: 'my'
         }
     )
-    useEffect(() => {
-        async function fetchData() {
-            let response = await getAllOntologiesNew()
-            let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
-            dispatchSearchOption({
-                type: "update",
-                payload: {
-                    ...oldSearchOption,
-                    domainList: response,
-                    allOntologies: response,
-                    domain: response[0]?.ontologyId,
-                    // domainList: [],
-                    // allOntologies: [],
-                    // domain: "abc"
-                }
-            })
-        }
-        fetchData()
-    }, [])
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         // let response = await getAllOntologiesNew()
+    //         let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+    //         dispatchSearchOption({
+    //             type: "update",
+    //             payload: {
+    //                 ...oldSearchOption,
+    //                 // allOntologies: response,
+    //                 domain: "4:6189104e-54a2-4243-81ac-77508424ea24:0",
+    //                 // allOntologies: [],
+    //                 // domain: "abc"
+    //             }
+    //         })
+    //     }
+    //     fetchData()
+    // }, [])
     return (
         <SearchOptionContext.Provider value={[searchOption, dispatchSearchOption]}>
             {props.children}

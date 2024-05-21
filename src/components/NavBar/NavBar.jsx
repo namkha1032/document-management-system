@@ -41,6 +41,10 @@ import UserContext from '../../context/UserContext';
 import TagButton from '../TagButton/TagButton';
 import UploadDocumentContext from '../../context/UploadDocumentContext';
 import ExtractModal from '../ExtractModal/ExtractModal';
+import DocumentMyContext from '../../context/DocumentMyContext';
+import DocumentSharedContext from '../../context/DocumentSharedContext';
+import DocumentCompanyContext from '../../context/DocumentCompanyContext';
+import DocumentTrashContext from '../../context/DocumentTrashContext';
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 const AdvancedSearchButton = (props) => {
     const navigate = useNavigate()
@@ -61,6 +65,10 @@ const NavBar = () => {
     const navigate = useNavigate()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
+    let [documentMy, dispatchDocumentMy] = useContext(DocumentMyContext)
+    let [documentShared, dispatchDocumentShared] = useContext(DocumentSharedContext)
+    let [documentCompany, dispatchDocumentCompany] = useContext(DocumentCompanyContext)
+    let [documentTrash, dispatchDocumentTrash] = useContext(DocumentTrashContext)
     const [uploadDocument, dispatchUploadDocument] = useContext(UploadDocumentContext)
 
     // const location = useLocation()
@@ -195,10 +203,10 @@ const NavBar = () => {
     }
     // logics
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
-    // let primaryBgColor = antdTheme.token.colorBgLayout
-    // let secondaryBgColor = antdTheme.token.colorBgElevated
-    let primaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgElevated : antdTheme.token.colorBgLayout
-    let secondaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgLayout : antdTheme.token.colorBgElevated
+    let primaryBgColor = antdTheme.token.colorBgElevated
+    let secondaryBgColor = antdTheme.token.colorBgLayout
+    // let primaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgElevated : antdTheme.token.colorBgLayout
+    // let secondaryBgColor = modeTheme == "light" ? antdTheme.token.colorBgLayout : antdTheme.token.colorBgElevated
     // HTMl
     return (
         searchOption
@@ -259,6 +267,13 @@ const NavBar = () => {
                                 if (e.key == "2") {
                                     // delete localStorage here
                                     dispatchUser({ type: "logout" })
+                                    dispatchDocumentCompany({ type: "reset" })
+                                    dispatchDocumentMy({ type: "reset" })
+                                    dispatchDocumentShared({ type: "reset" })
+                                    dispatchDocumentTrash({ type: "reset" })
+                                    dispatchUploadDocument({ type: "reset" })
+                                    dispatchSearchOption({ type: "reset" })
+                                    dispatchSearchResult({ type: "reset" })
                                     navigate("/login")
                                 }
                             },

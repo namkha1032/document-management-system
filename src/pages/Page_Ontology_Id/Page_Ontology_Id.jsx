@@ -240,6 +240,9 @@ const Section_Ontology_Id = () => {
                             "path": `/ontology/${ontology?.ontologyId}`
                         }
                     ]}
+                        extraComponent={ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0" ?
+                            <Typography.Text type="secondary">This default ontology can be viewed only</Typography.Text>
+                            : null}
                     />
                 </div>
                 {
@@ -383,7 +386,7 @@ const Section_Ontology_Id = () => {
                                                         <Button icon={<PlusOutlined />} loading={ontology.loadingAddNode} disabled={newNode ? false : true}
                                                         ></Button>
                                                     </Space.Compact> */}
-                                                    <Button onClick={() => handleAddSynset()} loading={ontology.loadingAddNode}>Add new synset</Button>
+                                                    <Button onClick={() => handleAddSynset()} loading={ontology.loadingAddNode} disabled={ontology.ontologyId === "4:6189104e-54a2-4243-81ac-77508424ea24:0"}>Add new synset</Button>
 
                                                 </Col>
                                             </Row>

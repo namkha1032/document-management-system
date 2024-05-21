@@ -33,6 +33,7 @@ import {
     EyeOutlined,
     EditOutlined
 } from '@ant-design/icons';
+import prettyBytes from 'pretty-bytes';
 import { useParams, useNavigate } from "react-router-dom";
 import { apiGrantPermission, apiDeletePermission, apiGetDocument } from "../../apis/documentApi";
 import randomString from "../../functions/randomString";
@@ -184,14 +185,18 @@ const PermissionModal = (props) => {
                     <Typography.Text type="secondary">Share your document to collaborate with your team</Typography.Text>
                     <Divider />
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Space style={{ width: "80%" }}>
+                        <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
                             <FontAwesomeIcon icon={icon({ name: 'file-pdf', family: 'classic', style: 'solid' })} style={{ color: "#e2574c", fontSize: 36 }} />
                             <Typography.Text ellipsis={{ tooltip: document?.versions[0].file_name.length > 0 ? document?.versions[0].file_name : document?.uid }}
-                                style={{ fontSize: 18, width: "60%", fontWeight: 600 }}>
+                                style={{
+                                    fontSize: 18,
+                                    maxWidth: 300,
+                                    fontWeight: 600
+                                }}>
                                 {document?.versions[0].file_name.length > 0 ? document?.versions[0].file_name : document?.uid}
                             </Typography.Text>
-                        </Space>
-                        <Typography.Text style={{ fontWeight: 400 }}>{document?.versions[0].size}</Typography.Text>
+                        </div>
+                        <Typography.Text style={{ fontWeight: 400 }}>{prettyBytes(document?.versions[0]?.file_size ? parseInt(document?.versions[0]?.file_size) : 0)}</Typography.Text>
                     </div>
                     <div style={{ marginTop: 16, marginBottom: 16, display: 'flex', alignItems: "center", columnGap: selectedUser ? 8 : 0 }}>
                         <div style={{ width: selectedUser ? '60%' : '100%', transition: "width 0.3s" }}>

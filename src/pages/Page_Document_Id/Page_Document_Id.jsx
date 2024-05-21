@@ -16,7 +16,7 @@ import {
     message,
     theme
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 // import Skeleton from '@mui/material/Skeleton';
 import {
     ClockCircleOutlined,
@@ -25,22 +25,35 @@ import {
     TagOutlined,
     UngroupOutlined,
     DownloadOutlined,
-    ExclamationCircleFilled
+    ExclamationCircleFilled,
+    UploadOutlined
 } from '@ant-design/icons';
 import { FaGlobeAsia } from "react-icons/fa";
 import { MdVpnKey } from "react-icons/md";
 import { saveAs } from 'file-saver';
 import { GoVersions } from "react-icons/go";
 import { AiOutlineAudit } from "react-icons/ai";
+import { FaEyeSlash, FaUnlock, FaLock } from "react-icons/fa";
 
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
 import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
-import { apiGetDocument, apiRestoreVersion, apiUpdateMetadata, apiDeleteDocument } from "../../apis/documentApi";
+import {
+    apiGetDocument,
+    apiRestoreVersion,
+    apiUpdateMetadata,
+    apiDeleteDocument,
+    apiPublicDocument,
+    apiPrivateDocument,
+    apiLockDocument
+} from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
 import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
 import PermissionModal from "../../components/PermissionModal/PermissionModal";
 import TagButton from "../../components/TagButton/TagButton";
+import UploadDocumentContext from "../../context/UploadDocumentContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -113,7 +126,9 @@ const ModalUpdateMetadata = (props) => {
     }
     return (
         <>
-            <Button onClick={() => { setModalOpen(true) }}>Edit metadata</Button>
+            {document?.permission == "VIEW"
+                ? null
+                : <Button onClick={() => { setModalOpen(true) }}>Edit metadata</Button>}
             <Modal footer={null} width={700} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
                 <FormEditMetadata newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
                 <Row gutter={[8, 8]} justify={"end"}>
@@ -131,76 +146,115 @@ const ModalUpdateMetadata = (props) => {
     )
 }
 
-async function getDocumentSize(documentResponse) {
-    let documentCopy = JSON.parse(JSON.stringify(documentResponse))
-    let documentPromise = documentResponse.versions.map(async (docver, idx) => {
-        let fileResponse = await axios.get(documentResponse.versions[0].url !== "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
-        let size = prettyBytes(parseInt(fileResponse.headers.get('Content-Length')));
-        documentCopy.versions[idx]["size"] = size
-    })
-    await Promise.all(documentPromise)
-    return documentCopy
-}
-const DownloadButton = (props) => {
-    let documentUrl = props.documentUrl
-    let documentFileName = props.documentFileName
-    async function handleDownloadDocument() {
-        // const a = document.createElement("a");
-        // a.href = documentUrl;
-        // const clickEvnt = new MouseEvent("click", {
-        //     view: window,
-        //     bubbles: true,
-        //     cancelable: true,
-        // });
+// async function getDocumentSize(documentResponse) {
+//     let documentCopy = JSON.parse(JSON.stringify(documentResponse))
+//     let documentPromise = documentResponse.versions.map(async (docver, idx) => {
+//         let fileResponse = await axios.get(documentResponse.versions[0].url !== "" ? documentResponse.versions[0].url : "https://pdfobject.com/pdf/sample.pdf")
+//         let size = prettyBytes(parseInt(fileResponse.headers.get('Content-Length')));
+//         documentCopy.versions[idx]["size"] = size
+//     })
+//     await Promise.all(documentPromise)
+//     return documentCopy
+// }
+// const DownloadButton = (props) => {
+//     let documentUrl = props.documentUrl
+//     let documentFileName = props.documentFileName
+//     async function handleDownloadDocument() {
+//         // const a = document.createElement("a");
+//         // a.href = documentUrl;
+//         // const clickEvnt = new MouseEvent("click", {
+//         //     view: window,
+//         //     bubbles: true,
+//         //     cancelable: true,
+//         // });
 
-        // a.dispatchEvent(clickEvnt);
-        // a.remove();
-        // saveAs(documentUrl, documentFileName)
-        // const response = await fetch(documentUrl)
-        // let fileBlob = await response.blob()
-        // console.log("download", fileBlob)
-        // const blob = new Blob([documentUrl], { type: 'application/pdf' });
-        // const tempLink = document.createElement('a');
-        // tempLink.href = window.URL.createObjectURL(blob);
-        // tempLink.setAttribute('download', documentFileName);
-        // tempLink.click();
-        // const anchor = document.createElement('a');
-        // anchor.href = documentUrl;
-        // anchor.download = documentFileName;
-        // // document.body.appendChild(anchor);
-        // // anchor.click();
-        // // Cleanup
-        // // document.body.removeChild(anchor);
-        // // URL.revokeObjectURL(documentUrl);
+//         // a.dispatchEvent(clickEvnt);
+//         // a.remove();
+//         // saveAs(documentUrl, documentFileName)
+//         // const response = await fetch(documentUrl)
+//         // let fileBlob = await response.blob()
+//         // console.log("download", fileBlob)
+//         // const blob = new Blob([documentUrl], { type: 'application/pdf' });
+//         // const tempLink = document.createElement('a');
+//         // tempLink.href = window.URL.createObjectURL(blob);
+//         // tempLink.setAttribute('download', documentFileName);
+//         // tempLink.click();
+//         // const anchor = document.createElement('a');
+//         // anchor.href = documentUrl;
+//         // anchor.download = documentFileName;
+//         // // document.body.appendChild(anchor);
+//         // // anchor.click();
+//         // // Cleanup
+//         // // document.body.removeChild(anchor);
+//         // // URL.revokeObjectURL(documentUrl);
 
 
-        // // Simulate a click event
-        // anchor.dispatchEvent(new MouseEvent('click', {
-        //     bubbles: true,
-        //     cancelable: true,
-        //     view: window
-        // }));
+//         // // Simulate a click event
+//         // anchor.dispatchEvent(new MouseEvent('click', {
+//         //     bubbles: true,
+//         //     cancelable: true,
+//         //     view: window
+//         // }));
 
-        // // Remove the anchor element from the DOM
-        // document.body.removeChild(anchor);
+//         // // Remove the anchor element from the DOM
+//         // document.body.removeChild(anchor);
+//     }
+//     return (
+//         <>
+//             <Button icon={<DownloadOutlined />} onClick={() => { handleDownloadDocument() }}>Download</Button>
+//             {/* <Link to={documentUrl} target="_blank" download>Download</Link> */}
+//             {/* <a href={documentUrl} download>Click to download</a> */}
+
+//         </>
+//     )
+// }
+
+const ModalViewFile = (props) => {
+    let version = props.version
+    let ModalButton = props.ModalButton
+    let handleRestoreVersion = props.handleRestoreVersion
+    let [modalOpen, setModalOpen] = useState(false)
+    let [loading, setLoading] = useState(false)
+    async function handleRestore() {
+        setLoading(true)
+        await handleRestoreVersion(version.uid)
+        setModalOpen(false)
+        setLoading(false)
     }
     return (
         <>
-            <Button icon={<DownloadOutlined />} onClick={() => { handleDownloadDocument() }}>Download</Button>
-            {/* <Link to={documentUrl} target="_blank" download>Download</Link> */}
-            {/* <a href={documentUrl} download>Click to download</a> */}
-
+            <div onClick={() => { setModalOpen(true) }}>
+                {ModalButton}
+            </div>
+            <Modal width={800} title={"Old version file"} open={modalOpen} maskClosable={true}
+                onCancel={() => { setModalOpen(false) }}
+                onOk={() => { handleRestore() }}
+                cancelText="Cancel"
+                okText="Restore this version"
+                centered
+                confirmLoading={loading}
+            >
+                <iframe src={version?.url?.length > 0 ? version.url : "https://pdfobject.com/pdf/sample.pdf"}
+                    style={{ borderRadius: 8, borderWidth: 0, width: "100%", height: 600 }}>
+                </iframe>
+            </Modal>
         </>
     )
 }
+
 const Page_Document_Id = () => {
-    const [messageApi, contextHolder] = message.useMessage();
+    // const [messageApi, contextHolder] = message.useMessage();
     let [document, setDocument] = useState(null)
     let [restoreLoading, setRestoreLoading] = useState(false)
     let [isAllowed, setIsAllowed] = useState(true)
     let [modalDeleteOpen, setModalDeleteOpen] = useState(false)
+    let [modalPrivacyOpen, setModalPrivacyOpen] = useState(false)
+    let [modalLockOpen, setModalLockOpen] = useState(false)
     let [loadingDelete, setLoadingDelete] = useState(false)
+    let [loadingPrivacy, setLoadingPrivacy] = useState(false)
+    let [loadingLock, setLoadingLock] = useState(false)
     let [loadingLog, setLoadingLog] = useState(false)
+    const [uploadDocument, dispatchUploadDocument] = useContext(UploadDocumentContext)
     let [log, setLog] = useState([])
     let antdTheme = theme.useToken()
     let { document_id } = useParams()
@@ -244,10 +298,13 @@ const Page_Document_Id = () => {
         },
         {
             "title": "Action",
-            "render": ((obj) => <>
+            "render": ((obj) => <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
+                <Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>View metadata</Button>
+
+                <ModalViewFile handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>View file</Button>} />
                 <Popconfirm
-                    title="Delete the task"
-                    description="Are you sure to delete this task?"
+                    title="Restore version"
+                    description="Are you sure you want to restore this version?"
                     onConfirm={() => { handleRestoreVersion(obj.uid) }}
                     okText="Yes"
                     cancelText="No"
@@ -256,7 +313,7 @@ const Page_Document_Id = () => {
                     }}>
                     <Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>Restore</Button>
                 </Popconfirm>
-            </>)
+            </div>)
         }
     ]
     let logColumns = [
@@ -290,7 +347,7 @@ const Page_Document_Id = () => {
             let documentResponse = await apiGetDocument(document_id)
             let documentCopy = { ...documentResponse, versions: documentResponse.versions.map(item => ({ ...item, file_size: Number(item.file_size || 0) })) }
             let findUser = documentCopy.users_with_permission.find((item, idx) => item.email === userStorage.email)
-            if (!findUser && documentCopy.owner.email !== userStorage.email) {
+            if (!findUser && documentCopy.owner.email !== userStorage.email && documentCopy.is_private === true) {
                 setIsAllowed(false)
             }
             setDocument(documentCopy)
@@ -304,10 +361,14 @@ const Page_Document_Id = () => {
         // let documentCopy = await getDocumentSize(documentResponse)
         setDocument(documentResponse)
         setRestoreLoading(false)
-        messageApi.open({
-            content: <Alert style={{ fontSize: 24 }} showIcon type="success" message="Version has been reverted successfully" closable />,
-            className: 'namkha-message',
-        });
+        // messageApi.open({
+        //     content: <Alert style={{ fontSize: 24 }} showIcon type="success" message="Version has been reverted successfully" closable />,
+        //     className: 'namkha-message',
+        // });
+
+        toast.success('Version has been reverted successfully', {
+            theme: "colored"
+        })
     }
     async function handleDeleteDocument() {
         setLoadingDelete(true)
@@ -335,6 +396,42 @@ const Page_Document_Id = () => {
         setDocument(newResponse)
         setLoadingLog(false)
     }
+    async function handlePublicFile() {
+        setLoadingPrivacy(true)
+        await apiPublicDocument(document_id)
+        let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+        setDocument(documentResponse)
+        toast.success('Document has been public successfully', {
+            theme: "colored"
+        })
+        setLoadingPrivacy(false)
+        setModalPrivacyOpen(false)
+    }
+    async function handlePrivateFile() {
+        setLoadingPrivacy(true)
+        await apiPrivateDocument(document_id)
+        let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+        setDocument(documentResponse)
+        toast.success('Document has been private successfully', {
+            theme: "colored"
+        })
+        setLoadingPrivacy(false)
+        setModalPrivacyOpen(false)
+    }
+    async function handleLockFile() {
+        setLoadingLock(true)
+        await apiLockDocument(document_id)
+        let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+        setDocument(documentResponse)
+        toast.success('Document has been lock successfully', {
+            theme: "colored"
+        })
+        setLoadingLock(false)
+        setModalLockOpen(false)
+    }
+    async function handleUnlockFile() {
+
+    }
     // ///////////////////////////////////////////////////////
 
     // console.log(watch("example")) // watch input value by passing the name of it
@@ -343,7 +440,7 @@ const Page_Document_Id = () => {
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Modal title={
                 <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
-                    <ExclamationCircleFilled style={{ color: antdTheme.token.colorWarning, fontSize: 22 }} />
+                    <ExclamationCircleFilled style={{ color: antdTheme.token.colorError, fontSize: 22 }} />
                     <Typography.Title level={4} style={{ margin: 0 }}>Delete document</Typography.Title>
                 </div>} open={modalDeleteOpen} maskClosable={true} onCancel={() => { setModalDeleteOpen(false) }}
                 onOk={() => { handleDeleteDocument() }}
@@ -354,14 +451,67 @@ const Page_Document_Id = () => {
             >
                 <Typography.Text>Are you sure you want to delete this document?</Typography.Text>
             </Modal>
-            {contextHolder}
+            <Modal title={
+                <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                    <ExclamationCircleFilled style={{ color: antdTheme.token.colorInfo, fontSize: 22 }} />
+                    <Typography.Title level={4} style={{ margin: 0 }}>{
+                        document?.is_private ?
+                            "Public document"
+                            : "Private document"}</Typography.Title>
+                </div>} open={modalPrivacyOpen} maskClosable={true} onCancel={() => { setModalPrivacyOpen(false) }}
+                onOk={() => {
+                    if (document?.is_private) {
+                        handlePublicFile()
+                    }
+                    else {
+                        handlePrivateFile()
+                    }
+                }}
+                cancelText="No"
+                okText="Yes"
+                centered
+                confirmLoading={loadingPrivacy}
+            >
+                <Typography.Text>{
+                    document?.is_private ?
+                        "Are you sure you want to public this document? Everyone in the company will be able to view this document"
+                        : "Are you sure you want to private this document? No one in the company will be able to access it except you and users with permission"}</Typography.Text>
+            </Modal>
+            <Modal title={
+                <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                    <ExclamationCircleFilled style={{ color: antdTheme.token.colorWarning, fontSize: 22 }} />
+                    <Typography.Title level={4} style={{ margin: 0 }}>{
+                        document?.is_lock ?
+                            "Unlock document"
+                            : "Lock document"}</Typography.Title>
+                </div>} open={modalLockOpen} maskClosable={true} onCancel={() => { setModalLockOpen(false) }}
+                onOk={() => {
+                    if (document?.is_lock) {
+                        handleUnlockFile()
+                    }
+                    else {
+                        handleLockFile()
+                    }
+                }}
+                cancelText="No"
+                okText="Yes"
+                centered
+                confirmLoading={loadingLock}
+            >
+                <Typography.Text>{
+                    document?.is_lock ?
+                        "Are you sure you want to unlock this document? Everyone with EDIT permission will be able to edit this document."
+                        : "Are you sure you want to lock this document? No one will be able to edit it except you"}</Typography.Text>
+
+            </Modal>
+            <ToastContainer />
             {isAllowed
                 ?
                 <div style={{ flex: "0 1 auto" }}>
                     <Bread breadSelectedDoc={document} breadProp={[
                         {
-                            "title": "Document",
-                            "path": "/company"
+                            "title": `${document?.is_private ? document?.owner?.email == userStorage.email ? "My documents" : "Shared documents" : "Company documents"}`,
+                            "path": `${document?.is_private ? document?.owner?.email == userStorage.email ? "/my-documents" : "/shared-documents" : "/company"}`,
                         },
                         {
                             "title": document?.versions[0].file_name !== "" ? document?.versions[0].file_name : document.uid,
@@ -467,15 +617,17 @@ const Page_Document_Id = () => {
                                                 <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text>
                                             </Col>
                                             <Col span={14}>
-                                                {Object.entries(item)[0][0] === 'Văn bản liên quan'
+                                                {/* {Object.entries(item)[0][0] === 'Văn bản liên quan'
                                                     ? JSON.parse(Object.entries(item)[0][1].replaceAll("'", '"')).map((ite, index, arr) =>
                                                         <Input.TextArea style={{ marginBottom: index + 1 === arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
                                                     )
                                                     : <Input.TextArea
                                                         // onChange={(e) => handleUpdateMetadata(Object.entries(item)[0][0], e.target.value)} 
                                                         autoSize={{ minRows: 1, maxRows: 4 }} value={Object.entries(item)[0][1]} />
-                                                }
-
+                                                } */}
+                                                <Input.TextArea
+                                                    // onChange={(e) => handleUpdateMetadata(Object.entries(item)[0][0], e.target.value)} 
+                                                    autoSize={{ minRows: 1, maxRows: 4 }} value={Object.entries(item)[0][1]} />
                                             </Col>
                                         </Row>)
                                     }
@@ -483,30 +635,32 @@ const Page_Document_Id = () => {
                                 </Card>
                             </Col>
                             {userStorage?.email === document?.owner?.email
-                                ? <Col md={8}>
-                                    <PermissionModal document={document} setDocument={setDocument}
-                                        modalButton={
-                                            <TagButton icon={<MdVpnKey />} color="geekblue" columnGap={8}>
-                                                Manage access
-                                            </TagButton>
-                                        } />
-                                </Col>
-                                : null}
-
-                            {userStorage?.email === document?.owner?.email
-                                ? <Col md={8}>
-                                    <TagButton icon={<FaGlobeAsia />} color="green" columnGap={8} >
-                                        Public file
-                                    </TagButton>
-                                </Col>
-                                : null}
-
-                            {userStorage?.email === document?.owner?.email
-                                ? <Col md={8}>
-                                    <TagButton handleClick={() => { setModalDeleteOpen(true) }} icon={<DeleteOutlined />} color="red" columnGap={8}>
-                                        Delete file
-                                    </TagButton>
-                                </Col>
+                                ? <>
+                                    <Col md={6}>
+                                        <PermissionModal document={document} setDocument={setDocument}
+                                            modalButton={
+                                                <TagButton icon={<MdVpnKey />} color="green" columnGap={8} height={40}>
+                                                    Permission
+                                                </TagButton>
+                                            } />
+                                    </Col>
+                                    <Col md={6}>
+                                        <TagButton handleClick={() => { setModalPrivacyOpen(true) }} icon={document.is_private ? <FaGlobeAsia /> : <FaEyeSlash />} color="geekblue" columnGap={8} height={40} >
+                                            {document?.is_private ? "Public file" : "Private file"}
+                                        </TagButton>
+                                    </Col>
+                                    <Col md={6}>
+                                        <TagButton handleClick={() => { setModalLockOpen(true) }} icon={document.is_lock ? <FaUnlock /> : <FaLock />} color="gold" columnGap={8} height={40} >
+                                            {document.is_lock ? "Unlock file" : "Lock file"}
+                                        </TagButton>
+                                    </Col>
+                                    <Col md={6}>
+                                        <TagButton height={40}
+                                            handleClick={() => { setModalDeleteOpen(true) }} icon={<DeleteOutlined />} color="red" columnGap={8}>
+                                            Delete file
+                                        </TagButton>
+                                    </Col>
+                                </>
                                 : null}
                         </Row>
                     </Col>
@@ -514,6 +668,13 @@ const Page_Document_Id = () => {
                 <div style={{ display: "flex", alignItems: "center", columnGap: 16, marginTop: 24, marginBottom: 16 }}>
                     <GoVersions style={{ fontSize: 24 }} />
                     <Typography.Title level={2} style={{ margin: 0 }}>Version control</Typography.Title>
+                    <Button icon={<UploadOutlined />} onClick={() => {
+                        dispatchUploadDocument({
+                            type: "addItem", payload: {
+                                uploadType: document.uid
+                            }
+                        })
+                    }}>Update new file</Button>
                 </div>
 
                 <Table

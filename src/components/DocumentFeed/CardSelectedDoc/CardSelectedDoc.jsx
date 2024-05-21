@@ -75,10 +75,11 @@ const CardSelectedDoc = (props) => {
                     <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
                         <Button type={"primary"} onClick={() => {
                             navigate(`/document/${selectedDocState?.uid}`, {
+                                // selectedDocState?.versions[0].file_name.slice(0, -16)
                                 state: {
                                     breadState: [
                                         { "title": originTitle, "path": `/${originPath}` },
-                                        { "title": `${selectedDocState?.versions[0].file_name ? selectedDocState?.versions[0].file_name.slice(0, -16) : selectedDocState?.uid}`, "path": `/document/${selectedDocState?.uid}` }
+                                        { "title": `${selectedDocState?.versions[0].file_name ? selectedDocState?.versions[0].file_name : selectedDocState?.uid}`, "path": `/document/${selectedDocState?.uid}` }
                                     ]
 
                                 }
@@ -140,8 +141,8 @@ const CardSelectedDoc = (props) => {
                             {/* <Button icon={<MdVpnKey />} style={{ display: "flex", alignItems: "center", height: 48, fontSize: 16, borderColor: antdTheme.token.colorText, color: antdTheme.token.colorText }}>Manage access</Button> */}
                             <PermissionModal document={selectedDocState} setDocument={setSelectedDocState}
                                 modalButton={
-                                    <TagButton icon={<MdVpnKey />} color="geekblue" columnGap={8} width={200}>
-                                        Manage access
+                                    <TagButton icon={<MdVpnKey />} color="green" columnGap={8} width={150}>
+                                        Permission
                                     </TagButton>
                                 } />
                         </div>

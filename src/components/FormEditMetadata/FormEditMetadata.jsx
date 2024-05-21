@@ -27,7 +27,7 @@ import {
     LoadingOutlined
 } from '@ant-design/icons';
 import { useParams, useNavigate } from "react-router-dom";
-import { apiGetDocument, apiUpdateMetadata, apiLiveSearchMetadata } from "../../apis/documentApi";
+import { apiLiveSearchMetadata } from "../../apis/documentApi";
 
 const KeyValueForm = (props) => {
     let item = props.item
@@ -109,13 +109,14 @@ const KeyValueForm = (props) => {
                 <Typography.Text>:</Typography.Text>
             </Col>
             <Col span={metadataValueNum}>
-                {
+                {/* {
                     isStringArray(Object.entries(item)[0][1].replaceAll("'", '"')) > 0
                         ? JSON.parse(Object.entries(item)[0][1].replaceAll("'", '"')).map((ite, index, arr) =>
                             <Input.TextArea style={{ marginBottom: index + 1 == arr.length ? 0 : 8 }} key={index} autoSize={{ minRows: 1, maxRows: 4 }} value={ite} />
                         )
                         : <Input.TextArea onChange={(e) => setKvPair({ ...kvPair, value: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.value} />
-                }
+                } */}
+                <Input.TextArea onChange={(e) => setKvPair({ ...kvPair, value: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.value} />
             </Col>
         </>
     )
