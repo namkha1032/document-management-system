@@ -16,7 +16,8 @@ import {
     Skeleton,
     Empty,
     Cascader,
-    Select
+    Select,
+    Result
 } from "antd"
 import {
     DownloadOutlined,
@@ -442,7 +443,6 @@ const Section_Ontology_Id = () => {
                         </>
                 }
             </div>
-
         </>
     )
 }

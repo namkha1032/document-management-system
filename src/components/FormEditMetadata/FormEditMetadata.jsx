@@ -29,6 +29,22 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { apiLiveSearchMetadata } from "../../apis/documentApi";
 
+
+function removeAccents(str) {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
+function filterSearchNode(inputValue, path) {
+    // console.log("inputValue", inputValue)
+    // console.log("path", path)
+    // return path.some((option) => {
+    //     return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+    // });
+    return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+}
+
 const KeyValueForm = (props) => {
     let item = props.item
     let index = props.index
@@ -38,27 +54,30 @@ const KeyValueForm = (props) => {
     let metadataKeyNum = props.metadataKeyNum
     let metadataColonNum = props.metadataColonNum
     let metadataValueNum = props.metadataValueNum
-    let [options, setOptions] = useState([])
+    let options = props.options
+    let setOptions = props.setOptions
+    let type = props.type
     let [kvPair, setKvPair] = useState({
         key: Object.entries(item)[0][0],
         value: Object.entries(item)[0][1]
     })
     useEffect(() => {
         const timer = setTimeout(() => {
-            async function getSuggestions() {
-                setOptions([{
-                    value: "loading", label: <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <LoadingOutlined />
-                    </div>
-                }])
-                let response = await apiLiveSearchMetadata(kvPair.key)
-                console.log("query: ", response)
-                setOptions(response.data)
-            }
-            if (kvPair.key != Object.entries(item)[0][0] || kvPair.value != Object.entries(item)[0][1]) {
-                getSuggestions()
-                editMetadata(index, kvPair.key, kvPair.value)
-            }
+            // async function getSuggestions() {
+            //     setOptions([{
+            //         value: "loading", label: <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            //             <LoadingOutlined />
+            //         </div>
+            //     }])
+            //     let response = await apiLiveSearchMetadata(kvPair.key)
+            //     console.log("query: ", response)
+            //     setOptions(response.data)
+            // }
+            // if (kvPair.key != Object.entries(item)[0][0] || kvPair.value != Object.entries(item)[0][1]) {
+            //     getSuggestions()
+            //     editMetadata(index, kvPair.key, kvPair.value)
+            // }
+            editMetadata(index, kvPair.key, kvPair.value)
         }, 500)
         return () => clearTimeout(timer)
     }, [kvPair])
@@ -100,10 +119,18 @@ const KeyValueForm = (props) => {
             <Col span={metadataKeyNum}>
                 {/* <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text> */}
                 {/* <Input.TextArea onChange={(e) => setKvPair({ ...kvPair, key: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.key} /> */}
-                <AutoComplete style={{ width: "100%" }} onSearch={(val) => {
-
-                    setKvPair({ ...kvPair, key: val })
-                }} options={options} value={kvPair.key} />
+                {type == "edit" ?
+                    <AutoComplete style={{ width: "100%" }} onSearch={(val) => {
+                        setKvPair({ ...kvPair, key: val })
+                    }} options={options} value={kvPair.key}
+                        filterOption={filterSearchNode}
+                        onSelect={(val, node) => {
+                            // console.log("node", node)
+                            setKvPair({ ...kvPair, key: node.label })
+                        }}
+                    />
+                    : <Input.TextArea autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.key} readOnly />
+                }
             </Col>
             <Col span={metadataColonNum} style={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
                 <Typography.Text>:</Typography.Text>
@@ -116,23 +143,37 @@ const KeyValueForm = (props) => {
                         )
                         : <Input.TextArea onChange={(e) => setKvPair({ ...kvPair, value: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.value} />
                 } */}
-                <Input.TextArea onChange={(e) => setKvPair({ ...kvPair, value: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.value} />
+                <Input.TextArea readOnly={type == "view"} onChange={(e) => setKvPair({ ...kvPair, value: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.value} />
             </Col>
         </>
     )
 }
 
-const MetadataUpdateForm = (props) => {
+const FormEditMetadata = (props) => {
     let newMetadata = props.newMetadata
     let setNewMetadata = props.setNewMetadata
-    let metadataKeyNum = 7
-    let metadataValueNum = 14
-    let metadataButtonNum = 2
-    let metadataColonNum = 1
+    let type = props.type
+    let metadataKeyNum = type == "view" ? 9 : 7
+    let metadataValueNum = type == "view" ? 14 : 14
+    let metadataButtonNum = type == "view" ? 0 : 2
+    let metadataColonNum = type == "view" ? 1 : 1
     let [newPair, setNewPair] = useState({
         key: "",
         value: ""
     })
+    let [options, setOptions] = useState([])
+    useEffect(() => {
+        async function getSuggestions() {
+            let response = await apiLiveSearchMetadata("")
+            setOptions(response.data.map((res, idx) => {
+                return {
+                    ...res,
+                    compareLabel: removeAccents(res.label)
+                }
+            }))
+        }
+        getSuggestions()
+    }, [])
     function addMetadata() {
         setNewMetadata([
             ...newMetadata,
@@ -159,32 +200,37 @@ const MetadataUpdateForm = (props) => {
                         metadataKeyNum={metadataKeyNum}
                         metadataColonNum={metadataColonNum}
                         metadataValueNum={metadataValueNum}
+                        type={type}
+                        options={options}
+                        setOptions={setOptions}
                     />
                 </Row>)
             }
             )}
-            <Row gutter={[8, 8]} style={{ marginTop: 8 }}>
-                <Col span={2}>
-                    <Button onClick={() => addMetadata()} shape="circle" icon={<PlusOutlined />} />
-                </Col>
-                <Col span={7}>
-                    <Input value={newPair.key} onChange={(e) => setNewPair({
-                        ...newPair,
-                        key: e.target.value
-                    })} placeholder="key" variant="filled" />
-                </Col>
-                <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Typography.Text>:</Typography.Text>
-                </Col>
-                <Col span={14}>
-                    <Input value={newPair.value} onChange={(e) => setNewPair({
-                        ...newPair,
-                        value: e.target.value
-                    })} placeholder="value" variant="filled" />
-                </Col>
-            </Row>
+            {type == "edit"
+                ? <Row gutter={[8, 8]} style={{ marginTop: 8 }}>
+                    <Col span={2}>
+                        <Button onClick={() => addMetadata()} shape="circle" icon={<PlusOutlined />} />
+                    </Col>
+                    <Col span={7}>
+                        <Input value={newPair.key} onChange={(e) => setNewPair({
+                            ...newPair,
+                            key: e.target.value
+                        })} placeholder="key" variant="filled" />
+                    </Col>
+                    <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Typography.Text>:</Typography.Text>
+                    </Col>
+                    <Col span={14}>
+                        <Input value={newPair.value} onChange={(e) => setNewPair({
+                            ...newPair,
+                            value: e.target.value
+                        })} placeholder="value" variant="filled" />
+                    </Col>
+                </Row>
+                : null}
         </>
     )
 }
 
-export default MetadataUpdateForm
+export default FormEditMetadata

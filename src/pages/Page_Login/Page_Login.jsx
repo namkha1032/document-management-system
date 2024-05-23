@@ -115,9 +115,9 @@ const Page_Login = () => {
                                 placeholder="Password"
                             />
                         </Form.Item>
-                        <a className="login-form-forgot" href="">
+                        {/* <a className="login-form-forgot" href="">
                             Forgot password
-                        </a>
+                        </a> */}
 
                         <Form.Item>
                             <Button loading={loadingLogin} type="primary" htmlType="submit" className="login-form-button" style={{ width: "100%" }}>

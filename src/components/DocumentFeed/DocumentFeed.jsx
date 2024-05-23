@@ -34,6 +34,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import GridListContext from "../../context/GridListContext"
 import CardSelectedDoc from "./CardSelectedDoc/CardSelectedDoc";
+import { apiRestoreDocument, apiDeleteForever } from "../../apis/documentApi";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const DocumentFeed = (props) => {
     const { state } = useLocation();
     let breadSelectedDoc = state?.breadSelectedDoc
@@ -47,7 +50,9 @@ const DocumentFeed = (props) => {
     let [selectedDoc, setSelectedDoc] = useState([])
     let [selectedKey, setSelectedKey] = useState([])
     let [modalRestore, setModalRestore] = useState(false)
+    let [modalDeleteForever, setModalDeleteForever] = useState(false)
     let [loadingRestore, setLoadingRestore] = useState(false)
+    let [loadingDeleteForever, setLoadingDeleteForever] = useState(false)
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
     // fetch("http://localhost:3000/file/sample.pdf")
@@ -202,16 +207,68 @@ const DocumentFeed = (props) => {
         }
     }
     async function handleRestoreDocument() {
-        console.log("restore", selectedDoc)
+        setLoadingRestore(true)
+        let documentPromise = selectedDoc.map(async (doc, idx) => {
+            await apiRestoreDocument(doc.uid)
+        })
+        await Promise.all(documentPromise)
+        dispatchDocumentResult({
+            type: "set", payload: {
+                ...documentResult,
+                documents: documentResult.documents.filter((olddoc, idx2) => {
+                    for (let i = 0; i < selectedDoc.length; i++) {
+                        if (selectedDoc[i].uid === olddoc.uid) {
+                            return false
+                        }
+                    }
+                    return true
+                })
+            }
+        })
+        toast.success('Document has been restored successfully', {
+            theme: "colored"
+        })
+        setSelectedDoc([])
+        setSelectedKey([])
+        setModalRestore(false)
+        setLoadingRestore(false)
+    }
+    async function handleDeleteForever() {
+        setLoadingDeleteForever(true)
+        let documentPromise = selectedDoc.map(async (doc, idx) => {
+            await apiDeleteForever(doc.uid)
+        })
+        await Promise.all(documentPromise)
+        dispatchDocumentResult({
+            type: "set", payload: {
+                ...documentResult,
+                documents: documentResult.documents.filter((olddoc, idx2) => {
+                    for (let i = 0; i < selectedDoc.length; i++) {
+                        if (selectedDoc[i].uid === olddoc.uid) {
+                            return false
+                        }
+                    }
+                    return true
+                })
+            }
+        })
+        toast.success('Document has been deleted forever successfully', {
+            theme: "colored"
+        })
+        setSelectedDoc([])
+        setSelectedKey([])
+        setModalDeleteForever(false)
+        setLoadingDeleteForever(false)
     }
     return (
         documentResult.documents !== null
             ?
             (documentResult?.documents?.length > 0
                 ? <>
+                    <ToastContainer />
                     <Modal title={
                         <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
-                            <ExclamationCircleFilled style={{ color: antdTheme.token.colorWarning, fontSize: 22 }} />
+                            <ExclamationCircleFilled style={{ fontSize: 22 }} />
                             <Typography.Title level={4} style={{ margin: 0 }}>Restore document</Typography.Title>
                         </div>} open={modalRestore} maskClosable={true} onCancel={() => { setModalRestore(false) }}
                         onOk={() => { handleRestoreDocument() }}
@@ -220,7 +277,20 @@ const DocumentFeed = (props) => {
                         centered
                         confirmLoading={loadingRestore}
                     >
-                        <Typography.Text>Are you sure you want to restore this document?</Typography.Text>
+                        <Typography.Text>{`Are you sure you want to restore ${selectedDoc?.length == 1 ? "this" : `these ${selectedDoc?.length}`} document${selectedDoc?.length == 1 ? "" : "s"}?`}</Typography.Text>
+                    </Modal>
+                    <Modal title={
+                        <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                            <ExclamationCircleFilled style={{ color: antdTheme.token.colorError, fontSize: 22 }} />
+                            <Typography.Title level={4} style={{ margin: 0 }}>Delete forever</Typography.Title>
+                        </div>} open={modalDeleteForever} maskClosable={true} onCancel={() => { setModalDeleteForever(false) }}
+                        onOk={() => { handleDeleteForever() }}
+                        cancelText="No"
+                        okText="Yes"
+                        centered
+                        confirmLoading={loadingDeleteForever}
+                    >
+                        <Typography.Text>{`Are you sure you want to delete ${selectedDoc?.length == 1 ? "this" : `these ${selectedDoc?.length}`} document${selectedDoc?.length == 1 ? "" : "s"} forever?`}</Typography.Text>
                     </Modal>
                     <div style={{ overflowX: "hidden", flex: "1 1 auto", display: "flex", flexDirection: "column" }}>
                         <div style={{ height: "40px", display: "flex", justifyContent: "space-between", marginBottom: 16, marginTop: 1, flex: "0 1 auto", alignItems: "center" }}>
@@ -264,7 +334,7 @@ const DocumentFeed = (props) => {
                                             originPath === "trash" ?
                                                 <>
                                                     <Tooltip title={"Delete forever"}>
-                                                        <Button size="large" shape="circle" type="text" icon={<MdOutlineDeleteForever style={{ fontSize: 24 }} />} />
+                                                        <Button onClick={() => { setModalDeleteForever(true) }} size="large" shape="circle" type="text" icon={<MdOutlineDeleteForever style={{ fontSize: 24 }} />} />
                                                     </Tooltip>
                                                     <Tooltip title={"Restore document"}>
                                                         <Button onClick={() => { setModalRestore(true) }} size="large" shape="circle" type="text" icon={<MdOutlineSettingsBackupRestore style={{ fontSize: 24 }} />} />

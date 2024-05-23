@@ -28,15 +28,17 @@ import Page_Login from './pages/Page_Login/Page_Login';
 import Page_Document_Id from './pages/Page_Document_Id/Page_Document_Id';
 import Page_Ontology_Id from './pages/Page_Ontology_Id/Page_Ontology_Id';
 import Page_Ontology_All from './pages/Page_Ontology_All/Page_Ontology_All';
+import Unauthorized from './components/Unauthorized/Unauthorized';
+import UserContext from './context/UserContext';
 // import apis
 import { getSearchResult } from './apis/searchApi';
 import { getMe } from './apis/userApi';
 // import Context
-import UserContext from './context/UserContext';
 import Page_Documents_Company from './pages/Page_Documents_Company/Page_Documents_Company';
 const App = () => {
   // search
   // router
+  let [user, dispatchUser] = useContext(UserContext)
   const router = createBrowserRouter([
     {
       path: "/",
@@ -44,35 +46,35 @@ const App = () => {
       children: [
         {
           path: "company",
-          element: <Page_Documents_Company />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Documents_Company />,
         },
         {
           path: "my-documents",
-          element: <Page_Documents_My />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Documents_My />,
         },
         {
           path: "shared-documents",
-          element: <Page_Documents_Shared />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Documents_Shared />,
         },
         {
           path: "search",
-          element: <Page_Search />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Search />,
         },
         {
           path: "trash",
-          element: <Page_Trash />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Trash />,
         },
         {
           path: "upload",
-          element: <Page_Upload />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Upload />,
         },
         {
           path: "ontology",
-          element: <Page_Ontology_All />,
+          element: user?.is_expertuser ? <Page_Ontology_All /> : <Unauthorized />,
         },
         {
           path: "ontologyold",
-          element: <Page_Ontology />,
+          element: user?.is_expertuser ? <Page_Ontology /> : <Unauthorized />,
         },
         {
           path: "ontologyold/:ontologyUrl",
@@ -80,11 +82,11 @@ const App = () => {
         },
         {
           path: "ontology/:ontologyId",
-          element: <Page_Ontology_Id />,
+          element: user?.is_expertuser ? <Page_Ontology_Id /> : <Unauthorized />,
         },
         {
           path: "document/:document_id",
-          element: <Page_Document_Id />,
+          element: user?.is_expertuser ? <Unauthorized /> : <Page_Document_Id />,
         }
       ]
     },

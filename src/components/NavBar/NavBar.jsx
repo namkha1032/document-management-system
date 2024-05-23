@@ -224,17 +224,20 @@ const NavBar = () => {
                     <div style={{ display: "flex", alignItems: "center", width: "40%" }}>
                         <Input.Search
                             placeholder="input search text"
-                            // enterButton={<Typography.Text>Search</Typography.Text>}
-                            enterButton='Search'
+                            // enterButton={<div>
+                            //     <Typography.Text>Search</Typography.Text>
+                            // </div>}
+                            // enterButton='Search'
+                            enterButton
                             size="large"
-                            suffix={<AdvancedSearchButton />}
+                            // suffix={<AdvancedSearchButton />}
                             onSearch={handleSearch}
                             prefix={
                                 <>
                                     {
                                         Object.entries(searchOption?.broader).map(([oriTerm, extendArray], index) =>
                                             extendArray.map((extendTerm, index) =>
-                                                <Tag key={index} color='red' closeIcon onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
+                                                <Tag key={index} color='green' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
                                                     {extendTerm}
                                                 </Tag>
                                             ))
@@ -250,7 +253,7 @@ const NavBar = () => {
                                     {
                                         Object.entries(searchOption?.narrower).map(([oriTerm, extendArray], index) =>
                                             extendArray.map((extendTerm, index) =>
-                                                <Tag key={index} color='blue' closeIcon onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
+                                                <Tag key={index} color='blue' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
                                                     {extendTerm}
                                                 </Tag>
                                             ))

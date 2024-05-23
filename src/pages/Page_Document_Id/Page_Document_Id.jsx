@@ -34,6 +34,7 @@ import { saveAs } from 'file-saver';
 import { GoVersions } from "react-icons/go";
 import { AiOutlineAudit } from "react-icons/ai";
 import { FaEyeSlash, FaUnlock, FaLock } from "react-icons/fa";
+import { FaList, FaRegFilePdf } from "react-icons/fa6";
 
 import axios from "axios";
 import prettyBytes from 'pretty-bytes';
@@ -54,6 +55,7 @@ import TagButton from "../../components/TagButton/TagButton";
 import UploadDocumentContext from "../../context/UploadDocumentContext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CiCircleList } from "react-icons/ci";
 const VjpStatistic = (props) => {
     const title = props.title
     const value = props.value
@@ -96,6 +98,7 @@ const ModalUpdateMetadata = (props) => {
     let [loadingUpdateMetadata, setLoadingUpdateMetadata] = useState(false)
     let [newMetadata, setNewMetadata] = useState(null)
     let [comment, setComment] = useState("")
+    let antdTheme = theme.useToken()
     useEffect(() => {
         setNewMetadata(document?.versions[0].metadata)
     }, [document])
@@ -128,9 +131,9 @@ const ModalUpdateMetadata = (props) => {
         <>
             {document?.permission == "VIEW"
                 ? null
-                : <Button onClick={() => { setModalOpen(true) }}>Edit metadata</Button>}
+                : <Button style={{ backgroundColor: antdTheme.token.colorFillContent }} onClick={() => { setModalOpen(true) }}>Edit metadata</Button>}
             <Modal footer={null} width={700} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
-                <FormEditMetadata newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
+                <FormEditMetadata type="edit" newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
                 <Row gutter={[8, 8]} justify={"end"}>
                     <Col md={24}>
                         <Typography.Title level={4}>Add some message</Typography.Title>
@@ -242,6 +245,37 @@ const ModalViewFile = (props) => {
     )
 }
 
+const ModalViewMetadata = (props) => {
+    let version = props.version
+    let ModalButton = props.ModalButton
+    let handleRestoreVersion = props.handleRestoreVersion
+    let [modalOpen, setModalOpen] = useState(false)
+    let [loading, setLoading] = useState(false)
+    async function handleRestore() {
+        setLoading(true)
+        await handleRestoreVersion(version.uid)
+        setModalOpen(false)
+        setLoading(false)
+    }
+    return (
+        <>
+            <div onClick={() => { setModalOpen(true) }}>
+                {ModalButton}
+            </div>
+            <Modal width={800} title={"Old version metadata"} open={modalOpen} maskClosable={true}
+                onCancel={() => { setModalOpen(false) }}
+                onOk={() => { handleRestore() }}
+                cancelText="Cancel"
+                okText="Restore this version"
+                centered
+                confirmLoading={loading}
+            >
+                <FormEditMetadata type="view" newMetadata={version.metadata} setNewMetadata={() => { }} />
+            </Modal>
+        </>
+    )
+}
+
 const Page_Document_Id = () => {
     // const [messageApi, contextHolder] = message.useMessage();
     let [document, setDocument] = useState(null)
@@ -298,10 +332,11 @@ const Page_Document_Id = () => {
         },
         {
             "title": "Action",
-            "render": ((obj) => <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
-                <Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>View metadata</Button>
+            "render": ((obj) => <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
 
-                <ModalViewFile handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>View file</Button>} />
+                <ModalViewMetadata handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0, display: 'flex', alignItems: "center" }} icon={<FaList />}>View metadata</Button>} />
+
+                <ModalViewFile handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0, display: 'flex', alignItems: "center" }} icon={<FaRegFilePdf />}>View file</Button>} />
                 <Popconfirm
                     title="Restore version"
                     description="Are you sure you want to restore this version?"
@@ -311,7 +346,7 @@ const Page_Document_Id = () => {
                     okButtonProps={{
                         loading: restoreLoading
                     }}>
-                    <Button type="text" style={{ padding: 0 }} icon={<RollbackOutlined />}>Restore</Button>
+                    <Button type="text" style={{ padding: 0, display: "flex", alignItems: "center" }} icon={<RollbackOutlined />}>Restore</Button>
                 </Popconfirm>
             </div>)
         }
@@ -639,23 +674,23 @@ const Page_Document_Id = () => {
                                     <Col md={6}>
                                         <PermissionModal document={document} setDocument={setDocument}
                                             modalButton={
-                                                <TagButton icon={<MdVpnKey />} color="green" columnGap={8} height={40}>
+                                                <TagButton fontSize={12} icon={<MdVpnKey />} color="green" columnGap={8} height={40}>
                                                     Permission
                                                 </TagButton>
                                             } />
                                     </Col>
                                     <Col md={6}>
-                                        <TagButton handleClick={() => { setModalPrivacyOpen(true) }} icon={document.is_private ? <FaGlobeAsia /> : <FaEyeSlash />} color="geekblue" columnGap={8} height={40} >
+                                        <TagButton fontSize={12} handleClick={() => { setModalPrivacyOpen(true) }} icon={document.is_private ? <FaGlobeAsia /> : <FaEyeSlash />} color="geekblue" columnGap={8} height={40} >
                                             {document?.is_private ? "Public file" : "Private file"}
                                         </TagButton>
                                     </Col>
                                     <Col md={6}>
-                                        <TagButton handleClick={() => { setModalLockOpen(true) }} icon={document.is_lock ? <FaUnlock /> : <FaLock />} color="gold" columnGap={8} height={40} >
+                                        <TagButton fontSize={12} handleClick={() => { setModalLockOpen(true) }} icon={document.is_lock ? <FaUnlock /> : <FaLock />} color="gold" columnGap={8} height={40} >
                                             {document.is_lock ? "Unlock file" : "Lock file"}
                                         </TagButton>
                                     </Col>
                                     <Col md={6}>
-                                        <TagButton height={40}
+                                        <TagButton fontSize={12} height={40}
                                             handleClick={() => { setModalDeleteOpen(true) }} icon={<DeleteOutlined />} color="red" columnGap={8}>
                                             Delete file
                                         </TagButton>

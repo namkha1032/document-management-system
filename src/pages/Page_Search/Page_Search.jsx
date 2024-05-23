@@ -207,6 +207,47 @@ function recurTypeKeyValue(obj_id, keyvalue, type, myObj) {
 }
 
 
+function recurTypeKeyValueNew(obj_id, newkey, newvalue, myObj) {
+    if (myObj.obj_id == obj_id) {
+        let newObject = null
+        if (myObj.hasOwnProperty('$not')) {
+            newObject = {
+                ...myObj,
+                $not: {
+                    ...myObj.$not,
+                    key: newkey,
+                    value: newvalue
+                }
+            }
+        }
+        else if (myObj.hasOwnProperty('key')) {
+            newObject = {
+                ...myObj,
+                key: newkey,
+                value: newvalue
+            }
+        }
+        return newObject
+    }
+    else {
+        if (myObj.hasOwnProperty('$and')) {
+            return {
+                ...myObj,
+                $and: myObj.$and.map((item, index) => recurTypeKeyValueNew(obj_id, newkey, newvalue, item))
+            }
+        }
+        else if (myObj.hasOwnProperty('$or')) {
+            return {
+                ...myObj,
+                $or: myObj.$or.map((item, index) => recurTypeKeyValueNew(obj_id, newkey, newvalue, item))
+            }
+        }
+        else {
+            return myObj
+        }
+    }
+}
+
 function recurChangeIsNot(obj_id, val, myObj) {
     if (myObj.obj_id == obj_id) {
         let newReturn = val == 'is'
@@ -392,6 +433,73 @@ const FormKey = (props) => {
         />
     )
 }
+const FormKeyValue = (props) => {
+    const myObj = props.myObj
+    const handleTypeKeyValueNew = props.handleTypeKeyValueNew
+    const operatorButton = props.operatorButton
+    const deleteButton = props.deleteButton
+    let [kvPair, setKvPair] = useState({
+        key: "",
+        value: ""
+    })
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // handleTypeKeyValue(myObj.obj_id, kvPair.key, 'key')
+            // handleTypeKeyValue(myObj.obj_id, kvPair.value, 'value')
+            handleTypeKeyValueNew(myObj.obj_id, kvPair.key, kvPair.value)
+        }, 500)
+
+        return () => clearTimeout(timer)
+    }, [kvPair])
+    useEffect(() => {
+        if (myObj.hasOwnProperty('$not')) {
+            if (myObj.$not.key !== kvPair.key || myObj.$not.value !== kvPair.value) {
+                setKvPair({
+                    key: myObj.$not.key,
+                    value: myObj.$not.value
+                })
+            }
+        }
+        else {
+            if (myObj.key !== kvPair.key || myObj.value !== kvPair.value) {
+                setKvPair({
+                    key: myObj.key,
+                    value: myObj.value
+                })
+            }
+        }
+        // setKvPair({
+        //     key: myObj.hasOwnProperty('$not') ? myObj.$not.key : myObj.key,
+        //     value: myObj.hasOwnProperty('$not') ? myObj.$not.value : myObj.value
+        // })
+    }, [myObj])
+    return (
+        <>
+            <AutoComplete
+                style={{
+                    width: 160,
+                }}
+                placeholder="key"
+                value={kvPair.key}
+                onChange={val => setKvPair({
+                    ...kvPair,
+                    key: val
+                })}
+            />
+            {operatorButton}
+            <Input
+                value={kvPair.value}
+                onChange={e => setKvPair({
+                    ...kvPair,
+                    value: e.target.value
+                })}
+                style={{ width: 160 }} placeholder='value'
+            />
+            {deleteButton}
+        </>
+    )
+}
+
 const MetaForm = (props) => {
     const antdTheme = theme.useToken()
     const myObj = props.myObj
@@ -406,6 +514,14 @@ const MetaForm = (props) => {
         let newSearchOption = {
             ...oldSearchOption,
             metadata: oldSearchOption.metadata.map((item, index) => recurTypeKeyValue(obj_id, keyvalue, type, item))
+        }
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
+    }
+    function handleTypeKeyValueNew(obj_id, newkey, newvalue) {
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = {
+            ...oldSearchOption,
+            metadata: oldSearchOption.metadata.map((item, index) => recurTypeKeyValueNew(obj_id, newkey, newvalue, item))
         }
         dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
@@ -533,24 +649,31 @@ const MetaForm = (props) => {
                     // marginLeft: (treeHeight - currHeight) * 25
                 }}>
                     {/* FormKey */}
-                    <FormKey myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} />
+                    {/* <FormKey myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} /> */}
 
-                    <Button
-                        style={{ width: 80 }}
-                        onClick={() => {
-                            if (myObj.hasOwnProperty('$not')) {
-                                handleChangeIsNot(myObj.obj_id, 'is')
-                            }
-                            else {
-                                handleChangeIsNot(myObj.obj_id, 'isnot')
-                            }
-                        }}>
-                        {myObj.hasOwnProperty('$not') ? 'IS NOT' : 'IS'}
-                    </Button>
+
                     {/* FormValue */}
-                    <FormValue myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} />
+                    {/* <FormValue myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} /> */}
 
-                    <Button shape="circle" type="text" icon={<CloseOutlined />} onClick={() => handleDeleteMetadata(myObj.obj_id)} />
+                    <FormKeyValue
+                        myObj={myObj}
+                        handleTypeKeyValueNew={handleTypeKeyValueNew}
+                        operatorButton={<Button
+                            style={{ width: 80 }}
+                            onClick={() => {
+                                if (myObj.hasOwnProperty('$not')) {
+                                    handleChangeIsNot(myObj.obj_id, 'is')
+                                }
+                                else {
+                                    handleChangeIsNot(myObj.obj_id, 'isnot')
+                                }
+                            }}>
+                            {myObj.hasOwnProperty('$not') ? 'IS NOT' : 'IS'}
+                        </Button>}
+                        deleteButton={
+                            <Button shape="circle" type="text" icon={<CloseOutlined />} onClick={() => handleDeleteMetadata(myObj.obj_id)} />
+                        }
+                    />
                 </div>
             )
         }
@@ -965,7 +1088,7 @@ const Page_Search = () => {
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.broader).map(([oriTerm, extendArray], index) =>
                                                         extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='red' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
+                                                            <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
                                                                 {kw}
                                                             </Tag>))}
                                                 </div>

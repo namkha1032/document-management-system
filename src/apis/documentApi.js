@@ -257,7 +257,7 @@ export async function apiDeleteDocument(documentId) {
 export async function apiDeleteForever(documentId) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     // await delay(1000)
-    let rawResponse = await axios.post(`${endpoint}/api/documents/delete/${documentId}`, null, {
+    let rawResponse = await axios.post(`${endpoint}/api/documents/delete/forever/${documentId}`, null, {
         headers: {
             "Authorization": `Bearer ${token}`,
             ...originHeader
@@ -270,7 +270,7 @@ export async function apiDeleteForever(documentId) {
 export async function apiRestoreDocument(documentId) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     // await delay(1000)
-    let rawResponse = await axios.post(`${endpoint}/api/documents/delete/${documentId}`, null, {
+    let rawResponse = await axios.post(`${endpoint}/api/documents/restore/${documentId}`, null, {
         headers: {
             "Authorization": `Bearer ${token}`,
             ...originHeader

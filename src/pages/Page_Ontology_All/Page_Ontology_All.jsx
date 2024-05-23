@@ -12,7 +12,8 @@ import {
     Input,
     Card,
     Skeleton,
-    theme
+    theme,
+    Result
 } from "antd"
 import {
     ShareAltOutlined,
@@ -55,7 +56,6 @@ const Page_Ontology_All = () => {
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
-
     let ontologyColumns = [
         {
             title: "Name",

@@ -170,7 +170,7 @@ const ExtractModal = (props) => {
                                 {uploadDocument[index].current == 1
                                     ? <Skeleton active />
                                     : <>
-                                        <FormEditMetadata newMetadata={uploadDocument[index]?.metadata} setNewMetadata={editMetadataArray} />
+                                        <FormEditMetadata type="edit" newMetadata={uploadDocument[index]?.metadata} setNewMetadata={editMetadataArray} />
                                         {/* {uploadDocument[index]?.metadata?.map((item, index) => {
                                             return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
                                                 <Col span={10}>
