@@ -1135,6 +1135,14 @@ const Page_Search = () => {
                                                         </div>
                                                 },
                                                 {
+                                                    value: 'full-text-onto',
+                                                    label:
+                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                            <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />
+                                                            <Typography.Text>Full-text onto</Typography.Text>
+                                                        </div>
+                                                },
+                                                {
                                                     value: 'semantic',
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>

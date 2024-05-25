@@ -143,13 +143,17 @@ export async function apiExtractMetadata(newForm) {
     // await delay(60000)
     let rawResponse = null
     let i = 0
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+
     while (rawResponse?.data?.data == null) {
-        // rawResponse = await axios.post(`${endpoint}/api/ocr`, newForm, {
-        //     headers: {
-        //         ...originHeader
-        //     }
-        // })
-        rawResponse = await axios.get(`http://localhost:3000/data/metadata.json`)
+        rawResponse = await axios.post(`${endpoint}/api/ocr`, newForm, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                ...originHeader
+            }
+        })
+        // rawResponse = await axios.get(`http://localhost:3000/data/metadata.json`)
+        console.log("ocr result", rawResponse)
         if (rawResponse.data.data) {
             return rawResponse.data.data
         }

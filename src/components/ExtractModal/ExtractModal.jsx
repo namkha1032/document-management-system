@@ -200,21 +200,29 @@ const ExtractModal = (props) => {
                         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginBottom: 16 }}>
                             <Upload fileList={uploadDocument[index].fileList} name={"file"} multiple={false}
                                 beforeUpload={(file) => {
+                                    console.log("upload file", file)
                                     if (file.type == "application/pdf") {
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => {
-                                            // setPdfFile(reader.result);
-                                            dispatchUploadDocument({
-                                                type: "setFile", payload: {
-                                                    index: index,
-                                                    fileUrl: [reader.result],
-                                                    fileList: [file]
-                                                }
+                                        if (file.size < 20971520) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                // setPdfFile(reader.result);
+                                                dispatchUploadDocument({
+                                                    type: "setFile", payload: {
+                                                        index: index,
+                                                        fileUrl: [reader.result],
+                                                        fileList: [file]
+                                                    }
+                                                })
+                                            };
+                                            reader.readAsDataURL(file);
+                                            // dispatchUploadDocument({ type: "addFile", payload: file })
+                                            return false
+                                        }
+                                        else {
+                                            toast.error("File's size < 20MB please", {
+                                                theme: "colored"
                                             })
-                                        };
-                                        reader.readAsDataURL(file);
-                                        // dispatchUploadDocument({ type: "addFile", payload: file })
-                                        return false
+                                        }
                                     }
                                     else {
                                         toast.error('Please upload a PDF file', {
