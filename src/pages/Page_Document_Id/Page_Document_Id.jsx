@@ -245,7 +245,9 @@ const ModalViewFile = (props) => {
                 okText="Restore this version"
                 centered
                 confirmLoading={loading}
-                footer={(document?.is_lock === true && document.owner.email !== userStorage.email) || document?.permission === "VIEW" ? null : true}
+                okButtonProps={{
+                    disabled: (document?.is_lock === true && document.owner.email !== userStorage.email) || document?.permission === "VIEW" ? true : false
+                }}
             >
                 <iframe src={version?.url?.length > 0 ? version.url : "https://pdfobject.com/pdf/sample.pdf"}
                     style={{ borderRadius: 8, borderWidth: 0, width: "100%", height: 600 }}>
@@ -281,7 +283,9 @@ const ModalViewMetadata = (props) => {
                 okText="Restore this version"
                 centered
                 confirmLoading={loading}
-                footer={(document?.is_lock === true && document.owner.email !== userStorage.email) || document?.permission === "VIEW" ? null : true}
+                okButtonProps={{
+                    disabled: (document?.is_lock === true && document.owner.email !== userStorage.email) || document?.permission === "VIEW" ? true : false
+                }}
             >
                 <FormEditMetadata type="view" newMetadata={version.metadata} setNewMetadata={() => { }} />
             </Modal>
