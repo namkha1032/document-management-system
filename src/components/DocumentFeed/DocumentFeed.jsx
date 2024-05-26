@@ -315,6 +315,7 @@ const DocumentFeed = (props) => {
                 }
             }
             console.log(selectedKey)
+            console.log("linkList", linkList)
             await navigator.clipboard.writeText(linkList);
             messageApi.open({
                 content: "Copied to clipboard!",
