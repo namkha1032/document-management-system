@@ -146,19 +146,22 @@ const SynsetRow = (props) => {
         setLoadingDeleteEdge(false)
     }
     async function handleChangeNode() {
+        console.log("typeX: ", type)
         const findNode = ontology.nodes.find((node) => node.id == (type == "parent" ? syn.from : syn.to))
-        await graphState.focus(findNode.id, {
-            scale: 1.0,
-            // offset: {x:Number, y:Number}
-            locked: true,
-            animation: {
-                duration: 1000,
-                easingFunction: "easeInOutCubic"
-            }
-        })
-        graphState.selectNodes([findNode.id])
-        setSearchNode(findNode)
-        setSelectedNode(findNode)
+        if (findNode) {
+            await graphState.focus(findNode.id, {
+                scale: 1.0,
+                // offset: {x:Number, y:Number}
+                locked: true,
+                animation: {
+                    duration: 1000,
+                    easingFunction: "easeInOutCubic"
+                }
+            })
+            graphState.selectNodes([findNode.id])
+            setSearchNode(findNode)
+            setSelectedNode(findNode)
+        }
     }
     return (
         <>
@@ -269,18 +272,20 @@ const SenseRow = (props) => {
     }
     async function handleChangeNode() {
         const findNode = ontology.nodes.find((node) => node.id == se.from)
-        await graphState.focus(findNode.id, {
-            scale: 1.0,
-            // offset: {x:Number, y:Number}
-            locked: true,
-            animation: {
-                duration: 1000,
-                easingFunction: "easeInOutCubic"
-            }
-        })
-        graphState.selectNodes([findNode.id])
-        setSearchNode(findNode)
-        setSelectedNode(findNode)
+        if (findNode) {
+            await graphState.focus(findNode.id, {
+                scale: 1.0,
+                // offset: {x:Number, y:Number}
+                locked: true,
+                animation: {
+                    duration: 1000,
+                    easingFunction: "easeInOutCubic"
+                }
+            })
+            graphState.selectNodes([findNode.id])
+            setSearchNode(findNode)
+            setSelectedNode(findNode)
+        }
     }
     return (
         <>

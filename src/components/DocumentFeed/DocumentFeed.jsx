@@ -15,7 +15,8 @@ import {
     Checkbox,
     Empty,
     Tooltip,
-    Modal
+    Modal,
+    message
 } from "antd"
 import {
     DownloadOutlined,
@@ -34,9 +35,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import GridListContext from "../../context/GridListContext"
 import CardSelectedDoc from "./CardSelectedDoc/CardSelectedDoc";
-import { apiRestoreDocument, apiDeleteForever } from "../../apis/documentApi";
+import { apiRestoreDocument, apiDeleteForever, apiDeleteDocument } from "../../apis/documentApi";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import endpoint from "../../apis/_domain";
+import prettyBytes from 'pretty-bytes';
 const DocumentFeed = (props) => {
     const { state } = useLocation();
     let breadSelectedDoc = state?.breadSelectedDoc
@@ -50,9 +53,12 @@ const DocumentFeed = (props) => {
     let [selectedDoc, setSelectedDoc] = useState([])
     let [selectedKey, setSelectedKey] = useState([])
     let [modalRestore, setModalRestore] = useState(false)
+    let [modalDelete, setModalDelete] = useState(false)
     let [modalDeleteForever, setModalDeleteForever] = useState(false)
     let [loadingRestore, setLoadingRestore] = useState(false)
+    let [loadingDelete, setLoadingDelete] = useState(false)
     let [loadingDeleteForever, setLoadingDeleteForever] = useState(false)
+    const [messageApi, contextHolder] = message.useMessage();
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
     // fetch("http://localhost:3000/file/sample.pdf")
@@ -150,6 +156,14 @@ const DocumentFeed = (props) => {
             }
         },
         {
+            title: "Size",
+            render: (obj) => {
+                return (
+                    <Typography.Text>{prettyBytes(obj?.versions[0].file_size)}</Typography.Text>
+                )
+            }
+        },
+        {
             title: "Created date",
             render: (obj) => {
                 return (
@@ -206,6 +220,33 @@ const DocumentFeed = (props) => {
             setSelectedKey(selectedKey.filter((seKey) => seKey !== item.uid))
         }
     }
+    async function handleDeleteDocument() {
+        setLoadingDelete(true)
+        let documentPromise = selectedDoc.map(async (doc, idx) => {
+            await apiDeleteDocument(doc.uid)
+        })
+        await Promise.all(documentPromise)
+        dispatchDocumentResult({
+            type: "set", payload: {
+                ...documentResult,
+                documents: documentResult.documents.filter((olddoc, idx2) => {
+                    for (let i = 0; i < selectedDoc.length; i++) {
+                        if (selectedDoc[i].uid === olddoc.uid) {
+                            return false
+                        }
+                    }
+                    return true
+                })
+            }
+        })
+        toast.success('Document has been deleted successfully', {
+            theme: "colored"
+        })
+        setSelectedDoc([])
+        setSelectedKey([])
+        setModalDelete(false)
+        setLoadingDelete(false)
+    }
     async function handleRestoreDocument() {
         setLoadingRestore(true)
         let documentPromise = selectedDoc.map(async (doc, idx) => {
@@ -260,12 +301,52 @@ const DocumentFeed = (props) => {
         setModalDeleteForever(false)
         setLoadingDeleteForever(false)
     }
+    async function handleCopyClipboard() {
+        try {
+            let linkList = ""
+            // console.log(window.location.hostname)
+            let currentDomain = `${window.location.hostname}:${window.location.port}`
+            for (let i = 0; i < selectedKey.length; i++) {
+                let newLink = `${currentDomain}/document/${selectedKey[i]}`
+                linkList = linkList.concat(newLink)
+                if (i != selectedKey.length - 1) {
+                    linkList = linkList + "\n"
+                }
+            }
+            console.log(selectedKey)
+            await navigator.clipboard.writeText(linkList);
+            messageApi.open({
+                content: "Copied to clipboard!",
+                duration: 2
+            });
+
+        } catch (err) {
+            console.log("err copy", err)
+        }
+    }
+    function handleOpenNewTab() {
+        let currentDomain = `${window.location.hostname}:${window.location.port}`
+        // selectedKey.forEach((key) => {
+        // })
+        selectedKey.forEach((key, index) => {
+            setTimeout(() => {
+                let newLink = `http://${currentDomain}/document/${key}`
+                window.open(newLink, '_blank', 'noopener,noreferrer');
+                console.log("key", key)
+            }, index * 500); // 500ms delay between each tab
+        })
+        // for (let i = 0; i < selectedKey.length; i++) {
+        //     let newLink = `http://${currentDomain}/document/${selectedKey[i]}`
+        //     window.open(newLink, '_blank');
+        // }
+    }
     return (
         documentResult.documents !== null
             ?
             (documentResult?.documents?.length > 0
                 ? <>
-                    <ToastContainer />
+                    {contextHolder}
+                    {/* <ToastContainer /> */}
                     <Modal title={
                         <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
                             <ExclamationCircleFilled style={{ fontSize: 22 }} />
@@ -292,6 +373,19 @@ const DocumentFeed = (props) => {
                     >
                         <Typography.Text>{`Are you sure you want to delete ${selectedDoc?.length == 1 ? "this" : `these ${selectedDoc?.length}`} document${selectedDoc?.length == 1 ? "" : "s"} forever?`}</Typography.Text>
                     </Modal>
+                    <Modal title={
+                        <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                            <ExclamationCircleFilled style={{ fontSize: 22, color: antdTheme.token.colorError }} />
+                            <Typography.Title level={4} style={{ margin: 0 }}>Delete document</Typography.Title>
+                        </div>} open={modalDelete} maskClosable={true} onCancel={() => { setModalDelete(false) }}
+                        onOk={() => { handleDeleteDocument() }}
+                        cancelText="No"
+                        okText="Yes"
+                        centered
+                        confirmLoading={loadingDelete}
+                    >
+                        <Typography.Text>{`Are you sure you want to delete ${selectedDoc?.length == 1 ? "this" : `these ${selectedDoc?.length}`} document${selectedDoc?.length == 1 ? "" : "s"}?`}</Typography.Text>
+                    </Modal>
                     <div style={{ overflowX: "hidden", flex: "1 1 auto", display: "flex", flexDirection: "column" }}>
                         <div style={{ height: "40px", display: "flex", justifyContent: "space-between", marginBottom: 16, marginTop: 1, flex: "0 1 auto", alignItems: "center" }}>
                             <div style={{ display: "flex", alignItems: "center" }}>
@@ -311,7 +405,7 @@ const DocumentFeed = (props) => {
                                 <div style={{
                                     border: selectedDoc.length > 0 ? `1px solid ${antdTheme.token.colorBorder}` : `0px solid white`,
                                     overflow: "hidden", transition: "width 0.3s",
-                                    width: selectedDoc.length > 0 ? (originPath === "trash" ? 250 : 300) : 0,
+                                    width: selectedDoc.length > 0 ? (originPath === "trash" ? 250 : 250) : 0,
                                     backgroundColor: antdTheme.token.colorBgContainer, borderRadius: 100, display: "flex", justifyContent: "space-between", alignItems: "center"
                                 }}>
                                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -324,9 +418,11 @@ const DocumentFeed = (props) => {
                                     <div style={{ display: 'flex', columnGap: 8, alignItems: 'center' }}>
                                         {originPath !== "trash" ?
                                             <>
-                                                <Button size="large" shape="circle" type="text" icon={<DownloadOutlined />} />
-                                                <Button size="large" shape="circle" type="text" icon={<DeleteOutlined />} />
-                                                <Button size="large" shape="circle" type="text" icon={<LinkOutlined rotate={45} />} />
+                                                {/* <Button onClick={() => { handleOpenNewTab() }} size="large" shape="circle" type="text" icon={<DownloadOutlined />} /> */}
+                                                {originPath === "my-documents" ?
+                                                    <Button onClick={() => { setModalDelete(true) }} size="large" shape="circle" type="text" icon={<DeleteOutlined />} />
+                                                    : null}
+                                                <Button onClick={() => { handleCopyClipboard() }} size="large" shape="circle" type="text" icon={<LinkOutlined rotate={45} />} />
                                             </>
                                             : null
                                         }

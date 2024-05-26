@@ -25,6 +25,7 @@ const Page_Documents_My = () => {
             });
         }
         fetchData()
+        document.title = "My documents"
     }, [])
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>

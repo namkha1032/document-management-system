@@ -25,6 +25,7 @@ const Page_Documents_Company = () => {
             });
         }
         fetchData()
+        document.title = "Company documents"
     }, [])
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>

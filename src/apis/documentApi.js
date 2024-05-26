@@ -28,7 +28,11 @@ export async function apiGetDocument(documentId, page = 1, page_size = 10) {
     console.log("logResponse", logResponse)
     let newResponse = {
         ...response.data.data,
-        versions: response.data.data.versions.map((ver, idx) => ({ ...ver, file_size: ver.file_size.length > 0 ? parseInt(ver.file_size) : 0 })),
+        versions: response.data.data.versions.map((ver, idx) => ({
+            ...ver,
+            file_size: ver.file_size.length > 0 ? parseInt(ver.file_size) : 0,
+            file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : response.data.data.uid
+        })),
         logs: logResponse.data.logs,
         logCurrent: page,
         logPageSize: page_size,
@@ -53,7 +57,8 @@ export async function apiGetCompanyDocument(token, page, page_size) {
                 versions: doc.versions.map((ver, verid) => {
                     return {
                         ...ver,
-                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0,
+                        file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : doc.uid
                     }
                 })
             }
@@ -78,7 +83,8 @@ export async function apiGetMyDocument(token, page, page_size) {
                 versions: doc.versions.map((ver, verid) => {
                     return {
                         ...ver,
-                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0,
+                        file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : doc.uid
                     }
                 })
             }
@@ -104,7 +110,8 @@ export async function apiGetTrashDocument(token, page, page_size) {
                 versions: doc.versions.map((ver, verid) => {
                     return {
                         ...ver,
-                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0,
+                        file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : doc.uid
                     }
                 })
             }
@@ -130,7 +137,8 @@ export async function apiGetSharedDocument(token, page, page_size) {
                 versions: doc.versions.map((ver, verid) => {
                     return {
                         ...ver,
-                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0,
+                        file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : doc.uid
                     }
                 })
             }
@@ -318,3 +326,15 @@ export async function apiLockDocument(documentId) {
     return rawResponse.data.data
 }
 
+
+export async function apiUnlockDocument(documentId) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    // await delay(1000)
+    let rawResponse = await axios.post(`${endpoint}/api/documents/unlock/${documentId}`, null, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}

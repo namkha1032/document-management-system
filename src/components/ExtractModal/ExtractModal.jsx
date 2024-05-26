@@ -135,8 +135,11 @@ const ExtractModal = (props) => {
     }
     return (
         <>
-            <ToastContainer />
-            <Modal width={1200} footer={null} style={{ top: 100 }} title="Create new document" open={uploadDocument[index].modalOpen} maskClosable={true}
+            {/* <ToastContainer /> */}
+            <Modal
+                width={"60%"}
+                // width={1200}
+                footer={null} style={{ top: 100 }} title={uploadDocument[index].uploadType === "create" ? "Create new document" : "Update new file version"} open={uploadDocument[index].modalOpen} maskClosable={true}
                 onCancel={() => {
                     if (uploadDocument[index].fileList.length == 0) {
                         dispatchUploadDocument({ type: "removeItem", payload: { index: index } })

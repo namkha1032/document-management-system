@@ -52,3 +52,7 @@ body,
     width: 300px
 } */
 
+.greyed-out-suggestion {
+    opacity: 0.5;
+    pointer-events: none;
+  }

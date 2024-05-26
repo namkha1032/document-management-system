@@ -213,10 +213,19 @@ const FormEditMetadata = (props) => {
                         <Button onClick={() => addMetadata()} shape="circle" icon={<PlusOutlined />} />
                     </Col>
                     <Col span={7}>
-                        <Input value={newPair.key} onChange={(e) => setNewPair({
+                        {/* <Input value={newPair.key} onChange={(e) => setNewPair({
                             ...newPair,
                             key: e.target.value
-                        })} placeholder="key" variant="filled" />
+                        })} placeholder="key" variant="filled" /> */}
+                        <AutoComplete variant="filled" style={{ width: "100%" }} onSearch={(val) => {
+                            setNewPair({ ...newPair, key: val })
+                        }} options={options} value={newPair.key}
+                            filterOption={filterSearchNode}
+                            onSelect={(val, node) => {
+                                // console.log("node", node)
+                                setNewPair({ ...newPair, key: node.label })
+                            }}
+                        />
                     </Col>
                     <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <Typography.Text>:</Typography.Text>

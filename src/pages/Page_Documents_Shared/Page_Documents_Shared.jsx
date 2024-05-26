@@ -25,6 +25,7 @@ const Page_Documents_Shared = () => {
             });
         }
         fetchData()
+        document.title = "Shared documents"
     }, [])
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>

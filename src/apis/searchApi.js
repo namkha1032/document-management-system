@@ -46,7 +46,18 @@ export async function getSearchResult(searchData) {
     //     broader: response1.data.data.broader,
     //     related: response1.data.data.related,
     //     narrower: response1.data.data.narrower,
-    //     documents: responseFake.data.data.documents,
+    //     documents: responseFake.data.data.documents.map((doc, docidx) => {
+    //         return {
+    //             ...doc,
+    //             versions: doc.versions.map((ver, verid) => {
+    //                 return {
+    //                     ...ver,
+    //                     file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0,
+    //                     file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : doc.uid
+    //                 }
+    //             })
+    //         }
+    //     }),
     //     current: searchData.current,
     //     pageSize: responseFake.data.data.page_size,
     //     total: responseFake.data.data.total_items,
@@ -57,7 +68,7 @@ export async function getSearchResult(searchData) {
     console.log("searchData", searchData)
     let newSearchData = {
         ...searchData,
-        method: searchData.method == "semantic" ? "semantic" : searchData.method == "filename" ? "filename" : "full-text",
+        method: searchData.method == "semantic" ? "semantic" : searchData.method == "file-name" ? "file-name" : "full-text",
         domain: searchData.method == "full-text-onto" ? searchData.domain : ""
     }
     const response = await axios.post(`${endpoint}/api/search?page=${newSearchData.current}&page_size=${newSearchData.pageSize}`, newSearchData, {
@@ -69,7 +80,18 @@ export async function getSearchResult(searchData) {
     console.log("search result", response)
     let newResponse = {
         ...response.data.data,
-        documents: response.data.data.search_result.documents,
+        documents: response.data.data.search_result.documents.map((doc, docidx) => {
+            return {
+                ...doc,
+                versions: doc.versions.map((ver, verid) => {
+                    return {
+                        ...ver,
+                        file_size: ver.file_size !== "" ? parseInt(ver.file_size) : 0,
+                        file_name: ver.file_name.includes(".pdf") ? ver.file_name.split(".")[0] + ".pdf" : doc.uid
+                    }
+                })
+            }
+        }),
         current: response.data.data.search_result.current_page,
         pageSize: response.data.data.search_result.page_size,
         total: response.data.data.search_result.total_items,

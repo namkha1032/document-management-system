@@ -14,7 +14,8 @@ import {
     Typography,
     Space,
     message,
-    theme
+    theme,
+    Tooltip
 } from "antd";
 import { useEffect, useState, useContext } from "react";
 // import Skeleton from '@mui/material/Skeleton';
@@ -46,7 +47,8 @@ import {
     apiDeleteDocument,
     apiPublicDocument,
     apiPrivateDocument,
-    apiLockDocument
+    apiLockDocument,
+    apiUnlockDocument
 } from "../../apis/documentApi";
 import Bread from "../../components/Bread/Bread";
 import FormEditMetadata from "../../components/FormEditMetadata/FormEditMetadata";
@@ -80,10 +82,13 @@ const VjpStatistic = (props) => {
         >
             <Typography.Text ellipsis type="secondary">{title}</Typography.Text>
             <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
+
                 <Typography.Text style={{ fontSize: fSize, display: "flex", alignItems: "center" }}>
                     {prefix}
                 </Typography.Text>
-                <Typography.Text style={{ fontSize: fSize }} ellipsis>{value}</Typography.Text>
+                <Tooltip title={value}>
+                    <Typography.Text style={{ fontSize: fSize }} ellipsis>{value}</Typography.Text>
+                </Tooltip>
             </div>
         </Card>
     )
@@ -131,7 +136,9 @@ const ModalUpdateMetadata = (props) => {
         <>
             {document?.permission == "VIEW"
                 ? null
-                : <Button style={{ backgroundColor: antdTheme.token.colorFillContent }} onClick={() => { setModalOpen(true) }}>Edit metadata</Button>}
+                : <Tooltip title={document?.is_lock === true && document.owner.email !== userStorage.email ? "Document is currently being locked by owner" : ""}>
+                    <Button disabled={document?.is_lock === true && document.owner.email !== userStorage.email} style={{ backgroundColor: antdTheme.token.colorFillContent }} onClick={() => { setModalOpen(true) }}>Edit metadata</Button>
+                </Tooltip>}
             <Modal footer={null} width={700} style={{ top: 100 }} title="Edit metadata" open={modalOpen} maskClosable={true} onCancel={() => { setModalOpen(false) }}>
                 <FormEditMetadata type="edit" newMetadata={newMetadata} setNewMetadata={setNewMetadata} />
                 <Row gutter={[8, 8]} justify={"end"}>
@@ -216,8 +223,10 @@ const ModalViewFile = (props) => {
     let version = props.version
     let ModalButton = props.ModalButton
     let handleRestoreVersion = props.handleRestoreVersion
+    let document = props.document
     let [modalOpen, setModalOpen] = useState(false)
     let [loading, setLoading] = useState(false)
+    let userStorage = JSON.parse(localStorage.getItem("user"))
     async function handleRestore() {
         setLoading(true)
         await handleRestoreVersion(version.uid)
@@ -236,6 +245,7 @@ const ModalViewFile = (props) => {
                 okText="Restore this version"
                 centered
                 confirmLoading={loading}
+                footer={(document?.is_lock === true && document.owner.email !== userStorage.email) || document?.permission === "VIEW" ? null : true}
             >
                 <iframe src={version?.url?.length > 0 ? version.url : "https://pdfobject.com/pdf/sample.pdf"}
                     style={{ borderRadius: 8, borderWidth: 0, width: "100%", height: 600 }}>
@@ -249,8 +259,10 @@ const ModalViewMetadata = (props) => {
     let version = props.version
     let ModalButton = props.ModalButton
     let handleRestoreVersion = props.handleRestoreVersion
+    let document = props.document
     let [modalOpen, setModalOpen] = useState(false)
     let [loading, setLoading] = useState(false)
+    let userStorage = JSON.parse(localStorage.getItem("user"))
     async function handleRestore() {
         setLoading(true)
         await handleRestoreVersion(version.uid)
@@ -269,13 +281,16 @@ const ModalViewMetadata = (props) => {
                 okText="Restore this version"
                 centered
                 confirmLoading={loading}
+                footer={(document?.is_lock === true && document.owner.email !== userStorage.email) || document?.permission === "VIEW" ? null : true}
             >
                 <FormEditMetadata type="view" newMetadata={version.metadata} setNewMetadata={() => { }} />
             </Modal>
         </>
     )
 }
-
+function setTitle(tit) {
+    document.title = tit
+}
 const Page_Document_Id = () => {
     // const [messageApi, contextHolder] = message.useMessage();
     let [document, setDocument] = useState(null)
@@ -334,20 +349,24 @@ const Page_Document_Id = () => {
             "title": "Action",
             "render": ((obj) => <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
 
-                <ModalViewMetadata handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0, display: 'flex', alignItems: "center" }} icon={<FaList />}>View metadata</Button>} />
+                <ModalViewMetadata document={document} handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0, display: 'flex', alignItems: "center" }} icon={<FaList />}>View metadata</Button>} />
 
-                <ModalViewFile handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0, display: 'flex', alignItems: "center" }} icon={<FaRegFilePdf />}>View file</Button>} />
-                <Popconfirm
-                    title="Restore version"
-                    description="Are you sure you want to restore this version?"
-                    onConfirm={() => { handleRestoreVersion(obj.uid) }}
-                    okText="Yes"
-                    cancelText="No"
-                    okButtonProps={{
-                        loading: restoreLoading
-                    }}>
-                    <Button type="text" style={{ padding: 0, display: "flex", alignItems: "center" }} icon={<RollbackOutlined />}>Restore</Button>
-                </Popconfirm>
+                <ModalViewFile document={document} handleRestoreVersion={handleRestoreVersion} version={obj} ModalButton={<Button type="text" style={{ padding: 0, display: 'flex', alignItems: "center" }} icon={<FaRegFilePdf />}>View file</Button>} />
+                {document?.permission === "VIEW"
+                    ? null
+                    : <Popconfirm
+                        title="Restore version"
+                        description="Are you sure you want to restore this version?"
+                        onConfirm={() => { handleRestoreVersion(obj.uid) }}
+                        okText="Yes"
+                        cancelText="No"
+                        okButtonProps={{
+                            loading: restoreLoading
+                        }}>
+                        <Tooltip title={document?.is_lock === true && document.owner.email !== userStorage.email ? "Document is currently being locked by owner" : ""}>
+                            <Button disabled={document?.is_lock === true && document.owner.email !== userStorage.email} type="text" style={{ padding: 0, display: "flex", alignItems: "center" }} icon={<RollbackOutlined />}>Restore</Button>
+                        </Tooltip>
+                    </Popconfirm>}
             </div>)
         }
     ]
@@ -361,7 +380,10 @@ const Page_Document_Id = () => {
         {
             "title": "User",
             "render": ((obj) => <>
-                <Typography.Text>{`${obj.modified_by.first_name} ${obj.modified_by.last_name}`}</Typography.Text>
+                <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
+                    <Avatar src={`/file/avatar.png`} />
+                    <Typography.Text>{`${obj.modified_by.first_name} ${obj.modified_by.last_name}`}</Typography.Text>
+                </div>
             </>)
         },
         {
@@ -386,6 +408,7 @@ const Page_Document_Id = () => {
                 setIsAllowed(false)
             }
             setDocument(documentCopy)
+            setTitle(documentCopy?.versions[0]?.file_name?.length > 0 ? documentCopy?.versions[0]?.file_name : documentCopy?.uid)
         }
         fetchData()
     }, [document_id])
@@ -465,7 +488,15 @@ const Page_Document_Id = () => {
         setModalLockOpen(false)
     }
     async function handleUnlockFile() {
-
+        setLoadingLock(true)
+        await apiUnlockDocument(document_id)
+        let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+        setDocument(documentResponse)
+        toast.success('Document has been unlock successfully', {
+            theme: "colored"
+        })
+        setLoadingLock(false)
+        setModalLockOpen(false)
     }
     // ///////////////////////////////////////////////////////
 
@@ -539,7 +570,7 @@ const Page_Document_Id = () => {
                         : "Are you sure you want to lock this document? No one will be able to edit it except you"}</Typography.Text>
 
             </Modal>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
             {isAllowed
                 ?
                 <div style={{ flex: "0 1 auto" }}>
@@ -703,13 +734,19 @@ const Page_Document_Id = () => {
                 <div style={{ display: "flex", alignItems: "center", columnGap: 16, marginTop: 24, marginBottom: 16 }}>
                     <GoVersions style={{ fontSize: 24 }} />
                     <Typography.Title level={2} style={{ margin: 0 }}>Version control</Typography.Title>
-                    <Button icon={<UploadOutlined />} onClick={() => {
-                        dispatchUploadDocument({
-                            type: "addItem", payload: {
-                                uploadType: document.uid
-                            }
-                        })
-                    }}>Update new file</Button>
+                    {document?.permission === "VIEW"
+                        ? null
+                        : <Tooltip title={document?.is_lock === true && document.owner.email !== userStorage.email ? "Document is currently being locked by owner" : ""}>
+                            <Button disabled={document?.is_lock === true && document.owner.email !== userStorage.email} icon={<UploadOutlined />} onClick={() => {
+                                dispatchUploadDocument({
+                                    type: "addItem", payload: {
+                                        uploadType: document.uid
+                                    }
+                                })
+                            }}>Update new file</Button>
+                        </Tooltip>}
+
+
                 </div>
 
                 <Table

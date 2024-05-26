@@ -52,9 +52,12 @@ const Page_Login = () => {
         }
         setLoadingLogin(false)
     };
+    useEffect(() => {
+        document.title = "Login"
+    }, [])
     return (
         <>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
             <div style={{
                 width: "100%",
                 height: "100%",

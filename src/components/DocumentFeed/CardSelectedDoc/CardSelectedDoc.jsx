@@ -46,6 +46,7 @@ const CardSelectedDoc = (props) => {
     let antdTheme = theme.useToken()
     let navigate = useNavigate()
     console.log("selectedDocState", selectedDocState)
+    let userStorage = JSON.parse(localStorage.getItem("user"))
     async function fetchData() {
         setLoadingSelectedDoc(true)
         let documentResponse = await apiGetDocument(selectedDoc[0].uid)
@@ -63,12 +64,15 @@ const CardSelectedDoc = (props) => {
             <Card
                 loading={loadingSelectedDoc}
                 title={<div>
-                    <Typography.Text ellipsis style={{ width: 290 }}>
-                        {selectedDocState?.versions[0].file_name.length > 0 ? selectedDocState?.versions[0].file_name : selectedDocState?.uid}
-                        {/* {selectedDocState?.versions[0].file_name.length > 0 ? "hahaha" : selectedDocState?.uid} */}
-                        {/* {selectedDocState?.uid} */}
-                        {/* {selectedDocState?.versions[0].file_name} */}
-                    </Typography.Text>
+
+                    <Tooltip title={`${selectedDocState?.versions[0]?.file_name}`}>
+                        <Typography.Text ellipsis style={{ width: 290 }}>
+                            {selectedDocState?.versions[0].file_name.length > 0 ? selectedDocState?.versions[0].file_name : selectedDocState?.uid}
+                            {/* {selectedDocState?.versions[0].file_name.length > 0 ? "hahaha" : selectedDocState?.uid} */}
+                            {/* {selectedDocState?.uid} */}
+                            {/* {selectedDocState?.versions[0].file_name} */}
+                        </Typography.Text>
+                    </Tooltip>
                 </div>}
                 className="selectCard"
                 extra={
@@ -139,12 +143,12 @@ const CardSelectedDoc = (props) => {
                                 }
                             </Avatar.Group>
                             {/* <Button icon={<MdVpnKey />} style={{ display: "flex", alignItems: "center", height: 48, fontSize: 16, borderColor: antdTheme.token.colorText, color: antdTheme.token.colorText }}>Manage access</Button> */}
-                            <PermissionModal document={selectedDocState} setDocument={setSelectedDocState}
+                            {selectedDocState?.owner.email === userStorage.email ? <PermissionModal document={selectedDocState} setDocument={setSelectedDocState}
                                 modalButton={
                                     <TagButton icon={<MdVpnKey />} color="green" columnGap={8} width={150}>
                                         Permission
                                     </TagButton>
-                                } />
+                                } /> : null}
                         </div>
                         <Typography.Title ellipsis level={4}>Owner</Typography.Title>
                         <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", columnGap: 8 }}>

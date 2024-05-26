@@ -41,11 +41,13 @@ import {
     HddOutlined,
     UserOutlined,
     TeamOutlined,
-    SearchOutlined
+    SearchOutlined,
+    ShareAltOutlined
 } from "@ant-design/icons"
 // import apis
 import { getSearchResult } from "../../apis/searchApi"
-import { hover } from "@testing-library/user-event/dist/hover"
+import { apiLiveSearchMetadata } from "../../apis/documentApi";
+// import { hover } from "@testing-library/user-event/dist/hover"
 // import hooks
 // import functions
 // import context
@@ -53,11 +55,29 @@ import SearchOptionContext from "../../context/SearchOptionContext";
 import SearchResultContext from "../../context/SearchResultContext";
 import OntologyAllContext from "../../context/OntologyAllContext";
 import randomString from "../../functions/randomString";
+import { PiShareNetworkFill } from "react-icons/pi";
+
+import prettyBytes from 'pretty-bytes';
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.js',
-    import.meta.url,
-).toString();
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//     'pdfjs-dist/build/pdf.worker.min.js',
+//     import.meta.url,
+// ).toString();
+
+function removeAccents(str) {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
+function filterSearchNode(inputValue, path) {
+    // console.log("inputValue", inputValue)
+    // console.log("path", path)
+    // return path.some((option) => {
+    //     return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+    // });
+    return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+}
 
 function calculateTreeHeight(subTree) {
     if (subTree.hasOwnProperty('key') || subTree.hasOwnProperty('$not')) {
@@ -435,6 +455,7 @@ const FormKey = (props) => {
 }
 const FormKeyValue = (props) => {
     const myObj = props.myObj
+    const options = props.options
     const handleTypeKeyValueNew = props.handleTypeKeyValueNew
     const operatorButton = props.operatorButton
     const deleteButton = props.deleteButton
@@ -485,6 +506,12 @@ const FormKeyValue = (props) => {
                     ...kvPair,
                     key: val
                 })}
+                options={options}
+                onSelect={(val, node) => {
+                    // console.log("node", node)
+                    setKvPair({ ...kvPair, key: node.label })
+                }}
+                filterOption={filterSearchNode}
             />
             {operatorButton}
             <Input
@@ -501,11 +528,12 @@ const FormKeyValue = (props) => {
 }
 
 const MetaForm = (props) => {
-    const antdTheme = theme.useToken()
     const myObj = props.myObj
     const treeHeight = props.treeHeight
     const currHeight = props.currHeight
     const cardWidth = props.cardWidth
+    const options = props.options
+    const antdTheme = theme.useToken()
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
 
@@ -563,7 +591,7 @@ const MetaForm = (props) => {
             <>
                 {myObj.map((item, index) =>
                     <div key={index}>
-                        <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight} cardWidth={'fit-content'} />
+                        <MetaForm options={options} myObj={item} treeHeight={treeHeight} currHeight={currHeight} cardWidth={'fit-content'} />
                     </div>
                 )}
             </>
@@ -629,13 +657,13 @@ const MetaForm = (props) => {
                             ?
                             myObj.$and.map((item, index) =>
                                 <div key={index}>
-                                    <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} cardWidth={'100%'} />
+                                    <MetaForm options={options} myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} cardWidth={'100%'} />
                                 </div>
                             )
                             :
                             myObj.$or.map((item, index) =>
                                 <div key={index}>
-                                    <MetaForm myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} cardWidth={'fit-content'} />
+                                    <MetaForm options={options} myObj={item} treeHeight={treeHeight} currHeight={currHeight + 1} cardWidth={'fit-content'} />
                                 </div>)
                         }
                     </div>
@@ -656,6 +684,7 @@ const MetaForm = (props) => {
                     {/* <FormValue myObj={myObj} handleTypeKeyValue={handleTypeKeyValue} /> */}
 
                     <FormKeyValue
+                        options={options}
                         myObj={myObj}
                         handleTypeKeyValueNew={handleTypeKeyValueNew}
                         operatorButton={<Button
@@ -705,6 +734,7 @@ const Page_Search = () => {
     let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let [searchResult, dispatchSearchResult] = useContext(SearchResultContext)
     let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
+    let [options, setOptions] = useState([])
     console.log("Page_Search: searchOption", searchOption)
     console.log("Page_Search: searchResult", searchResult)
     console.log("Page_Search: ontologyAll", ontologyAll)
@@ -815,7 +845,7 @@ const Page_Search = () => {
             render: (obj) => {
                 let displayArray = []
                 let extendArray = []
-                let limit = 2
+                let limit = 4
                 if (obj.versions[0].metadata.length > limit) {
                     displayArray = obj.versions[0].metadata.slice(0, limit)
                     extendArray = obj.versions[0].metadata.slice(limit)
@@ -885,7 +915,7 @@ const Page_Search = () => {
                         <Col span={12}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography.Title level={5} style={{ marginTop: 0, marginBottom: 13 }}>File size</Typography.Title>
-                                <Typography.Text>{obj?.versions[0]?.file_size}</Typography.Text>
+                                <Typography.Text>{prettyBytes(obj?.versions[0]?.file_size)}</Typography.Text>
                             </div>
                         </Col>
                         <Col span={12}>
@@ -926,7 +956,19 @@ const Page_Search = () => {
     }
     const leftTerm = 6
     const rightTerm = 18
-
+    useEffect(() => {
+        async function getSuggestions() {
+            let response = await apiLiveSearchMetadata("")
+            setOptions(response.data.map((res, idx) => {
+                return {
+                    ...res,
+                    compareLabel: removeAccents(res.label)
+                }
+            }))
+        }
+        getSuggestions()
+        document.title = "Search"
+    }, [])
     // HTMl
     // return null
     return (
@@ -998,7 +1040,9 @@ const Page_Search = () => {
                         <Container>
                             <Row gutter={[16, 16]}>
                                 <Col span={12}>
-                                    <Card title={'Keyword suggestion'} style={{ height: '100%' }}
+                                    <Card title={'Keyword suggestion'} className={searchOption?.method === "full-text-onto" ? "" : "greyed-out-suggestion"} style={{
+                                        height: '100%'
+                                    }}
                                         extra={<Select
                                             value={searchOption?.domain}
                                             style={{
@@ -1138,8 +1182,10 @@ const Page_Search = () => {
                                                     value: 'full-text-onto',
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                            <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} />
-                                                            <Typography.Text>Full-text onto</Typography.Text>
+                                                            {/* <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} /> */}
+                                                            {/* <ShareAltOutlined /> */}
+                                                            <PiShareNetworkFill />
+                                                            <Typography.Text>Full-text expand</Typography.Text>
                                                         </div>
                                                 },
                                                 {
@@ -1151,7 +1197,7 @@ const Page_Search = () => {
                                                         </div>,
                                                 },
                                                 {
-                                                    value: 'filename',
+                                                    value: 'file-name',
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
                                                             <FontAwesomeIcon icon={icon({ name: 'file-pdf', style: 'solid' })} />
@@ -1173,7 +1219,7 @@ const Page_Search = () => {
                                                 </div>
                                                 : null
                                             }
-                                            <MetaForm myObj={searchOption?.metadata} treeHeight={treeHeight} currHeight={1} cardWidth='fit-content' />
+                                            <MetaForm options={options} myObj={searchOption?.metadata} treeHeight={treeHeight} currHeight={1} cardWidth='fit-content' />
                                         </div>
                                     </Card>
                                 </Col>
@@ -1211,14 +1257,14 @@ const Page_Search = () => {
                                             size={'large'}
                                             onChange={handleChangeSearchScope}
                                             options={[
-                                                {
-                                                    value: 'all',
-                                                    label:
-                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                            <FileDoneOutlined />
-                                                            <Typography.Text>All</Typography.Text>
-                                                        </div>
-                                                },
+                                                // {
+                                                //     value: 'all',
+                                                //     label:
+                                                //         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                //             <FileDoneOutlined />
+                                                //             <Typography.Text>All</Typography.Text>
+                                                //         </div>
+                                                // },
                                                 {
                                                     value: 'company',
                                                     label:
@@ -1231,7 +1277,7 @@ const Page_Search = () => {
                                                     value: 'my',
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                            <FileDoneOutlined />
+                                                            <UserOutlined />
                                                             <Typography.Text>My documents</Typography.Text>
                                                         </div>
                                                 },
@@ -1239,7 +1285,7 @@ const Page_Search = () => {
                                                     value: 'shared',
                                                     label:
                                                         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                            <FileDoneOutlined />
+                                                            <TeamOutlined />
                                                             <Typography.Text>Shared documents</Typography.Text>
                                                         </div>
                                                 },

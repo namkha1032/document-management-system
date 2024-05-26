@@ -167,6 +167,7 @@ const Section_Ontology_Id = () => {
             let response = await getOntologyId(ontologyId)
             dispatchOntology({ type: "setOntology", payload: response })
             setNewOntologyName(response.ontologyName)
+            document.title = response.ontologyName
         }
         fetchData()
     }, [])

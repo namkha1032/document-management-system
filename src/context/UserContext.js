@@ -11,6 +11,16 @@ function userReducer(state, action) {
             localStorage.removeItem("user")
             return null
         }
+        case "updateInfo": {
+            let oldItem = JSON.parse(localStorage.getItem("user"))
+            let newItem = {
+                ...oldItem,
+                first_name: action.payload.first_name,
+                last_name: action.payload.last_name
+            }
+            localStorage.setItem("user", JSON.stringify(newItem))
+            return newItem
+        }
         default: {
             localStorage.removeItem("user")
             return null

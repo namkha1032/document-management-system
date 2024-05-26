@@ -21,6 +21,18 @@ export async function getMe(token) {
     return response.data.data
 }
 
+export async function apiUpdateInfo(data) {
+    // await delay(2000)
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    let response = await axios.post(`${endpoint}/api/users/update/info`, data, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    console.log("response info", response)
+    return response.data.data
+}
 export async function apiLiveSearchUser(query) {
     // await delay(2000)
     let token = JSON.parse(localStorage.getItem("user")).access_token

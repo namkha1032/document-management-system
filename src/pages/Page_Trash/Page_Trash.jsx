@@ -11,7 +11,7 @@ const Page_Trash = () => {
     useEffect(() => {
         async function fetchData() {
             let response = await apiGetTrashDocument(userStorage.access_token, documentTrash.current, documentTrash.pageSize);
-            console.log("response",response)
+            console.log("response", response)
             dispatchDocumentTrash({
                 type: "set", payload: {
                     ...documentTrash,
@@ -24,6 +24,7 @@ const Page_Trash = () => {
             });
         }
         fetchData()
+        document.title = "Trash"
     }, [])
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>

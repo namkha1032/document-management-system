@@ -35,6 +35,8 @@ import { getSearchResult } from './apis/searchApi';
 import { getMe } from './apis/userApi';
 // import Context
 import Page_Documents_Company from './pages/Page_Documents_Company/Page_Documents_Company';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   // search
   // router
@@ -100,7 +102,10 @@ const App = () => {
     }
   ]);
   return (
-    <RouterProvider router={router} />
+    <>
+      <ToastContainer />
+      <RouterProvider router={router} />
+    </>
   );
 };
 

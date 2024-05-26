@@ -101,6 +101,9 @@ const Page_Ontology_All = () => {
             }
         }
     ]
+    useEffect(() => {
+        document.title = "All ontologies"
+    }, [])
     return (
         <>
             <Bread breadProp={[{ "title": "Ontology", "path": "/ontology" }]} createButtonType={"ontology"} />
