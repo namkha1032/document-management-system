@@ -305,9 +305,10 @@ const DocumentFeed = (props) => {
         try {
             let linkList = ""
             // console.log(window.location.hostname)
-            let currentDomain = `${window.location.hostname}:${window.location.port}`
+            console.log("window.location", window.location)
+            // let currentDomain = `${window.location.hostname}:${window.location.port}`
             for (let i = 0; i < selectedKey.length; i++) {
-                let newLink = `${currentDomain}/document/${selectedKey[i]}`
+                let newLink = `${window.location.origin}/document/${selectedKey[i]}`
                 linkList = linkList.concat(newLink)
                 if (i != selectedKey.length - 1) {
                     linkList = linkList + "\n"
