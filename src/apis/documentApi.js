@@ -152,7 +152,7 @@ export async function apiExtractMetadata(newForm) {
     let rawResponse = null
     let i = 0
     let token = JSON.parse(localStorage.getItem("user")).access_token
-
+    // hehehe
     while (rawResponse?.data?.data == null) {
         rawResponse = await axios.post(`${endpoint}/api/ocr`, newForm, {
             headers: {
