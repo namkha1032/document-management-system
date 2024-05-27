@@ -121,10 +121,14 @@ const ExtractModal = (props) => {
         // }
         let response = await apiUpdateMetadata(userStorage.access_token, uploadDocument[index].uploadType, newForm)
         console.log("responsesavedoc", response)
-        navigate(`/document/${uploadDocument[index].uploadType}`)
         dispatchUploadDocument({ type: "removeItem", payload: { index: index } })
         setLoadingUpload(false)
-        window.location.reload()
+        navigate(`/document/${uploadDocument[index].uploadType}`, {
+            state: {
+                reloadFile: true
+            }
+        })
+        // window.location.reload()
     }
     async function handleOCR() {
         dispatchUploadDocument({ type: "setStep", payload: { index: index, current: 1 } })

@@ -416,6 +416,15 @@ const Page_Document_Id = () => {
         }
         fetchData()
     }, [document_id])
+    useEffect(() => {
+        async function fetchData() {
+            if (state?.reloadFile) {
+                let documentResponse = await apiGetDocument(document_id, document.logCurrent, document.logPageSize)
+                setDocument(documentResponse)
+            }
+        }
+        fetchData()
+    }, [state])
     async function handleRestoreVersion(versionUid) {
         setRestoreLoading(true)
         let restoreResponse = await apiRestoreVersion(document.uid, versionUid)
