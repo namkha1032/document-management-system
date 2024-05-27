@@ -2,7 +2,8 @@ import axios from "axios";
 import delay from "../functions/delay";
 import endpoint from "./_domain";
 import { originHeader } from "./_domain";
-export async function getSearchResult(searchData) {
+
+export async function apiGetSearchResult(searchData) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     // let newSearchData = {
     //     ...searchData,
@@ -69,7 +70,7 @@ export async function getSearchResult(searchData) {
     let newSearchData = {
         ...searchData,
         method: searchData.method == "semantic" ? "semantic" : searchData.method == "file-name" ? "file-name" : "full-text",
-        domain: searchData.method == "full-text-onto" ? searchData.domain : ""
+        domain: searchData.method == "full-text" ? searchData.domain : ""
     }
     const response = await axios.post(`${endpoint}/api/search?page=${newSearchData.current}&page_size=${newSearchData.pageSize}`, newSearchData, {
         headers: {

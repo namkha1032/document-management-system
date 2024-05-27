@@ -31,7 +31,6 @@ import Page_Ontology_All from './pages/Page_Ontology_All/Page_Ontology_All';
 import Unauthorized from './components/Unauthorized/Unauthorized';
 import UserContext from './context/UserContext';
 // import apis
-import { getSearchResult } from './apis/searchApi';
 import { getMe } from './apis/userApi';
 // import Context
 import Page_Documents_Company from './pages/Page_Documents_Company/Page_Documents_Company';

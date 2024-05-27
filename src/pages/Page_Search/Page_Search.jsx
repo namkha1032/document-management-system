@@ -45,7 +45,7 @@ import {
     ShareAltOutlined
 } from "@ant-design/icons"
 // import apis
-import { getSearchResult } from "../../apis/searchApi"
+import { apiGetSearchResult } from "../../apis/searchApi"
 import { apiLiveSearchMetadata } from "../../apis/documentApi";
 // import { hover } from "@testing-library/user-event/dist/hover"
 // import hooks
@@ -944,9 +944,9 @@ const Page_Search = () => {
         }
         // await searchMutation.mutateAsync(newSearchOption)
         await dispatchSearchResult({ type: 'loading', payload: true })
-        let newSearchResult = await getSearchResult(newSearchOption)
+        let newSearchResult = await apiGetSearchResult(newSearchOption)
         await dispatchSearchResult({ type: 'search', payload: { newSearchResult, newSearchOption } })
-        await dispatchSearchOption({ type: 'update', payload: newSearchOption })
+        await dispatchSearchOption({ type: 'search', payload: { newSearchResult, newSearchOption } })
         await dispatchSearchResult({ type: 'loading', payload: false })
     }
     // logic
@@ -1040,9 +1040,11 @@ const Page_Search = () => {
                         <Container>
                             <Row gutter={[16, 16]}>
                                 <Col span={12}>
-                                    <Card title={'Keyword suggestion'} className={searchOption?.method === "full-text-onto" ? "" : "greyed-out-suggestion"} style={{
-                                        height: '100%'
-                                    }}
+                                    <Card title={'Keyword suggestion'}
+                                        className={searchOption?.method === "full-text" ? "" : "greyed-out-suggestion"}
+                                        style={{
+                                            height: '100%'
+                                        }}
                                         extra={<Select
                                             value={searchOption?.domain}
                                             style={{
@@ -1132,27 +1134,27 @@ const Page_Search = () => {
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.broader).map(([oriTerm, extendArray], index) =>
                                                         extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
+                                                            <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
                                                                 {kw}
                                                             </Tag>))}
                                                 </div>
                                             </div>
-                                            {/* <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                                 <Typography.Text strong>Related terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.related).map(([oriTerm, extendArray], index) =>
                                                         extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'related')}>
+                                                            <Tag key={index} color='cyan' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'related')}>
                                                                 {kw}
                                                             </Tag>))}
                                                 </div>
-                                            </div> */}
+                                            </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                                 <Typography.Text strong>Narrower terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.narrower).map(([oriTerm, extendArray], index) =>
                                                         extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'narrower')}>
+                                                            <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'narrower')}>
                                                                 {kw}
                                                             </Tag>))}
                                                 </div>
@@ -1178,16 +1180,16 @@ const Page_Search = () => {
                                                             <Typography.Text>Full-text search</Typography.Text>
                                                         </div>
                                                 },
-                                                {
-                                                    value: 'full-text-onto',
-                                                    label:
-                                                        <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
-                                                            {/* <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} /> */}
-                                                            {/* <ShareAltOutlined /> */}
-                                                            <PiShareNetworkFill />
-                                                            <Typography.Text>Full-text expand</Typography.Text>
-                                                        </div>
-                                                },
+                                                // {
+                                                //     value: 'full-text-onto',
+                                                //     label:
+                                                //         <div style={{ display: 'flex', alignItems: 'center', columnGap: 8 }}>
+                                                //             {/* <FontAwesomeIcon icon={icon({ name: 'file-lines', style: 'solid' })} /> */}
+                                                //             {/* <ShareAltOutlined /> */}
+                                                //             <PiShareNetworkFill />
+                                                //             <Typography.Text>Full-text expand</Typography.Text>
+                                                //         </div>
+                                                // },
                                                 {
                                                     value: 'semantic',
                                                     label:

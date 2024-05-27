@@ -6,6 +6,30 @@ function SearchOptionReducer(state, action) {
         case "update": {
             return action.payload
         }
+        case "search": {
+            let newSearchResult = action.payload.newSearchResult
+            let newSearchOption = action.payload.newSearchOption
+            if (newSearchOption.method === "full-text" && newSearchOption.oldQuery !== newSearchOption.original_query) {
+                return {
+                    ...newSearchOption,
+                    oldQuery: newSearchOption.original_query,
+                    broader: {},
+                    related: newSearchResult.related,
+                    narrower: {}
+                }
+            }
+            else if (newSearchOption.method === "full-text") {
+                return newSearchOption
+            }
+            else {
+                return {
+                    ...newSearchOption,
+                    broader: {},
+                    related: {},
+                    narrower: {}
+                }
+            }
+        }
         case "reset": {
             return {
                 original_query: '',
@@ -18,7 +42,8 @@ function SearchOptionReducer(state, action) {
                 // allOntologies: [],
                 current: 1,
                 pageSize: 10,
-                search_scope: 'my'
+                search_scope: 'my',
+                oldQuery: ""
             }
         }
     }
@@ -37,7 +62,8 @@ const SearchOptionProvider = (props) => {
             // allOntologies: [],
             current: 1,
             pageSize: 10,
-            search_scope: 'my'
+            search_scope: 'my',
+            oldQuery: ""
         }
     )
     // useEffect(() => {

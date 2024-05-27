@@ -31,7 +31,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 // import apis
-import { getSearchResult } from '../../apis/searchApi';
+import { apiGetSearchResult } from '../../apis/searchApi';
 import { apiUpdateInfo } from '../../apis/userApi';
 // import hooks
 // import functions
@@ -103,12 +103,13 @@ const NavBar = () => {
             ...searchOption,
             original_query: value,
             current: 1,
-            pageSize: searchOption.pageSize
+            pageSize: searchOption.pageSize,
+            auto: searchOption.oldQuery !== value ? true : false
         }
         await dispatchSearchResult({ type: 'loading', payload: true })
-        let newSearchResult = await getSearchResult(newSearchOption)
+        let newSearchResult = await apiGetSearchResult(newSearchOption)
         await dispatchSearchResult({ type: 'search', payload: { newSearchResult, newSearchOption } })
-        await dispatchSearchOption({ type: 'update', payload: newSearchOption })
+        await dispatchSearchOption({ type: 'search', payload: { newSearchResult, newSearchOption } })
         await dispatchSearchResult({ type: 'loading', payload: false })
     }
     async function handleRemoveKeyword(e, extendTerm, oriTerm, type) {
@@ -289,7 +290,7 @@ const NavBar = () => {
                     </Row>
                 </Modal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: "center", height: "100%" }}>
-                    <div style={{ display: "flex", alignItems: "center", width: "40%" }}>
+                    <div style={{ display: "flex", alignItems: "center", width: "80%" }}>
                         {user?.is_expertuser
                             ? null
                             :
@@ -302,13 +303,16 @@ const NavBar = () => {
                                 enterButton
                                 size="large"
                                 // suffix={<AdvancedSearchButton />}
+                                // style={{
+                                //     width: 2000
+                                // }}
                                 onSearch={handleSearch}
                                 prefix={
                                     <>
                                         {
                                             Object.entries(searchOption?.broader).map(([oriTerm, extendArray], index) =>
                                                 extendArray.map((extendTerm, index) =>
-                                                    <Tag key={index} color='green' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
+                                                    <Tag key={index} color='blue' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
                                                         {extendTerm}
                                                     </Tag>
                                                 ))
@@ -316,7 +320,7 @@ const NavBar = () => {
                                         {
                                             Object.entries(searchOption?.related).map(([oriTerm, extendArray], index) =>
                                                 extendArray.map((extendTerm, index) =>
-                                                    <Tag key={index} color='green' closeIcon onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')}>
+                                                    <Tag key={index} color='cyan' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')}>
                                                         {extendTerm}
                                                     </Tag>
                                                 ))
@@ -324,7 +328,7 @@ const NavBar = () => {
                                         {
                                             Object.entries(searchOption?.narrower).map(([oriTerm, extendArray], index) =>
                                                 extendArray.map((extendTerm, index) =>
-                                                    <Tag key={index} color='blue' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
+                                                    <Tag key={index} color='green' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
                                                         {extendTerm}
                                                     </Tag>
                                                 ))
