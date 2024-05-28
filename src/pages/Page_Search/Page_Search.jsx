@@ -1293,6 +1293,10 @@ const Page_Search = () => {
                                                 },
                                             ]}
                                         />
+                                        {searchResult?.total !== null ?
+                                            <Typography.Text>{searchResult?.total} documents found</Typography.Text>
+                                            : null}
+
                                     </div>
                                     <Pagination
                                         current={searchResult.current}
