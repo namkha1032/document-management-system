@@ -180,7 +180,14 @@ export async function apiSaveDocumentToCloud(token, data) {
         }
     })
     // return 1
-    return rawResponse.data
+    let newResponse = {
+        ...rawResponse.data,
+        versions: {
+            ...rawResponse.data.versions,
+            file_name: rawResponse.data.versions.file_name.includes(".pdf") ? rawResponse.data.versions.file_name.split(".")[0] + ".pdf" : rawResponse.data.uid
+        }
+    }
+    return newResponse
 }
 
 export async function apiUpdateMetadata(token, uid, data) {
