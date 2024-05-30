@@ -256,7 +256,20 @@ const ModalViewFile = (props) => {
         </>
     )
 }
-
+const ModalViewContent = (props) => {
+    let document = props.document
+    let [modalOpen, setModalOpen] = useState(false)
+    return (<>
+        <Button onClick={() => { setModalOpen(true) }}>View content</Button>
+        <Modal width={800} title={"Content"} open={modalOpen} maskClosable={true}
+            onCancel={() => { setModalOpen(false) }}
+            centered
+            footer={null}
+        >
+            <Input.TextArea value={document?.versions[0]?.content} autoSize={{ minRows: 1, maxRows: 40 }} />
+        </Modal>
+    </>)
+}
 const ModalViewMetadata = (props) => {
     let version = props.version
     let ModalButton = props.ModalButton
@@ -689,7 +702,13 @@ const Page_Document_Id = () => {
                                 <Card style={{
                                     height: document ? "100%" : 0, transition: "height 0.3s, min-height 0.3s", overflow: "hidden", minHeight: document ? 500 : 0,
                                     borderColor: antdTheme.token.colorBorder
-                                }} title={"Metadata"} extra={<ModalUpdateMetadata document={document} setDocument={setDocument} />}>
+                                }} title={"Metadata"} extra={
+                                    <div style={{ display: 'flex', alignItems: "center", columnGap: 8 }}>
+                                        <ModalViewContent document={document} />
+                                        <ModalUpdateMetadata document={document} setDocument={setDocument} />
+                                    </div>
+
+                                }>
                                     {document?.versions[0].metadata.map((item, index) => {
                                         return (<Row key={index} style={{ marginTop: 8 }} gutter={[8, 8]}>
                                             <Col span={10}>
