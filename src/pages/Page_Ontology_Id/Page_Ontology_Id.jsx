@@ -42,11 +42,14 @@ const Search_Node = (props) => {
             .replace(/đ/g, 'd').replace(/Đ/g, 'D');
     }
     async function handleSearchNode(id) {
-        // console.log("search id", id)
-        let ontologyIdSplit = ontology.ontologyId.split(':')
+        console.log("search id", id)
+        let ontologyIdSplit = ontology.ontologyId.length === 15 ? "4:6189104e-54a2-4243-81ac-77508424ea24:0".split(':') : ontology.ontologyId.split(':')
         let preId = `${ontologyIdSplit[0]}:${ontologyIdSplit[1]}:${id}`
         if (id) {
+            console.log("ontology full", ontology)
+            console.log("preId", preId)
             const findNode = ontology.nodes.find((node) => node.id == preId)
+            console.log("findNode", findNode)
             await graphState.focus(findNode.id, {
                 scale: 1.0,
                 // offset: {x:Number, y:Number}
@@ -170,6 +173,7 @@ const Section_Ontology_Id = () => {
             document.title = response.ontologyName
         }
         fetchData()
+        return () => { }
     }, [])
     useEffect(() => {
         async function handleZoom() {
@@ -266,10 +270,13 @@ const Section_Ontology_Id = () => {
                                                     setGraphState(network)
                                                 }}
                                                 options={{
-                                                    // layout: {
-                                                    //     randomSeed: 69,
-                                                    //     improvedLayout: true,
-                                                    // },
+                                                    layout: {
+                                                        randomSeed: 69,
+                                                        improvedLayout: true,
+                                                        // hierarchical: {
+                                                        //     direction: "LR"
+                                                        // }
+                                                    },
                                                     edges: {
                                                         color: modeTheme == "light" ? "#000000" : "#FFFFFF",
                                                         // "smooth": {
@@ -279,51 +286,51 @@ const Section_Ontology_Id = () => {
                                                     height: "100%",
                                                     nodes: {
                                                         shape: 'box',
-                                                        // mass: 1
+                                                        // mass: 2
                                                     },
-                                                    // "physics": {
-                                                    //     "barnesHut": {
-                                                    //         "springConstant": 0,
-                                                    //         "avoidOverlap": 1
+                                                    // physics: {
+                                                    //     barnesHut: {
+                                                    //         springConstant: 0.01,
+                                                    //         avoidOverlap: 0.2
                                                     //     }
                                                     // }
                                                     physics: {
-                                                        enabled: true,
-                                                        barnesHut: {
-                                                            // gravitationalConstant: -80000,
-                                                            // "springConstant": 0,
-                                                            avoidOverlap: 0.2,
-                                                            // gravitationalConstant: -80000,
-                                                            // springConstant: 0.001,
-                                                            // springLength: 200
-                                                        },
+                                                        // stabilization: {
+                                                        //     enabled: true,
+                                                        //     iterations: 100, // The number of iterations to perform
+                                                        //     updateInterval: 1, // Update the progress bar every 25 iterations
+                                                        //     onlyDynamicEdges: false,
+                                                        //     fit: true
+                                                        // },
+                                                        // enabled: false,
+                                                        // barnesHut: {
+                                                        //     gravitationalConstant: -80000,
+                                                        //     "springConstant": 0,
+                                                        //     avoidOverlap: 0.2,
+                                                        //     gravitationalConstant: -80000,
+                                                        //     springConstant: 0.001,
+                                                        // springLength: 100
+                                                        // },
                                                         // stabilization: {
                                                         //     enabled: true,
                                                         //     iterations: 80000, // You can adjust this to control the level of stabilization
                                                         // },
-                                                        // barnesHut: {
-                                                        //     // gravitationalConstant: -80000, // Stronger repulsion to avoid overlap
-                                                        //     // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
-                                                        //     // springLength: 9000, // Distance between connected nodes
-                                                        //     // springConstant: 0.001, // Controls the spring force
-                                                        //     avoidOverlap: 1,
-                                                        //     // gravitationalConstant: -20000, // Stronger repulsion to avoid overlap
-                                                        //     // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
-                                                        //     // springLength: 95, // Distance between connected nodes
-                                                        //     // springConstant: 0.04, // Controls the spring force
-                                                        // },
+                                                        barnesHut: {
+                                                            // gravitationalConstant: -20, // Stronger repulsion to avoid overlap
+                                                            // centralGravity: 0.3, // Keeps nodes centered to avoid too much dispersion
+                                                            avoidOverlap: 0.2,
+                                                            // springLength: 200, // Distance between connected nodes
+                                                            // springConstant: 0.04, // Controls the spring force
+                                                        },
                                                         // stabilization: {
                                                         //     enabled: true,
                                                         //     iterations: 50, // Fewer iterations to speed up stabilization
                                                         //     updateInterval: 25, // More frequent updates for quicker animations
                                                         // },
                                                         // solver: 'barnesHut', // Good for large graphs
-                                                        // timestep: 0.7, // Increased timestep for faster animations
+                                                        // timestep: 2, // Increased timestep for faster animations
                                                         // repulsion: {
-                                                        //     nodeDistance: 150, // Controls distance between nodes
-                                                        // },
-                                                        // stabilization: {
-                                                        //     enabled: true,
+                                                        //     nodeDistance: 5000, // Controls distance between nodes
                                                         // },
                                                     },
                                                 }}

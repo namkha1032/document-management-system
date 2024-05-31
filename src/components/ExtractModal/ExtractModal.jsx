@@ -34,6 +34,7 @@ import TagButton from "../TagButton/TagButton";
 import FormEditMetadata from "../FormEditMetadata/FormEditMetadata";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import stringSimilarity from 'string-similarity';
 const ExtractModal = (props) => {
     let index = props.index
     let [modalOpen, setModalOpen] = useState(false)
@@ -137,6 +138,8 @@ const ExtractModal = (props) => {
         let response = await apiExtractMetadata(newForm)
         dispatchUploadDocument({ type: "setResult", payload: { index: index, metadata: response.metadata } })
     }
+    // const similarityRatio = stringSimilarity.compareTwoStrings(text1, text2);
+    // console.log("sim", similarityRatio)
     return (
         <>
             {/* <ToastContainer /> */}

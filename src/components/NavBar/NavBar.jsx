@@ -307,34 +307,34 @@ const NavBar = () => {
                                 //     width: 2000
                                 // }}
                                 onSearch={handleSearch}
-                                prefix={
-                                    <>
-                                        {
-                                            Object.entries(searchOption?.broader).map(([oriTerm, extendArray], index) =>
-                                                extendArray.map((extendTerm, index) =>
-                                                    <Tag key={index} color='blue' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
-                                                        {extendTerm}
-                                                    </Tag>
-                                                ))
-                                        }
-                                        {
-                                            Object.entries(searchOption?.related).map(([oriTerm, extendArray], index) =>
-                                                extendArray.map((extendTerm, index) =>
-                                                    <Tag key={index} color='cyan' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')}>
-                                                        {extendTerm}
-                                                    </Tag>
-                                                ))
-                                        }
-                                        {
-                                            Object.entries(searchOption?.narrower).map(([oriTerm, extendArray], index) =>
-                                                extendArray.map((extendTerm, index) =>
-                                                    <Tag key={index} color='green' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
-                                                        {extendTerm}
-                                                    </Tag>
-                                                ))
-                                        }
-                                    </>
-                                }
+                            // prefix={
+                            //     <>
+                            //         {
+                            //             Object.entries(searchOption?.broader).map(([oriTerm, extendArray], index) =>
+                            //                 extendArray.map((extendTerm, index) =>
+                            //                     <Tag key={index} color='blue' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'broader')}>
+                            //                         {extendTerm}
+                            //                     </Tag>
+                            //                 ))
+                            //         }
+                            //         {
+                            //             Object.entries(searchOption?.related).map(([oriTerm, extendArray], index) =>
+                            //                 extendArray.map((extendTerm, index) =>
+                            //                     <Tag key={index} color='cyan' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'related')}>
+                            //                         {extendTerm}
+                            //                     </Tag>
+                            //                 ))
+                            //         }
+                            //         {
+                            //             Object.entries(searchOption?.narrower).map(([oriTerm, extendArray], index) =>
+                            //                 extendArray.map((extendTerm, index) =>
+                            //                     <Tag key={index} color='green' closeIcon style={{ cursor: "pointer" }} onClick={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')} onClose={(e) => handleRemoveKeyword(e, extendTerm, oriTerm, 'narrower')}>
+                            //                         {extendTerm}
+                            //                     </Tag>
+                            //                 ))
+                            //         }
+                            //     </>
+                            // }
                             >
                             </Input.Search>
                         }

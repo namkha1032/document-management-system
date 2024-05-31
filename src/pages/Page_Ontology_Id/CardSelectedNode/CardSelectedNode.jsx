@@ -206,7 +206,7 @@ const SenseList = (props) => {
     }
     return (
         <div style={{ display: "flex", flexDirection: "column", marginTop: 16 }}>
-            <Typography.Title style={{ marginTop: 0 }} level={5}>Senses: </Typography.Title>
+            <Typography.Title style={{ marginTop: 0 }} level={5}>Words: </Typography.Title>
             {sense.map((se, idx) =>
                 <div style={{ display: "flex", columnGap: 8, marginBottom: 8 }} key={idx}>
                     <SenseRow graphState={graphState} se={se} sense={sense} setSense={setSense} setSearchNode={setSearchNode} setSelectedNode={setSelectedNode} />

@@ -33,7 +33,19 @@ const DeleteOntologyButton = (props) => {
     async function handleDeleteOntology() {
         setLoadingDeleteOntology(true)
         let deletedOntology = await deleteOntology(ontology.ontologyId)
-        let newOntologies = ontologyAll.filter((onto) => onto.ontologyId != deletedOntology.ontologyId)
+        let newOntologies = ontologyAll.map((onto) => {
+            if (onto.ontologyId === deletedOntology.ontologyId) {
+                return {
+                    ...onto,
+                    available: 0
+                }
+            }
+            else {
+                return {
+                    ...onto
+                }
+            }
+        })
         dispatchOntologyAll({ type: "update", payload: newOntologies })
         setLoadingDeleteOntology(false)
     }
@@ -53,7 +65,6 @@ const DeleteOntologyButton = (props) => {
 
 const Page_Ontology_All = () => {
     let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
-    let [searchOption, dispatchSearchOption] = useContext(SearchOptionContext)
     let antdTheme = theme.useToken()
     const navigate = useNavigate()
     let ontologyColumns = [
@@ -79,21 +90,22 @@ const Page_Ontology_All = () => {
                 )
             }
         },
+        // {
+        //     title: "Number of synsets",
+        //     render: (obj) => {
+        //         return (
+        //             <Typography.Text>{obj.count_syn}</Typography.Text>
+        //         )
+        //     }
+        // },
         {
-            title: "Number of synsets",
-            render: (obj) => {
-                return (
-                    <Typography.Text>{obj.count_syn}</Typography.Text>
-                )
-            }
-        },
-        {
-            title: "Number of senses",
+            // title: "Actions",
             render: (obj) => {
                 return (
                     <>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <Typography.Text>{obj.count_sense}</Typography.Text>
+                            {/* <Typography.Text>{obj.count_sense}</Typography.Text> */}
+                            <div />
                             <DeleteOntologyButton ontology={obj} />
                         </div>
                     </>
@@ -113,7 +125,7 @@ const Page_Ontology_All = () => {
                         <Table
                             columns={ontologyColumns}
                             rowKey={(record) => record.ontologyId}
-                            dataSource={ontologyAll}
+                            dataSource={ontologyAll.filter((onto, idx) => onto.available == 1)}
                             style={{
                                 borderRadius: 8, cursor: "pointer",
                                 border: `1px solid ${antdTheme.token.colorBorder}`

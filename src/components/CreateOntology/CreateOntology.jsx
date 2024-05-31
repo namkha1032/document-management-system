@@ -11,7 +11,8 @@ import {
     Tabs,
     Input,
     Card,
-    Skeleton
+    Skeleton,
+    Select
 } from "antd"
 import {
     ShareAltOutlined,
@@ -63,10 +64,23 @@ import {
     xt256,
     zenburn
 } from 'react-code-blocks';
-import { getAllOntologies, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
+import { getAllOntologiesNew, uploadOntologyFile, deleteOntology, createNewOntology } from "../../apis/ontologyApi";
 
+import OntologyAllContext from "../../context/OntologyAllContext";
 
-
+function removeAccents(str) {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+function filterSearchNode(inputValue, path) {
+    // console.log("inputValue", inputValue)
+    // console.log("path", path)
+    // return path.some((option) => {
+    //     return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+    // });
+    return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
+}
 const CreateOntology = () => {
     let [modalOpen, setModalOpen] = useState(false)
     let [fileList, setFileList] = useState([])
@@ -74,6 +88,9 @@ const CreateOntology = () => {
     let [loadingCreateOntology, setLoadingCreateOntology] = useState(false)
     let [modeTheme, dispatchModeTheme] = useContext(ModeThemeContext)
     let [createTab, setCreateTab] = useState("1")
+    let [ontologyAll, dispatchOntologyAll] = useContext(OntologyAllContext)
+    let [selectedDomainOntology, setSelectedDomainOntology] = useState(null)
+    console.log("CreateOnto ontologyall", ontologyAll)
     const navigate = useNavigate()
     let exampleJSON =
         `{
@@ -97,51 +114,32 @@ const CreateOntology = () => {
             key: '1',
             label: 'Create from scratch',
             children: <div>
-                <Input placeholder="Enter ontology name" value={newOntologyName} onChange={(e) => { setNewOntologyName(e.target.value) }} />
+                <Input size="large" placeholder="Enter ontology name" value={newOntologyName} onChange={(e) => { setNewOntologyName(e.target.value) }} />
             </div>,
         },
         {
             key: '2',
-            label: 'Upload JSON file',
+            label: 'Inherit from default ontology',
             children: <div>
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-                    <Upload fileList={fileList} name={"file"} multiple={false}
-                        beforeUpload={(file) => {
-                            console.log("file in beforeUpload: ", file)
-                            setFileList([
-                                ...fileList,
-                                file
-                            ])
-                            return false
-                        }}
-                        onChange={(file) => {
-                            console.log("file in onChange: ", file)
-                        }}
-                        onRemove={(file) => {
-                            const index = fileList.indexOf(file);
-                            const newFileList = fileList.slice();
-                            newFileList.splice(index, 1);
-                            setFileList(newFileList);
-                        }}
-                    >
-                        {fileList.length == 0
-                            ? <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                            : null
+                <Select
+                    size="large"
+                    style={{ width: "100%" }}
+                    showSearch
+                    allowClear
+                    options={ontologyAll?.filter((onto, idx) => onto.available == 0)?.map((onto, idx) => {
+                        return {
+                            value: onto.ontologyId,
+                            label: onto.ontologyName
                         }
-                    </Upload>
-                </div>
-                <Typography.Text>
-                    Please upload your ontology as a JSON file that follows the below format:
-                </Typography.Text>
-                <CodeBlock
-                    text={exampleJSON}
-                    language={"javascript"}
-                    showLineNumbers={false}
-                    codeBlock={true}
-                    // copied={true}
-                    theme={modeTheme == "dark" ? anOldHope : monoBlue}
-                // wrapLines
-                />
+                    })}
+                    // options={[]}
+                    placeholder="Select a domain"
+                    value={selectedDomainOntology}
+                    // optionFilterProp="children"
+                    onChange={(value) => { setSelectedDomainOntology(value) }}
+                    // onSearch={(val) => { console.log("val", val) }}
+                    filterOption={(input, option) =>
+                        removeAccents(option?.label ?? '').toLowerCase().includes(removeAccents(input).toLowerCase())} />
             </div>,
         }
     ]
@@ -155,10 +153,17 @@ const CreateOntology = () => {
     }
     async function handleCreateOntology() {
         setLoadingCreateOntology(true)
-        let newOntology = await createNewOntology({ name: newOntologyName })
+        let newOntology = await createNewOntology({ name: newOntologyName ? newOntologyName : "", ontologyId: selectedDomainOntology ? selectedDomainOntology : "" })
         navigate(`/ontology/${newOntology.ontologyId}`)
+        let response2 = await getAllOntologiesNew()
+        dispatchOntologyAll({
+            type: "update",
+            payload: response2
+        })
         setLoadingCreateOntology(false)
     }
+    console.log("selected", selectedDomainOntology)
+    
     return (
         <>
             <Modal style={{ top: 150 }} title="Create new ontology" open={modalOpen}
@@ -166,15 +171,14 @@ const CreateOntology = () => {
                 okButtonProps={{
                     icon: < CheckOutlined />,
                     loading: loadingCreateOntology,
-                    disabled: (fileList.length == 0 && createTab == "2") || (newOntologyName == "" && createTab == "1")
+                    disabled: (!selectedDomainOntology && createTab == "2") || (newOntologyName == "" && createTab == "1")
                 }}
                 okText={"Create"}
-                onOk={createTab == "1" ? handleCreateOntology : handleUploadOntology}
+                onOk={() => { handleCreateOntology() }}
                 onCancel={() => { setModalOpen(false) }}>
 
-                {/* <Tabs animated={{ inkBar: true, tabPane: false }} activeKey={createTab} items={createModalTab} onChange={(key) => { setCreateTab(key) }} /> */}
-                <Input placeholder="Enter ontology name" value={newOntologyName} onChange={(e) => { setNewOntologyName(e.target.value) }} />
-
+                <Tabs animated={{ inkBar: true, tabPane: false }} activeKey={createTab} items={createModalTab} onChange={(key) => { setCreateTab(key) }} />
+                {/* <Input placeholder="Enter ontology name" value={newOntologyName} onChange={(e) => { setNewOntologyName(e.target.value) }} /> */}
             </Modal >
             <Button onClick={() => { setModalOpen(true) }} type="primary" icon={<PlusOutlined />} size={"large"}>
                 New ontology

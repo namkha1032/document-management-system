@@ -739,31 +739,31 @@ const Page_Search = () => {
     console.log("Page_Search: searchResult", searchResult)
     console.log("Page_Search: ontologyAll", ontologyAll)
     async function handleAddKeyword(extendTerm, oriTerm, type) {
-        let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
-        const newBroaderResult = type == 'broader'
-            ? {
-                ...oldSearchResult.broader,
-                [oriTerm]: oldSearchResult.broader[oriTerm].filter(termItem => termItem != extendTerm)
-            }
-            : oldSearchResult.broader
-        const newRelatedResult = type == 'related'
-            ? {
-                ...oldSearchResult.related,
-                [oriTerm]: oldSearchResult.related[oriTerm].filter(termItem => termItem != extendTerm)
-            }
-            : oldSearchResult.related
-        const newNarrowerResult = type == 'narrower'
-            ? {
-                ...oldSearchResult.narrower,
-                [oriTerm]: oldSearchResult.narrower[oriTerm].filter(termItem => termItem != extendTerm)
-            }
-            : oldSearchResult.narrower
-        let newSearchResult = {
-            ...oldSearchResult,
-            broader: newBroaderResult,
-            related: newRelatedResult,
-            narrower: newNarrowerResult
-        }
+        // let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
+        // const newBroaderResult = type == 'broader'
+        //     ? {
+        //         ...oldSearchResult.broader,
+        //         [oriTerm]: oldSearchResult.broader[oriTerm].filter(termItem => termItem != extendTerm)
+        //     }
+        //     : oldSearchResult.broader
+        // const newRelatedResult = type == 'related'
+        //     ? {
+        //         ...oldSearchResult.related,
+        //         [oriTerm]: oldSearchResult.related[oriTerm].filter(termItem => termItem != extendTerm)
+        //     }
+        //     : oldSearchResult.related
+        // const newNarrowerResult = type == 'narrower'
+        //     ? {
+        //         ...oldSearchResult.narrower,
+        //         [oriTerm]: oldSearchResult.narrower[oriTerm].filter(termItem => termItem != extendTerm)
+        //     }
+        //     : oldSearchResult.narrower
+        // let newSearchResult = {
+        //     ...oldSearchResult,
+        //     broader: newBroaderResult,
+        //     related: newRelatedResult,
+        //     narrower: newNarrowerResult
+        // }
         let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
         const newBroaderOption = type == 'broader'
             ? (
@@ -810,7 +810,108 @@ const Page_Search = () => {
             related: newRelatedOption,
             narrower: newNarrowerOption
         }
-        dispatchSearchResult({ type: "update", payload: newSearchResult })
+        // dispatchSearchResult({ type: "update", payload: newSearchResult })
+        dispatchSearchOption({ type: "update", payload: newSearchOption })
+    }
+    async function handleRemoveKeyword(extendTerm, oriTerm, type) {
+        // e.preventDefault()
+        // let oldSearchResult = JSON.parse(JSON.stringify(searchResult))
+        // const newBroaderResult = type == 'broader'
+        //     ? (oldSearchResult.broader.hasOwnProperty(oriTerm)
+        //         ? {
+        //             ...oldSearchResult.broader,
+        //             [oriTerm]: [...oldSearchResult.broader[oriTerm], extendTerm]
+        //         }
+        //         : oldSearchResult.broader
+        //     )
+        //     : oldSearchResult.broader
+        // const newRelatedResult = type == 'related'
+        //     ? (oldSearchResult.related.hasOwnProperty(oriTerm)
+        //         ? {
+        //             ...oldSearchResult.related,
+        //             [oriTerm]: [...oldSearchResult.related[oriTerm], extendTerm]
+        //         }
+        //         : oldSearchResult.related
+        //     )
+        //     : oldSearchResult.related
+        // const newNarrowerResult = type == 'narrower'
+        //     ? (oldSearchResult.narrower.hasOwnProperty(oriTerm)
+        //         ? {
+        //             ...oldSearchResult.narrower,
+        //             [oriTerm]: [...oldSearchResult.narrower[oriTerm], extendTerm]
+        //         }
+        //         : oldSearchResult.narrower
+        //     )
+        //     : oldSearchResult.narrower
+        // let newSearchResult = {
+        //     ...oldSearchResult,
+        //     broader: newBroaderResult,
+        //     related: newRelatedResult,
+        //     narrower: newNarrowerResult
+        // }
+        let oldSearchOption = JSON.parse(JSON.stringify(searchOption))
+        let newSearchOption = null
+        if (type == 'broader') {
+            let newBroader = {}
+            if (oldSearchOption.broader[oriTerm].length >= 2) {
+                newBroader = {
+                    ...oldSearchOption.broader,
+                    [oriTerm]: oldSearchOption.broader[oriTerm].filter((item, index) => item != extendTerm)
+                }
+            }
+            else {
+                Object.entries(oldSearchOption.broader).forEach(([keyTerm, extendArray], index) => {
+                    if (keyTerm != oriTerm) {
+                        newBroader[keyTerm] = extendArray
+                    }
+                })
+            }
+            newSearchOption = {
+                ...oldSearchOption,
+                broader: newBroader
+            }
+        }
+        else if (type == 'related') {
+            let newRelated = {}
+            if (oldSearchOption.related[oriTerm].length >= 2) {
+                newRelated = {
+                    ...oldSearchOption.related,
+                    [oriTerm]: oldSearchOption.related[oriTerm].filter((item, index) => item != extendTerm)
+                }
+            }
+            else {
+                Object.entries(oldSearchOption.related).forEach(([keyTerm, extendArray], index) => {
+                    if (keyTerm != oriTerm) {
+                        newRelated[keyTerm] = extendArray
+                    }
+                })
+            }
+            newSearchOption = {
+                ...oldSearchOption,
+                related: newRelated
+            }
+        }
+        else if (type == 'narrower') {
+            let newNarrower = {}
+            if (oldSearchOption.narrower[oriTerm].length >= 2) {
+                newNarrower = {
+                    ...oldSearchOption.narrower,
+                    [oriTerm]: oldSearchOption.narrower[oriTerm].filter((item, index) => item != extendTerm)
+                }
+            }
+            else {
+                Object.entries(oldSearchOption.narrower).forEach(([keyTerm, extendArray], index) => {
+                    if (keyTerm != oriTerm) {
+                        newNarrower[keyTerm] = extendArray
+                    }
+                })
+            }
+            newSearchOption = {
+                ...oldSearchOption,
+                narrower: newNarrower
+            }
+        }
+        // dispatchSearchResult({ type: "update", payload: newSearchResult })
         dispatchSearchOption({ type: "update", payload: newSearchOption })
     }
     async function handleChangeSearchScope(value) {
@@ -1070,17 +1171,7 @@ const Page_Search = () => {
                                             //             </div>,
                                             //     }
                                             // ]}
-                                            options={ontologyAll?.map((item, index) => {
-                                                // let iconType = ''
-                                                // if (item.url == "phap-luat") {
-                                                //     iconType = "scale-balanced"
-                                                // }
-                                                // else if (item.url == "khoa-hoc-may-tinh") {
-                                                //     iconType = "laptop-code"
-                                                // }
-                                                // else {
-                                                //     iconType = "circle-nodes"
-                                                // }
+                                            options={ontologyAll?.filter((onto, idx) => onto.available == 1)?.map((item, index) => {
                                                 return {
                                                     value: item.ontologyId,
                                                     label:
@@ -1133,30 +1224,105 @@ const Page_Search = () => {
                                                 <Typography.Text strong>Broader terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.broader).map(([oriTerm, extendArray], index) =>
-                                                        extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='blue' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'broader')}>
-                                                                {kw}
-                                                            </Tag>))}
+                                                        extendArray.map((kw, index) => {
+                                                            let foundTerm = false
+                                                            for (let optionOriTerm in searchOption?.broader) {
+                                                                if (optionOriTerm === oriTerm) {
+                                                                    for (let optionExtendTerm of searchOption?.broader[optionOriTerm]) {
+                                                                        if (optionExtendTerm === kw) {
+                                                                            foundTerm = true
+                                                                            break
+                                                                        }
+                                                                    }
+                                                                    if (foundTerm == true) {
+                                                                        break
+                                                                    }
+                                                                }
+                                                            }
+                                                            return (
+                                                                <Tag key={index} color={foundTerm ? "#1677ff" : 'blue'} style={{ cursor: 'pointer' }} onClick={() => {
+                                                                    if (foundTerm) {
+                                                                        handleRemoveKeyword(kw, oriTerm, 'broader')
+                                                                    }
+                                                                    else {
+                                                                        handleAddKeyword(kw, oriTerm, 'broader')
+                                                                    }
+                                                                }}>
+                                                                    {kw}
+                                                                </Tag>
+                                                            )
+                                                        }
+
+                                                        ))}
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                                 <Typography.Text strong>Related terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.related).map(([oriTerm, extendArray], index) =>
-                                                        extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='cyan' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'related')}>
-                                                                {kw}
-                                                            </Tag>))}
+                                                        extendArray.map((kw, index) => {
+                                                            let foundTerm = false
+                                                            for (let optionOriTerm in searchOption?.related) {
+                                                                if (optionOriTerm === oriTerm) {
+                                                                    for (let optionExtendTerm of searchOption?.related[optionOriTerm]) {
+                                                                        if (optionExtendTerm === kw) {
+                                                                            foundTerm = true
+                                                                            break
+                                                                        }
+                                                                    }
+                                                                    if (foundTerm == true) {
+                                                                        break
+                                                                    }
+                                                                }
+                                                            }
+                                                            return (
+                                                                <Tag key={index} color={foundTerm ? "#13c2c2" : 'cyan'} style={{ cursor: 'pointer' }} onClick={() => {
+                                                                    if (foundTerm) {
+                                                                        handleRemoveKeyword(kw, oriTerm, 'related')
+                                                                    }
+                                                                    else {
+                                                                        handleAddKeyword(kw, oriTerm, 'related')
+                                                                    }
+                                                                }}>
+                                                                    {kw}
+                                                                </Tag>
+                                                            )
+                                                        }))}
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
                                                 <Typography.Text strong>Narrower terms: </Typography.Text>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: 8 }}>
                                                     {Object.entries(searchResult?.narrower).map(([oriTerm, extendArray], index) =>
-                                                        extendArray.map((kw, index) =>
-                                                            <Tag key={index} color='green' style={{ cursor: 'pointer' }} onClick={() => handleAddKeyword(kw, oriTerm, 'narrower')}>
-                                                                {kw}
-                                                            </Tag>))}
+                                                        extendArray.map((kw, index) => {
+                                                            let foundTerm = false
+                                                            for (let optionOriTerm in searchOption?.narrower) {
+                                                                if (optionOriTerm === oriTerm) {
+                                                                    for (let optionExtendTerm of searchOption?.narrower[optionOriTerm]) {
+                                                                        if (optionExtendTerm === kw) {
+                                                                            foundTerm = true
+                                                                            break
+                                                                        }
+                                                                    }
+                                                                    if (foundTerm == true) {
+                                                                        break
+                                                                    }
+                                                                }
+                                                            }
+                                                            return (
+                                                                <Tag key={index} color={foundTerm ? "#52c41a" : 'green'} style={{ cursor: 'pointer' }} onClick={() => {
+                                                                    if (foundTerm) {
+                                                                        handleRemoveKeyword(kw, oriTerm, 'narrower')
+                                                                    }
+                                                                    else {
+                                                                        handleAddKeyword(kw, oriTerm, 'narrower')
+                                                                    }
+                                                                }}>
+                                                                    {kw}
+                                                                </Tag>
+                                                            )
+                                                        }
+                                                        ))}
                                                 </div>
                                             </div>
                                         </div>
