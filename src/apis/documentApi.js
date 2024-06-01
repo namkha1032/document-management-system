@@ -248,6 +248,17 @@ export async function apiLiveSearchMetadata(query) {
     return rawResponse.data
 }
 
+export async function apiLiveSemanticSearchMetadata(data) {
+    let token = JSON.parse(localStorage.getItem("user")).access_token
+    let rawResponse = await axios.post(`${endpoint}/api/documents/live-search-semantic-metadata`, data, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            ...originHeader
+        }
+    })
+    return rawResponse.data.data
+}
+
 export async function apiGetLog(documentId) {
     let token = JSON.parse(localStorage.getItem("user")).access_token
     let rawResponse = await axios.get(`${endpoint}/api/logs/matrix/${documentId}`, {

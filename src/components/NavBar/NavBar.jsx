@@ -290,7 +290,7 @@ const NavBar = () => {
                     </Row>
                 </Modal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: "center", height: "100%" }}>
-                    <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                    <div style={{ display: "flex", alignItems: "center", width: "60%" }}>
                         {user?.is_expertuser
                             ? null
                             :

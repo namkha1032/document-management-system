@@ -56,7 +56,7 @@ import SearchResultContext from "../../context/SearchResultContext";
 import OntologyAllContext from "../../context/OntologyAllContext";
 import randomString from "../../functions/randomString";
 import { PiShareNetworkFill } from "react-icons/pi";
-
+import KeyAC from "../../components/KeyAC/KeyAC";
 import prettyBytes from 'pretty-bytes';
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -468,7 +468,7 @@ const FormKeyValue = (props) => {
             // handleTypeKeyValue(myObj.obj_id, kvPair.key, 'key')
             // handleTypeKeyValue(myObj.obj_id, kvPair.value, 'value')
             handleTypeKeyValueNew(myObj.obj_id, kvPair.key, kvPair.value)
-        }, 500)
+        }, 200)
 
         return () => clearTimeout(timer)
     }, [kvPair])
@@ -496,7 +496,7 @@ const FormKeyValue = (props) => {
     }, [myObj])
     return (
         <>
-            <AutoComplete
+            {/* <AutoComplete
                 style={{
                     width: 160,
                 }}
@@ -512,6 +512,15 @@ const FormKeyValue = (props) => {
                     setKvPair({ ...kvPair, key: node.label })
                 }}
                 filterOption={filterSearchNode}
+            /> */}
+            <KeyAC
+                variant={"outlined"}
+                width={160}
+                item={null}
+                kvPair={kvPair}
+                setKvPair={setKvPair}
+                options={options}
+                updatePairFunc={() => { handleTypeKeyValueNew(myObj.obj_id, kvPair.key, kvPair.value) }}
             />
             {operatorButton}
             <Input

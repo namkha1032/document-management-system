@@ -27,23 +27,9 @@ import {
     LoadingOutlined
 } from '@ant-design/icons';
 import { useParams, useNavigate } from "react-router-dom";
-import { apiLiveSearchMetadata } from "../../apis/documentApi";
-
-
-function removeAccents(str) {
-    return str.normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd').replace(/Đ/g, 'D');
-}
-
-function filterSearchNode(inputValue, path) {
-    // console.log("inputValue", inputValue)
-    // console.log("path", path)
-    // return path.some((option) => {
-    //     return option.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
-    // });
-    return path.compareLabel.toLowerCase().indexOf(removeAccents(inputValue).toLowerCase()) > -1
-}
+import { apiLiveSearchMetadata, apiLiveSemanticSearchMetadata } from "../../apis/documentApi";
+import delay from "../../functions/delay";
+import KeyAC from "../KeyAC/KeyAC";
 
 const KeyValueForm = (props) => {
     let item = props.item
@@ -61,26 +47,7 @@ const KeyValueForm = (props) => {
         key: Object.entries(item)[0][0],
         value: Object.entries(item)[0][1]
     })
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            // async function getSuggestions() {
-            //     setOptions([{
-            //         value: "loading", label: <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            //             <LoadingOutlined />
-            //         </div>
-            //     }])
-            //     let response = await apiLiveSearchMetadata(kvPair.key)
-            //     console.log("query: ", response)
-            //     setOptions(response.data)
-            // }
-            // if (kvPair.key != Object.entries(item)[0][0] || kvPair.value != Object.entries(item)[0][1]) {
-            //     getSuggestions()
-            //     editMetadata(index, kvPair.key, kvPair.value)
-            // }
-            editMetadata(index, kvPair.key, kvPair.value)
-        }, 500)
-        return () => clearTimeout(timer)
-    }, [kvPair])
+
     useEffect(() => {
         if (kvPair.key != Object.entries(item)[0][0] || kvPair.value != Object.entries(item)[0][1]) {
             setKvPair({
@@ -120,14 +87,15 @@ const KeyValueForm = (props) => {
                 {/* <Typography.Text>{Object.entries(item)[0][0]}</Typography.Text> */}
                 {/* <Input.TextArea onChange={(e) => setKvPair({ ...kvPair, key: e.target.value })} autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.key} /> */}
                 {type == "edit" ?
-                    <AutoComplete style={{ width: "100%" }} onSearch={(val) => {
-                        setKvPair({ ...kvPair, key: val })
-                    }} options={options} value={kvPair.key}
-                        filterOption={filterSearchNode}
-                        onSelect={(val, node) => {
-                            // console.log("node", node)
-                            setKvPair({ ...kvPair, key: node.label })
-                        }}
+                    <KeyAC
+                        variant={"outlined"}
+                        width={"100%"}
+                        item={item}
+                        kvPair={kvPair}
+                        setKvPair={setKvPair}
+                        options={options}
+                        setOptions={setOptions}
+                        updatePairFunc={() => { editMetadata(index, kvPair.key, kvPair.value) }}
                     />
                     : <Input.TextArea autoSize={{ minRows: 1, maxRows: 4 }} value={kvPair.key} readOnly />
                 }
@@ -168,7 +136,7 @@ const FormEditMetadata = (props) => {
             setOptions(response.data.map((res, idx) => {
                 return {
                     ...res,
-                    compareLabel: removeAccents(res.label)
+                    // compareLabel: removeAccents(res.label)
                 }
             }))
         }
@@ -217,7 +185,7 @@ const FormEditMetadata = (props) => {
                             ...newPair,
                             key: e.target.value
                         })} placeholder="key" variant="filled" /> */}
-                        <AutoComplete variant="filled" style={{ width: "100%" }} onSearch={(val) => {
+                        {/* <AutoComplete variant="filled" style={{ width: "100%" }} onSearch={(val) => {
                             setNewPair({ ...newPair, key: val })
                         }} options={options} value={newPair.key}
                             filterOption={filterSearchNode}
@@ -225,6 +193,16 @@ const FormEditMetadata = (props) => {
                                 // console.log("node", node)
                                 setNewPair({ ...newPair, key: node.label })
                             }}
+                        /> */}
+                        <KeyAC
+                            variant={"filled"}
+                            width={"100%"}
+                            item={null}
+                            kvPair={newPair}
+                            setKvPair={setNewPair}
+                            options={options}
+                            setOptions={setOptions}
+                            updatePairFunc={() => { }}
                         />
                     </Col>
                     <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
