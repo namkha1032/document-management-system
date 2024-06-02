@@ -73,7 +73,7 @@ export async function apiGetSearchResult(searchData) {
         domain: searchData.method == "full-text" ? searchData.domain : ""
     }
     if (newSearchData.method == "semantic") {
-        newSearchData["threshold"] = 0
+        newSearchData["threshold"] = 0.5
     }
     const response = await axios.post(`${endpoint}/api/search?page=${newSearchData.current}&page_size=${newSearchData.pageSize}`, newSearchData, {
         headers: {
