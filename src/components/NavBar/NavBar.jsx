@@ -76,8 +76,6 @@ const NavBar = () => {
     const [uploadDocument, dispatchUploadDocument] = useContext(UploadDocumentContext)
     let [firstName, setFirstName] = useState(user?.first_name)
     let [lastName, setLastName] = useState(user?.last_name)
-    console.log("firstName", firstName)
-    console.log("lastName", lastName)
     // useEffect(() => {
     //     setFirstName(user?.first_name)
     //     setLastName(user?.last_name)

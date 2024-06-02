@@ -205,11 +205,15 @@ const FormEditMetadata = (props) => {
                             updatePairFunc={() => { }}
                         />
                     </Col>
-                    <Col span={1} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Col span={1} style={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
                         <Typography.Text>:</Typography.Text>
                     </Col>
                     <Col span={14}>
-                        <Input value={newPair.value} onChange={(e) => setNewPair({
+                        {/* <Input value={newPair.value} onChange={(e) => setNewPair({
+                            ...newPair,
+                            value: e.target.value
+                        })} placeholder="value" variant="filled" /> */}
+                        <Input.TextArea autoSize={{ minRows: 1, maxRows: 4 }} value={newPair.value} onChange={(e) => setNewPair({
                             ...newPair,
                             value: e.target.value
                         })} placeholder="value" variant="filled" />

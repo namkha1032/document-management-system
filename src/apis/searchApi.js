@@ -72,6 +72,9 @@ export async function apiGetSearchResult(searchData) {
         method: searchData.method == "semantic" ? "semantic" : searchData.method == "file-name" ? "file-name" : "full-text",
         domain: searchData.method == "full-text" ? searchData.domain : ""
     }
+    if (newSearchData.method == "semantic") {
+        newSearchData["threshold"] = 0
+    }
     const response = await axios.post(`${endpoint}/api/search?page=${newSearchData.current}&page_size=${newSearchData.pageSize}`, newSearchData, {
         headers: {
             "Authorization": `Bearer ${token}`,

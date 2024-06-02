@@ -271,7 +271,7 @@ const Section_Ontology_Id = () => {
                                                 }}
                                                 options={{
                                                     layout: {
-                                                        randomSeed: 69,
+                                                        randomSeed: 80,
                                                         improvedLayout: true,
                                                         // hierarchical: {
                                                         //     direction: "LR"
